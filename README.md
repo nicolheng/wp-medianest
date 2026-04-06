@@ -39,3 +39,28 @@ This project pulls data and chart information from the following industry-standa
 * **Books:** Google Books & The New York Times
 * **Music:** iTunes & Last.fm
 
+---
+
+## How to Run
+
+### prerequisites
+
+Install Node.js on your machine to run this project. Node.js includes npm (Node Package Manager).
+
+* **Node.js**: Version 18.0.0 or higher.
+
+Verify your installation by running these commands in your terminal:
+
+```bash
+node -v
+npm -v
+```
+
+### Frontend Only [temp]
+
+
+1. git clone the repo
+2. at cmd, run `cd frontend`
+3. run `npm install`
+4. run `npm run dev`
+5. go to localhost:8081/
