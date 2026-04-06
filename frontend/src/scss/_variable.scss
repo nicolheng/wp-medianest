@@ -1,0 +1,15 @@
+// Logo Dimensions
+$navbar-logo-height: 40px;
+$footer-logo-height: 30px;
+
+.navbar-logo {
+    height: $navbar-logo-height;
+    width: auto; 
+    object-fit: contain;
+}
+
+.footer-logo {
+    height: $footer-logo-height;
+    width: auto;
+    object-fit: contain;
+}

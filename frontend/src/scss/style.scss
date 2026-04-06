@@ -4,6 +4,7 @@ $secondary: #5B7553;
 
 @import "bootstrap/scss/bootstrap";
 @import "bootstrap-icons/font/bootstrap-icons.css";
+@import "variable";
 
 // 1. Force dark text on primary buttons
 .btn-primary {
@@ -29,12 +30,22 @@ $secondary: #5B7553;
   --bs-list-group-active-border-color: var(--bs-primary);
 }
 
+header,
 footer {
   background-color: #212529;
   color: #ffffff;
 }
 
+[data-bs-theme="dark"] header,
 [data-bs-theme="dark"] footer {
   background-color: #141619;
   color: #ffffff;
+}
+
+.navbar-dark .navbar-nav .nav-link { 
+  color: $primary !important; 
+}
+
+.navbar-dark .navbar-nav .nav-link:hover { 
+  color: #cab621 !important; 
 }
