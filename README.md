@@ -30,3 +30,12 @@ The **Entertainment Hub** is a MEN-Stack web application designed to be a one-st
 * **Polymorphic Data:** A flexible database structure that handles diverse media details seamlessly.
 * **User Personalization:** Personalized profiles, watchlists, and rating systems.
 * **Real-time Data:** Integration with industry-standard APIs for the most up-to-date entertainment charts.
+
+---
+
+## 📜 Data Acknowledgements
+This project pulls data and chart information from the following industry-standard sources:
+* **Movies & Shows:** TMDB 
+* **Books:** Google Books & The New York Times
+* **Music:** iTunes & Last.fm
+
