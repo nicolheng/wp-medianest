@@ -8,20 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Helper function to update the button's look
     const updateButtonUI = (theme) => {
-        if (!themeToggleBtn || !themeIcon) return;
+        if (!themeToggleBtn || !themeIcon ) return;
+
+        // Strip away both icons to create a blank slate
+        themeIcon.classList.remove('bi-moon-stars-fill', 'bi-sun-fill');
 
         if (theme === 'dark') {
-            // Set Sun icon for Dark Mode (to indicate switching to light)
-            themeIcon.className = 'bi bi-sun-fill fs-5';
-            
-            themeToggleBtn.classList.add('btn-light');
-            themeToggleBtn.classList.remove('btn-outline-secondary', 'btn-dark');
+            // Add the sun icon for Dark Mode
+            themeIcon.classList.add('bi-sun-fill');
         } else {
-            // Set Moon icon for Light Mode (to indicate switching to dark)
-            themeIcon.className = 'bi bi-moon-stars-fill fs-5';
-            
-            themeToggleBtn.classList.add('btn-outline-secondary');
-            themeToggleBtn.classList.remove('btn-light', 'btn-dark');
+            // Add the moon icon for Light Mode
+            themeIcon.classList.add('bi-moon-stars-fill');
         }
     };
 
