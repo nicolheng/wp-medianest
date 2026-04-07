@@ -49,3 +49,13 @@ footer {
 .navbar-dark .navbar-nav .nav-link:hover { 
   color: #cab621 !important; 
 }
+
+.box {
+  /* A soft, muted off-white. Not harsh like #fff */
+  background-color: #f4f5f7; 
+}
+
+/* 2. Dark Mode Override */
+[data-bs-theme="dark"] .box {
+  background-color: #343a40;
+}
