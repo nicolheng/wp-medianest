@@ -4,6 +4,7 @@ $secondary: #5B7553;
 
 @import "bootstrap/scss/bootstrap";
 @import "bootstrap-icons/font/bootstrap-icons.css";
+@import "auth";
 
 // 1. Force dark text on primary buttons
 .btn-primary {

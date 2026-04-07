@@ -1,0 +1,71 @@
+.box-area {
+    width: 930px;
+    height: 550px;
+    // No need for a separate block at the bottom, nest it here!
+    @media only screen and (max-width: 768px) {
+        width: 100%; // Better for mobile to use 100% instead of a fixed px
+        height: auto;
+        margin: 20px;
+    }
+}
+
+.right-box {
+    background-image: url('/images/sign.png'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    padding: 0 !important;
+
+    // SCSS Nesting for the overlay
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: inherit;
+    }
+
+    // Nest the mobile height here too
+    @media only screen and (max-width: 768px) {
+        height: 250px;
+    }
+}
+
+.featured-text {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4); // This is your transparent gray/black
+    backdrop-filter: blur(5px); // Optional: adds a nice "glass" effect
+    padding: 30px 20px; // Gives the text some breathing room inside the gray box
+    text-align: center;
+    
+    h2 {
+        margin-bottom: 5px;
+    }
+    
+    p {
+        margin-bottom: 0; // Tightens up the space at the bottom
+    }
+}
+
+//if ok can move to style.scss
+.dark-mode-container {
+    position: fixed;   /* This makes it float */
+    bottom: 20px;      /* Distance from the bottom edge */
+    right: 20px;       /* THIS moves it to the right edge */
+    left: auto;        /* Ensures it's not fighting a 'left' setting */
+    z-index: 9999;     /* High number so it stays on top of everything */
+}
+
+#darkModeToggle {
+    border-radius: 50px; /* Makes it look like a floating pill/bubble */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Makes it "pop" off the screen */
+}
