@@ -1,0 +1,15 @@
+// Adaptive Box Component
+.box {
+  background-color: #f4f5f7; 
+}
+
+[data-bs-theme="dark"] .box {
+  background-color: var(--bs-gray-800); 
+}
+
+.hover-primary {
+    transition: color 0.2s ease-in-out;
+    &:hover {
+        color: $primary !important; 
+    }
+}

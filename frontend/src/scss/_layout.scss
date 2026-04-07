@@ -1,0 +1,17 @@
+.logo {
+    height: $logo-height;
+    width: auto; 
+    object-fit: contain;
+}
+
+header, footer {
+  background-color: var(--bs-dark);
+  color: var(--bs-white);
+}
+
+[data-bs-theme="dark"] header,
+[data-bs-theme="dark"] footer {
+  background-color: #141619;
+  color: var(--bs-white);
+}
+

@@ -1,0 +1,29 @@
+// Force dark text on primary elements for contrast
+.btn-primary {
+  --bs-btn-color: var(--bs-dark);
+  --bs-btn-hover-color: #000000;
+  --bs-btn-active-color: #000000;
+}
+
+// Grouped background utilities
+.bg-primary,
+.text-bg-primary,
+.progress-bar.bg-primary {
+  color: var(--bs-dark) !important;
+}
+
+// Active list items
+.list-group-item.active {
+  --bs-list-group-active-color: var(--bs-dark);
+  --bs-list-group-active-bg: var(--bs-primary);
+  --bs-list-group-active-border-color: var(--bs-primary);
+}
+
+// Custom Navbar Links
+.navbar .navbar-nav .nav-link { 
+  color: var(--bs-primary); 
+  
+  &:hover { 
+    color: #cab621; 
+  }
+}
