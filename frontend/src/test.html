@@ -8,40 +8,44 @@
 
 <body class="d-flex flex-column min-vh-100">
     <header class="sticky-top">
-        <nav class="navbar navbar-expand-lg shadow-sm">
-            <div class="container">
-                <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="#">
+        <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+            <div class="container d-flex align-items-center flex-wrap flex-lg-nowrap">
+    
+                <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="index.html">
                     <img src="./assets/logo.png" alt="MediaNest" class="logo">
                     MediaNest
                 </a>
-        
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-        
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-2 me-auto mb-lg-0 py-2 py-lg-0 gap-2">
+    
+                <div class="collapse navbar-collapse w-100 order-3 order-lg-2" id="navbarNav">
+                    <ul class="navbar-nav ms-lg-3 mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="watchList.html">WatchList</a></li>
                     </ul>
-        
-                    <div class="d-flex align-items-center gap-3">
-                        <input class="form-control text-secondary mb-0" type="search" placeholder="Search" aria-label="Search">
+                </div>
+    
+                <div class="d-flex align-items-center gap-2 ms-auto flex-shrink-0 order-2 order-lg-3">
+    
+                    <a href="search.html" class="text-secondary hover-primary p-1">
+                        <i class="bi bi-search fs-5"></i>
+                    </a>
+    
+                    <div id="auth-buttons" class="d-flex gap-2 flex-nowrap">
+                        <a class="btn btn-outline-primary btn-sm d-none d-md-inline-block text-nowrap" href="login.html">Log
+                            In</a>
+                        <a class="btn btn-primary btn-sm text-nowrap" href="signup.html">Sign Up</a>
+                    </div>
                     
-                        <div id="auth-buttons" class="d-flex gap-2">
-                            <button class="btn btn-outline-primary" style="white-space: nowrap;" href="login.html">Log In</button>
-                            <button class="btn btn-primary" style="white-space: nowrap;" href="signup.html">Sign Up</button>
-                        </div>
-                    
-                        <div id="profile-placeholder" class="d-none align-items-center gap-2" href="profile.html">
-                            <i class="bi bi-person-circle text-primary fs-4" style="cursor: pointer;"></i>
-                        </div>
+                    <button class="btn btn-outline-secondary rounded-circle p-1 lh-1" id="theme-toggle" type="button">
+                        <i class="bi bi-sun-fill fs-5" id="theme-icon"></i>
+                    </button>
+    
+                    <button class="navbar-toggler border-1 p-1 ms-1.5" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                        <button class="btn btn-outline-secondary rounded-circle p-2 lh-1" id="theme-toggle" type="button" aria-label="Toggle theme">
-                            <i class="bi bi-sun-fill fs-5" id="theme-icon"></i>
-                        </button>
-
+                    <div id="profile-placeholder" class="d-none d-flex align-items-center">
+                        <i class="bi bi-person-circle text-primary fs-3" style="cursor: pointer;"></i>
                     </div>
                 </div>
             </div>
@@ -50,7 +54,7 @@
 
     <main class="mb-5">
         <div class="container box p-3 mt-5">
-            meow meow im a box
+            meow meow im a box yayyyyy
         </div>
         <div class="container mt-5">
             <h2 class="mb-4 text-primary">Color Test Components</h2>
