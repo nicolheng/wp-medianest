@@ -24,7 +24,7 @@
                                 <input type="email"
                                         id="email"
                                         name="email"
-                                        class="form-control form-control-lg bg-light fs-6"
+                                        class="form-control form-control-lg fs-6"
                                         placeholder="Email"
                                         autocomplete="email"
                                         required>
@@ -33,21 +33,21 @@
                                 <input type="password"
                                         id="password"
                                         name="password"
-                                        class="form-control form-control-lg bg-light fs-6"
+                                        class="form-control form-control-lg fs-6"
                                         placeholder="Password"
                                         autocomplete="current-password"
                                         required>
                             </div>
                             <div class="input-group mb-3">
-                                <button class="btn btn-lg btn-warning w-100 fs-6">Sign In</button>
+                                <button class="btn btn-lg btn-primary w-100 fs-6">Sign In</button>
                             </div>
                             <div class="row">
-                                <small>Don't have an account? <a href="signup.html">Sign Up</a></small>
+                                <small>Don't have an account? <a href="signup.html" class="auth-link">Sign Up</a></small>
                             </div>
                         </div>
                         <div class="d-flex align-items-center my-3 w-100">
                             <div style="flex: 1; height: 1.2px; background-color: var(--bs-border-color);"></div>
-                            <span class="mx-3 text-secondary fw-bold" style="font-size: 0.8rem;">OR</span>
+                            <span class="mx-3 divider-text fw-bold" style="font-size: 0.8rem;">OR</span>
                             <div style="flex: 1; height: 1.2px; background-color: var(--bs-border-color);"></div>
                         </div>
                         <div class="row mt-3">
@@ -60,7 +60,7 @@
                                         <span class="fw-bold" style="font-size: 0.9rem;">Continue with Apple</span>
                                     </button>
                                     
-                                    <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center py-2 w-50 mb-2 shadow-sm border">
+                                    <button class="btn btn-outline-secondary d-flex btn-google align-items-center justify-content-center py-2 w-50 mb-2 shadow-sm border">
                                         <img src="https://img.icons8.com/color/20/000000/google-logo.png" class="me-2">
                                         <span class="fw-bold" style="font-size: 0.9rem;">Continue with Google</span>
                                     </button>
@@ -85,8 +85,8 @@
                 </div>
             </div>
             <div class="dark-mode-container">
-                <button id="darkModeToggle" class="btn btn-dark shadow-lg rounded-pill px-3 py-2">
-                    <i class="bi bi-moon-stars-fill me-2"></i>
+                <button id="theme-toggle" class="btn btn-dark shadow-lg rounded-pill px-3 py-2">
+                    <i id="theme-icon" class="bi bi-moon-stars-fill me-2"></i>
                     <span id="toggleText">Dark Mode</span>
                 </button>
             </div>
