@@ -1,15 +1,73 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <title>Entertainment Recommendation System</title>
-    </head>
-    <body>
-        <header>
-        </header>
-        <main>
-        </main>
-        <footer>
-        </footer>
-        <script type="module" src="./js/main.js"></script>
+
+<head>
+    <title>MediaNest</title>
+    <link rel="icon" type="image/png" href="./assets/logo.png">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="#">
+                    <img src="./assets/logo.png" alt="MediaNest" class="logo">
+                    MediaNest
+                </a>
+        
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+        
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-2 me-auto mb-lg-0 py-2 py-lg-0 gap-2">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="watchList.html">WatchList</a></li>
+                    </ul>
+        
+                    <div class="d-flex align-items-center gap-3">
+                        <input class="form-control text-secondary mb-0" type="search" placeholder="Search" aria-label="Search">
+                    
+                        <div id="auth-buttons" class="d-flex gap-2">
+                            <button class="btn btn-outline-primary" style="white-space: nowrap;" href="login.html">Log In</button>
+                            <button class="btn btn-primary" style="white-space: nowrap;" href="signup.html">Sign Up</button>
+                        </div>
+                    
+                        <div id="profile-placeholder" class="d-none align-items-center gap-2" href="profile.html">
+                            <i class="bi bi-person-circle text-primary fs-4" style="cursor: pointer;"></i>
+                        </div>
+
+                        <button class="btn btn-outline-secondary rounded-circle p-2 lh-1" id="theme-toggle" type="button" aria-label="Toggle theme">
+                            <i class="bi bi-sun-fill fs-5" id="theme-icon"></i>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="mb-5">
+        <div class="container mt-5">
+            <!--start ur content here-->
+        </div>
+    </main>
+
+    <footer class="py-5 mt-auto">
+        <div class="container d-flex justify-content-between gap-2">
+            <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="index.html">
+                    <img src="./assets/logo.png" alt="MediaNest" class="logo">
+                    MediaNest
+            </a>
+            <div class="d-flex justify-content-end gap-2 align-items-center">
+                <i class="bi bi-c-circle"></i>
+                    <div>2026 MediaNest. All rights reserved.</div>     
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="./js/main.js"></script>
     </body>
+
 </html>
