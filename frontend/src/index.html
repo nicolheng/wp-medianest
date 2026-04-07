@@ -52,11 +52,124 @@
         </nav>
     </header>
 
-    <main class="mb-5">
-        <div class="container mt-5">
-            <!--start ur content here-->
-        </div>
-    </main>
+    <main class="flex-grow-1">
+        <section class="hero-section py-5">
+            <div class="container py-4 py-lg-5">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-7">
+                <span class="badge text-bg-primary rounded-pill px-3 py-2 mb-3">Real-time discovery</span>
+                <h1 class="display-4 fw-bold text-white mb-3">
+                    Discover top movies, books, and music in one place.
+                </h1>
+                <p class="lead text-white-50 mb-4">
+                    Explore curated charts, track what is trending now, and save the titles you love.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#top-charts" class="btn btn-primary btn-lg px-4">Explore Charts</a>
+                    <a href="signup.html" class="btn btn-outline-light btn-lg px-4">Create Account</a>
+                </div>
+
+                <div class="d-flex flex-wrap gap-3 mt-4 text-white-50 small">
+                    <span><i class="bi bi-check2-circle me-2"></i>Movies</span>
+                    <span><i class="bi bi-check2-circle me-2"></i>Books</span>
+                    <span><i class="bi bi-check2-circle me-2"></i>Music</span>
+                </div>
+                </div>
+
+                <div class="col-lg-5">
+                <div class="hero-panel p-4 p-lg-5 rounded-4 shadow-lg">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <div class="text-white-50 small text-uppercase">Trending now</div>
+                        <h2 class="h4 text-white mb-0">Live chart snapshot</h2>
+                    </div>
+                    <span class="badge rounded-pill text-bg-dark">Updated today</span>
+                    </div>
+
+                    <div class="chart-preview-list">
+                    <div class="chart-preview-item">
+                        <div class="rank">01</div>
+                        <div class="flex-grow-1">
+                        <div class="text-white fw-semibold">Featured movie title</div>
+                        <div class="text-white-50 small">Movie charts</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-preview-item">
+                        <div class="rank">02</div>
+                        <div class="flex-grow-1">
+                        <div class="text-white fw-semibold">Featured book title</div>
+                        <div class="text-white-50 small">Book charts</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-preview-item">
+                        <div class="rank">03</div>
+                        <div class="flex-grow-1">
+                        <div class="text-white fw-semibold">Featured song or artist</div>
+                        <div class="text-white-50 small">Music charts</div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <section id="top-charts" class="py-5">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+                    <div>
+                        <span class="badge text-bg-secondary rounded-pill px-3 py-2 mb-2">Top charts</span>
+                        <h2 class="h1 fw-bold mb-0">What people are discovering now</h2>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <article class="chart-card h-100 p-4 rounded-4 shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h3 class="h4 mb-0">Movies</h3>
+                                <span class="badge text-bg-primary">Top 10</span>
+                            </div>
+
+                            <div id="movies-list" class="chart-list"></div>
+
+                            <a href="#" class="btn btn-outline-primary w-100 mt-4">View movie chart</a>
+                        </article>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <article class="chart-card h-100 p-4 rounded-4 shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h3 class="h4 mb-0">Books</h3>
+                                <span class="badge text-bg-primary">Top 10</span>
+                            </div>
+
+                            <div id="books-list" class="chart-list"></div>
+
+                            <a href="#" class="btn btn-outline-primary w-100 mt-4">View book chart</a>
+                        </article>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <article class="chart-card h-100 p-4 rounded-4 shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h3 class="h4 mb-0">Music</h3>
+                                <span class="badge text-bg-primary">Top 10</span>
+                            </div>
+
+                            <div id="music-list" class="chart-list"></div>
+
+                            <a href="#" class="btn btn-outline-primary w-100 mt-4">View music chart</a>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+        </main>
 
     <footer class="py-5 mt-auto">
         <div class="container d-flex justify-content-between gap-2">

@@ -10,7 +10,24 @@ export default {
     outDir: '../dist'
   },
   server: {
-    port: 8080
+    port: 8080,
+    proxy: {
+      '/api/tmdb': {
+        target: 'https://api.themoviedb.org',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/tmdb/, ''),
+      },
+      '/api/nyt': {
+        target: 'https://api.nytimes.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/nyt/, ''),
+      },
+      '/api/lastfm': {
+        target: 'https://ws.audioscrobbler.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/lastfm/, ''),
+      },
+    },
   },
   // Optional: Silence Sass deprecation warnings. See note below.
   css: {
