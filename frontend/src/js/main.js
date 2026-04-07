@@ -1,19 +1,24 @@
 import '../scss/style.scss'
 import * as bootstrap from 'bootstrap'
 
-document.addEventListener('DOMContentLoaded', () => {
-  const toggleButton = document.getElementById('darkModeToggle');
+// Select the button and the icon inside it
+const themeToggleBtn = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+
+themeToggleBtn.addEventListener('click', () => {
+  // Read the current theme from the HTML tag (defaults to 'light' if not set)
+  const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
   
-  toggleButton.addEventListener('click', () => {
-    const htmlElement = document.documentElement;
-    const currentTheme = htmlElement.getAttribute('data-bs-theme');
-    
-    if (currentTheme === 'dark') {
-      htmlElement.setAttribute('data-bs-theme', 'light');
-      toggleButton.textContent = 'Enable Dark Mode';
-    } else {
-      htmlElement.setAttribute('data-bs-theme', 'dark');
-      toggleButton.textContent = 'Enable Light Mode';
-    }
-  });
+  // Determine the new theme
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  // Apply the new theme to the document
+  document.documentElement.setAttribute('data-bs-theme', newTheme);
+  
+  // Swap the icon classes
+  if (newTheme === 'dark') {
+    themeIcon.classList.replace('bi-sun-fill', 'bi-moon-fill');
+  } else {
+    themeIcon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+  }
 });
