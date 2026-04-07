@@ -1,7 +1,7 @@
-# 🎬 APP NAME
+# 🎬 Medianest
 ### *A Full-Stack Cross-Platform Discovery Tool*
 
-The **Entertainment Hub** is a MEN-Stack web application designed to be a one-stop destination for discovering Movies, Books, and Music. By integrating various global APIs, the platform allows users to explore top charts, search for specific titles, and manage their personal entertainment preferences.
+The **Medianest** is a MEN-Stack web application designed to be a one-stop destination for discovering Movies, Books, and Music. By integrating various global APIs, the platform allows users to explore top charts, search for specific titles, and manage their personal entertainment preferences.
 
 ---
 
