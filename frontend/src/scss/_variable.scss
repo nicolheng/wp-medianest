@@ -1,15 +1,6 @@
-// Logo Dimensions
-$navbar-logo-height: 40px;
-$footer-logo-height: 30px;
+//color theme
+$primary: #FDE426; 
+$secondary: #5B7553;
 
-.navbar-logo {
-    height: $navbar-logo-height;
-    width: auto; 
-    object-fit: contain;
-}
-
-.footer-logo {
-    height: $footer-logo-height;
-    width: auto;
-    object-fit: contain;
-}
+//logo size
+$logo-height: 40px;
