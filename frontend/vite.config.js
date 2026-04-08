@@ -27,6 +27,11 @@ export default {
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/lastfm/, ''),
       },
+      '/api/itunes': {
+        target: 'https://itunes.apple.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/itunes/, ''),
+      },
     },
   },
   // Optional: Silence Sass deprecation warnings. See note below.
