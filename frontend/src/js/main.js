@@ -1,6 +1,9 @@
 import '../scss/style.scss'
 import * as bootstrap from 'bootstrap'
 
+console.log("Vite Config Root Check:", import.meta.env.MODE);
+console.log("All Env Vars:", import.meta.env);
+
 document.addEventListener('DOMContentLoaded', () => {
     const htmlElement = document.documentElement;
     const themeToggleBtn = document.getElementById('theme-toggle');
