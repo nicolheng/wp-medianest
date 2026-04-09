@@ -1,5 +1,11 @@
 import { fetchMovies, fetchTVShows, fetchBooks, fetchMusic, renderRail } from './main.js';
 
+// When search starts:
+document.getElementById('search-results-page').classList.add('loading-active');
+
+// When search finishes (after data is fetched):
+document.getElementById('search-results-page').classList.remove('loading-active');
+
 document.addEventListener('DOMContentLoaded', () => {
   // Submit from search.html -> navigate to search_result.html with query params
   const searchForm = document.getElementById('search-form');
