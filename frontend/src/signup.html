@@ -4,6 +4,7 @@
 <head>
     <title>MediaNest</title>
     <link rel="icon" type="image/png" href="./assets/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -62,40 +63,53 @@
                                 <h2>Create an account</h2>
                                 <p>Sign up and get started.</p>
                             </div>
-                            <div class="input-group mb-3">
-                                <input type="text"
-                                        id="username"
-                                        name="username"
-                                        class="form-control form-control-lg fs-6"
-                                        placeholder="Username"
-                                        autocomplete="username"
-                                        required>
-                            </div>
-                            <div class="input-group mb-3">
-                                <input type="email"
-                                        id="email"
-                                        name="email"
-                                        class="form-control form-control-lg fs-6"
-                                        placeholder="Email"
-                                        autocomplete="email"
-                                        required>
-                            </div>
-                            <div class="input-group mb-5">
-                                <input type="password"
-                                        id="password"
-                                        name="password"
-                                        class="form-control form-control-lg fs-6"
-                                        placeholder="Password"
-                                        autocomplete="current-password"
-                                        required>
-                            </div>
                             
-                            <div class="input-group mb-3">
-                                <button class="btn btn-lg auth-button w-100 fs-6">Get Started</button>
-                            </div>
-                            <div class="row">
-                                <small>Have any account? <a href="login.html" class="auth-link">Sign In</a></small>
-                            </div>
+                            <form id="signupForm" novalidate onsubmit="handleSignup(event)">
+                                <div class="input-group mb-3">
+                                    <input type="text"
+                                            id="username"
+                                            name="username"
+                                            class="form-control form-control-lg fs-6"
+                                            placeholder="Username"
+                                            autocomplete="username"
+                                            required>
+                                </div>
+                                <div id="usernameError" class="form-text text-danger d-none mb-2" style="font-size: 0.85rem;"></div>
+                                <div class="input-group mb-3">
+                                    <input type="email"
+                                            id="email"
+                                            name="email"
+                                            class="form-control form-control-lg fs-6"
+                                            placeholder="Email"
+                                            autocomplete="email"
+                                            required>
+                                </div>
+                                <div id="emailError" class="form-text text-danger d-none mb-2" style="font-size: 0.85rem;"></div>
+                                <div id="errorMessage" class="alert alert-danger d-none py-2" style="font-size: 0.9rem;"></div>
+                                <div class="input-group mb-2">
+                                    <input type="password"
+                                            id="password"
+                                            name="password"
+                                            class="form-control form-control-lg fs-6"
+                                            placeholder="Password"
+                                            autocomplete="current-password"
+                                            required>
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword" onclick="togglePasswordVisibility()">
+                                        <i class="bi bi-eye-slash" id="eyeIcon"></i>
+                                    </button>
+                                </div>
+                                <div id="passwordError" class="form-text text-danger d-none mb-2" style="font-size: 0.85rem;"></div>
+                                <div id="passwordHelp" class="mb-4 d-none" style="font-size: 0.8rem;">
+                                    <p class="mb-1 text-muted" id="length-check">*At least 6 characters</p>
+                                    <p class="mb-1 text-muted" id="upper-check">*At least one uppercase letter</p>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <button class="btn btn-lg auth-button w-100 fs-6">Get Started</button>
+                                </div>
+                                <div class="row">
+                                    <small>Have any account? <a href="login.html" class="auth-link">Sign In</a></small>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
@@ -117,5 +131,6 @@
 
         </footer>
         <script type="module" src="./js/main.js"></script>
+        <script type="module" src="./js/auth.js"></script>
     </body>
 </html>
