@@ -111,7 +111,7 @@ function buildMusicFallback(title) {
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=random&color=fff&size=500&font-size=0.33`;
 }
 
-async function fetchMovies() {
+export async function fetchMovies() {
   if (!tmdbToken) throw new Error('Missing VITE_TMDB_READ_TOKEN');
 
   const res = await fetch('/api/tmdb/3/trending/movie/week', {
@@ -128,7 +128,7 @@ async function fetchMovies() {
   }));
 }
 
-async function fetchTVShows() {
+export async function fetchTVShows() {
   if (!tmdbToken) throw new Error('Missing VITE_TMDB_READ_TOKEN');
 
   const res = await fetch('/api/tmdb/3/trending/tv/week', {
@@ -145,7 +145,7 @@ async function fetchTVShows() {
   }));
 }
 
-async function fetchBooks() {
+export async function fetchBooks() {
   if (!nytBooksApiKey) throw new Error('Missing VITE_NYT_BOOKS_API_KEY');
 
   const res = await fetch(
@@ -162,7 +162,7 @@ async function fetchBooks() {
   }));
 }
 
-async function fetchMusic() {
+export async function fetchMusic() {
   if (!lastfmApiKey) throw new Error('Missing VITE_LASTFM_API_KEY');
 
   const res = await fetch(
@@ -228,7 +228,7 @@ async function fetchMusic() {
   }));
 }
 
-function renderRail(containerId, items, emptyLabel, type) {
+export function renderRail(containerId, items, emptyLabel, type) {
   const el = document.getElementById(containerId);
   if (!el) return;
 
@@ -336,3 +336,6 @@ document.addEventListener("DOMContentLoaded", () => {
   loadCharts();
   setInterval(loadCharts, 10 * 60 * 1000);
 });
+
+// Search form handling and search-result page logic
+// Search logic has been moved to ./search.js
