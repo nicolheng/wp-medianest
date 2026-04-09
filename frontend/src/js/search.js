@@ -22,11 +22,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // On search_result.html: parse params and fetch/render selected genres
+  // On search_result.html: parse params and fetch/render selected items
   const resultsPage = document.getElementById('search-results-page');
   if (resultsPage) {
+    // If user clicks the search form container (but not the input or submit), go back to search.html
+    if (searchForm) {
+      searchForm.addEventListener('click', (e) => {
+        try {
+          if (e.target && e.target.closest && (e.target.closest('#search-input') || e.target.closest('button[type="submit"]'))) {
+            return; // allow interacting with input/button
+          }
+        } catch (err) {
+          // ignore
+        }
+        window.location.href = 'search.html';
+      });
+    }
     const params = new URLSearchParams(window.location.search);
-    const q = params.get('q') || '';
+    const q = (params.get('q') || '').trim();
     const filters = (params.get('filters') || '').split(',').filter(Boolean);
     const showAll = filters.length === 0;
 
@@ -48,14 +61,123 @@ document.addEventListener('DOMContentLoaded', () => {
     const loader = document.getElementById('results-loader');
     if (loader) loader.classList.remove('d-none');
 
-    const promises = [];
-    if (showAll || filters.includes('movies')) promises.push(fetchMovies().then(r => renderRail('movies-list', r, 'No movies found', 'movies')));
-    if (showAll || filters.includes('tv')) promises.push(fetchTVShows().then(r => renderRail('tv-list', r, 'No TV shows found', 'tv')));
-    if (showAll || filters.includes('books')) promises.push(fetchBooks().then(r => renderRail('books-list', r, 'No books found', 'books')));
-    if (showAll || filters.includes('music')) promises.push(fetchMusic().then(r => renderRail('music-list', r, 'No music found', 'music')));
+    // Helper to match query against result item fields
+    const qLower = q.toLowerCase();
+    const matchItem = (item) => {
+      if (!qLower) return true;
+      const title = (item.title || '').toString().toLowerCase();
+      const sub = (item.sub || '').toString().toLowerCase();
+      return title.includes(qLower) || sub.includes(qLower);
+    };
 
-    Promise.allSettled(promises).finally(() => {
-      if (loader) loader.classList.add('d-none');
-    });
+    // Local renderer for combined/mixed-type results into #matches-list
+    function renderCombined(containerId, items) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      el.replaceChildren();
+      el.classList.add('media-rail');
+
+      if (!items.length) {
+        const empty = document.createElement('p');
+        empty.className = 'text-body-secondary small mb-0';
+        empty.textContent = 'No matches found';
+        el.append(empty);
+        return;
+      }
+
+      items.forEach((item) => {
+        const card = document.createElement('article');
+        card.className = 'media-card';
+        if (item.type === 'music') card.classList.add('media-card--square');
+
+        const img = document.createElement('img');
+        img.className = 'media-thumb';
+        img.src = item.image || '';
+        img.alt = item.title;
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.referrerPolicy = 'no-referrer';
+        img.onerror = () => {
+          const fallbackByType = {
+            movies: 'https://placehold.co/342x513/1b1f24/f8f9fa?text=No+Poster',
+            tv: 'https://placehold.co/342x513/1b1f24/f8f9fa?text=No+Poster',
+            books: 'https://placehold.co/300x450/1b1f24/f8f9fa?text=No+Cover',
+            music: 'https://placehold.co/300x300/1b1f24/f8f9fa?text=No+Art',
+          };
+          img.src = fallbackByType[item.type] || fallbackByType.music;
+        };
+
+        const overlay = document.createElement('div');
+        overlay.className = 'media-card-overlay';
+
+        const title = document.createElement('div');
+        title.className = 'media-title';
+        title.textContent = item.title;
+
+        const sub = document.createElement('div');
+        sub.className = 'media-sub';
+        sub.textContent = item.sub;
+
+        // Badge: show type label or rank if available
+        const badge = document.createElement('span');
+        badge.className = 'badge text-bg-primary position-absolute top-0 start-0 m-2';
+        badge.textContent = item.rank ? `#${item.rank}` : (item.type || '');
+
+        overlay.append(title, sub);
+        card.append(badge, img, overlay);
+        el.append(card);
+      });
+    }
+
+    // We'll fetch all categories, keep both full lists and filtered lists.
+    const allPromises = {
+      movies: fetchMovies(),
+      tv: fetchTVShows(),
+      books: fetchBooks(),
+      music: fetchMusic(),
+    };
+
+    Promise.allSettled([allPromises.movies, allPromises.tv, allPromises.books, allPromises.music])
+      .then((results) => {
+        const [moviesRes, tvRes, booksRes, musicRes] = results;
+
+        const moviesAll = moviesRes.status === 'fulfilled' ? moviesRes.value : [];
+        const tvAll = tvRes.status === 'fulfilled' ? tvRes.value : [];
+        const booksAll = booksRes.status === 'fulfilled' ? booksRes.value : [];
+        const musicAll = musicRes.status === 'fulfilled' ? musicRes.value : [];
+
+        // Build matched lists only for visible categories (showAll || in filters)
+        const matches = [];
+        if (showAll || filters.includes('movies')) {
+          moviesAll.filter(matchItem).forEach((it) => matches.push({ ...it, type: 'movies' }));
+        }
+        if (showAll || filters.includes('tv')) {
+          tvAll.filter(matchItem).forEach((it) => matches.push({ ...it, type: 'tv' }));
+        }
+        if (showAll || filters.includes('books')) {
+          booksAll.filter(matchItem).forEach((it) => matches.push({ ...it, type: 'books' }));
+        }
+        if (showAll || filters.includes('music')) {
+          musicAll.filter(matchItem).forEach((it) => matches.push({ ...it, type: 'music' }));
+        }
+
+        // Render combined matches into the top section
+        renderCombined('matches-list', matches);
+
+        // Render the full lists under Other (per-type)
+        renderRail('movies-list', moviesAll, 'No movies found', 'movies');
+        renderRail('tv-list', tvAll, 'No TV shows found', 'tv');
+        renderRail('books-list', booksAll, 'No books found', 'books');
+        renderRail('music-list', musicAll, 'No music found', 'music');
+
+        // Log any errors
+        if (moviesRes.status === 'rejected') console.error('Movies error:', moviesRes.reason);
+        if (tvRes.status === 'rejected') console.error('TV error:', tvRes.reason);
+        if (booksRes.status === 'rejected') console.error('Books error:', booksRes.reason);
+        if (musicRes.status === 'rejected') console.error('Music error:', musicRes.reason);
+      })
+      .finally(() => {
+        if (loader) loader.classList.add('d-none');
+      });
   }
 });

@@ -53,33 +53,106 @@
         </nav>
     </header>
 
-    <main class="mb-5">
-        <div class="container mt-5">
-            <!-- Search UI -->
-            <form id="search-form" class="mb-4">
-                <div class="input-group input-group-lg">
-                    <input id="search-input" name="q" type="search" class="form-control" placeholder="Search movies, TV shows, books, music..." aria-label="Search">
-                    <button class="btn btn-primary" type="submit">Search</button>
+    <main class="flex-grow-1 d-flex align-items-start py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-9 col-lg-6">
+                
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <form id="search-form" class="search-card-refined flex-grow-1 p-1 shadow-sm rounded-pill bg-body border">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-0 pe-0 ps-3">
+                                <i class="bi bi-search text-primary small"></i>
+                            </span>
+                            <input id="search-input" name="q" type="search" 
+                                   class="form-control border-0 bg-transparent shadow-none py-2" 
+                                   placeholder="Search MediaNest..." 
+                                   aria-label="Search" autofocus>
+                            <button class="btn btn-primary rounded-pill px-4 me-1 my-1 btn-sm" type="submit">
+                                Search
+                            </button>
+                        </div>
+                    </form>
+
+                    <a href="index.html" class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0" 
+                       style="width: 42px; height: 42px;" title="Close Search">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
                 </div>
 
-                <div class="btn-group mt-3" role="group" aria-label="filters">
-                    <input type="checkbox" class="btn-check" id="filter-movies" autocomplete="off" checked>
-                    <label class="btn btn-outline-primary" for="filter-movies">Movies</label>
+                <div class="d-flex flex-wrap justify-content-center gap-2" role="group" aria-label="filters">
+                    <div class="filter-item">
+                        <input type="checkbox" class="btn-check" id="filter-movies" autocomplete="off">
+                        <label class="btn btn-outline-chip-sm rounded-pill" for="filter-movies">
+                            <i class="bi bi-film me-1"></i> Movies
+                        </label>
+                    </div>
 
-                    <input type="checkbox" class="btn-check" id="filter-tv" autocomplete="off" checked>
-                    <label class="btn btn-outline-primary" for="filter-tv">TV Shows</label>
+                    <div class="filter-item">
+                        <input type="checkbox" class="btn-check" id="filter-tv" autocomplete="off">
+                        <label class="btn btn-outline-chip-sm rounded-pill" for="filter-tv">
+                            <i class="bi bi-tv me-1"></i> TV
+                        </label>
+                    </div>
 
-                    <input type="checkbox" class="btn-check" id="filter-books" autocomplete="off" checked>
-                    <label class="btn btn-outline-primary" for="filter-books">Books</label>
+                    <div class="filter-item">
+                        <input type="checkbox" class="btn-check" id="filter-books" autocomplete="off">
+                        <label class="btn btn-outline-chip-sm rounded-pill" for="filter-books">
+                            <i class="bi bi-book me-1"></i> Books
+                        </label>
+                    </div>
 
-                    <input type="checkbox" class="btn-check" id="filter-music" autocomplete="off" checked>
-                    <label class="btn btn-outline-primary" for="filter-music">Music</label>
+                    <div class="filter-item">
+                        <input type="checkbox" class="btn-check" id="filter-music" autocomplete="off">
+                        <label class="btn btn-outline-chip-sm rounded-pill" for="filter-music">
+                            <i class="bi bi-music-note-beamed me-1"></i> Music
+                        </label>
+                    </div>
                 </div>
-            </form>
 
-            <div id="search-hint" class="text-muted">Choose filters and press <strong>Search</strong>.</div>
+                <div id="search-hint" class="text-center mt-5 opacity-25">
+                    <i class="bi bi-keyboard fs-4 d-block mb-1"></i>
+                    <small class="text-muted">Type and press Enter</small>
+                </div>
+
+            </div>
         </div>
-    </main>
+    </div>
+</main>
+
+<style>
+    /* Search Bar Refinement */
+    .search-card-refined {
+        transition: all 0.2s ease-in-out;
+        border: 1px solid #dee2e6 !important;
+    }
+    
+    .search-card-refined:focus-within {
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08) !important;
+        border-color: var(--bs-primary) !important;
+    }
+
+    /* Small Filter Chips */
+    .btn-outline-chip-sm {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.9rem;
+        border: 1px solid #dee2e6;
+        color: #6c757d;
+        background-color: transparent;
+        transition: all 0.2s;
+    }
+
+    .btn-check:checked + .btn-outline-chip-sm {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+        color: white;
+    }
+
+    .btn-outline-chip-sm:hover {
+        border-color: var(--bs-primary);
+        color: var(--bs-primary);
+    }
+</style>
 
     <footer class="py-5 mt-auto">
         <div class="container d-flex justify-content-between gap-2">
