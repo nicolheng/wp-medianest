@@ -14,9 +14,9 @@ router.post('/register', async (req, res) => {
 
         // 2. Strict Password Rules (The "Final Guard")
         if (password.length < 6 || !/[A-Z]/.test(password)) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Password must be 6+ chars with an uppercase letter." 
+            return res.status(400).json({
+                success: false,
+                message: "Password must be 6+ chars with an uppercase letter."
             });
         }
 
@@ -62,6 +62,9 @@ router.post('/login', async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ success: false, message: "Invalid email or password." });
         }
+        // ✅ Save user to session (ADD THESE 2 LINES)
+        req.session.userId = user._id.toString();
+        req.session.username = user.username;
 
         // 4. Success!
         res.status(200).json({ 
@@ -83,6 +86,21 @@ router.post('/logout', (req, res) => {
         res.clearCookie('connect.sid');
         return res.status(200).json({ success: true }); // Must send this!
     });
+});
+
+// GET /api/auth/me - Check if user is logged in (for navbar)
+router.get('/me', (req, res) => {
+    if (req.session.userId) {
+        res.json({
+        isAuthenticated: true,
+        user: {
+            id: req.session.userId,
+            username: req.session.username
+        }
+        });
+    } else {
+        res.status(401).json({ isAuthenticated: false });
+    }
 });
 
 module.exports = router;

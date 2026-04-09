@@ -26,6 +26,15 @@ const UserSchema = new mongoose.Schema({
         type: Array,
         default: [] // This ensures it always starts as [] and not 'undefined'
     },
+    searchHistory: {
+    query: { type: String, required: true, trim: true, maxlength: 100 },
+    timestamp: { type: Date, default: Date.now }
+    },
+    // Track last login for security/analytics
+    lastLogin: {
+        type: Date,
+        default: null
+    },
     
     // Also add your profile defaults while we are here!
     profile: {
