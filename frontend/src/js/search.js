@@ -1,11 +1,5 @@
 import { fetchMovies, fetchTVShows, fetchBooks, fetchMusic, renderRail } from './main.js';
 
-// When search starts:
-document.getElementById('search-results-page').classList.add('loading-active');
-
-// When search finishes (after data is fetched):
-document.getElementById('search-results-page').classList.remove('loading-active');
-
 document.addEventListener('DOMContentLoaded', () => {
   // Submit from search.html -> navigate to search_result.html with query params
   const searchForm = document.getElementById('search-form');
@@ -31,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // On search_result.html: parse params and fetch/render selected items
   const resultsPage = document.getElementById('search-results-page');
   if (resultsPage) {
+    // indicate loading state while we fetch
+    resultsPage.classList.add('loading-active');
     // If user clicks the search form container (but not the input or submit), go back to search.html
     if (searchForm) {
       searchForm.addEventListener('click', (e) => {
@@ -184,6 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .finally(() => {
         if (loader) loader.classList.add('d-none');
+        // remove loading state when finished
+        resultsPage.classList.remove('loading-active');
       });
   }
 });
