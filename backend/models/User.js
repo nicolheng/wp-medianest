@@ -20,15 +20,18 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please add a password"],
         minlength: 6,
-        select: false // This prevents the password from being sent back in API calls by default
+        select: false // prevents the password from being sent back in API calls by default
     },
     watchlist: {
         type: Array,
-        default: [] // This ensures it always starts as [] and not 'undefined'
+        default: [] // always starts as [] and not 'undefined'
     },
     searchHistory: {
-    query: { type: String, required: true, trim: true, maxlength: 100 },
-    timestamp: { type: Date, default: Date.now }
+        type: [{
+            query: { type: String, trim: true },
+            timestamp: { type: Date, default: Date.now }
+        }],
+        default: [] // empty array
     },
     // Track last login for security/analytics
     lastLogin: {

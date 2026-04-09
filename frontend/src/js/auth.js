@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = passwordInput.value;
 
         // The Backend will handle the validation now
-        handleAuth('/api/register', { username, email, password }, "Registration Successful!");
+        handleAuth('/api/auth/register', { username, email, password }, "Registration Successful!");
     };
 
     window.handleLogin = async function(event) {
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
-        handleAuth('/api/login', { email, password }, "Welcome back!");
+        handleAuth('/api/auth/login', { email, password }, "Welcome back!");
     };
 });
 

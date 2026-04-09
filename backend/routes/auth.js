@@ -12,7 +12,7 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ success: false, message: "All fields are required." });
         }
 
-        // 2. Strict Password Rules (The "Final Guard")
+        // 2. Strict Password Rules
         if (password.length < 6 || !/[A-Z]/.test(password)) {
             return res.status(400).json({
                 success: false,
@@ -22,18 +22,25 @@ router.post('/register', async (req, res) => {
 
         const newUser = new User({ username, email, password });
         await newUser.save();
-        res.status(201).json({ success: true, message: "User created!" });
+
+        // CREATE SESSION AUTOMATICALLY AFTER SIGNUP
+        req.session.userId = newUser._id.toString();
+        req.session.username = newUser.username;
+
+        res.status(201).json({
+            success: true,
+            message: "Account created & logged in!",
+            user: { id: newUser._id, username: newUser.username, email: newUser.email }
+        });
 
     } catch (err) {
-        // Check if the error is a duplicate key error (11000)
         if (err.code === 11000) {
-            const field = Object.keys(err.keyValue)[0]; // Finds if it was 'email' or 'username'
-            return res.status(400).json({ 
-                success: false, 
-                message: `That ${field} is already registered.` 
+            const field = Object.keys(err.keyValue)[0];
+            return res.status(400).json({
+                success: false,
+                message: `That ${field} is already registered.`
             });
         }
-        
         res.status(400).json({ success: false, message: err.message });
     }
 });
@@ -62,14 +69,14 @@ router.post('/login', async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ success: false, message: "Invalid email or password." });
         }
-        // ✅ Save user to session (ADD THESE 2 LINES)
+        // Save user to session
         req.session.userId = user._id.toString();
         req.session.username = user.username;
 
         // 4. Success!
-        res.status(200).json({ 
-            success: true, 
-            message: "Login successful!", 
+        res.status(200).json({
+            success: true,
+            message: "Login successful!",
             user: { id: user._id, username: user.username, email: user.email } 
         });
 
