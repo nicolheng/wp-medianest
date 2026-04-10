@@ -244,6 +244,12 @@ export function renderRail(containerId, items, emptyLabel, type) {
   }
 
   items.forEach((item) => {
+    const link = document.createElement('a');
+    const id = item._id || item.id || item.rank; 
+    link.href = `item_details.html?id=${id}`;
+    link.style.display = 'contents'; 
+    link.classList.add('text-decoration-none');
+
     const card = document.createElement('article');
     card.className = 'media-card';
     if (type === 'music') card.classList.add('media-card--square');
@@ -282,7 +288,8 @@ export function renderRail(containerId, items, emptyLabel, type) {
 
     overlay.append(title, sub);
     card.append(badge, img, overlay);
-    el.append(card);
+    link.append(card);
+    el.append(link);
   });
 }
 

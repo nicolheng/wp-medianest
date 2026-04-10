@@ -88,6 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       items.forEach((item) => {
+        const link = document.createElement('a');
+        const id = item._id || item.id || item.rank;
+        link.href = `item_details.html?id=${id}`;
+        link.style.display = 'contents'; 
+        link.classList.add('text-decoration-none');
+        
         const card = document.createElement('article');
         card.className = 'media-card';
         if (item.type === 'music') card.classList.add('media-card--square');
@@ -127,7 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         overlay.append(title, sub);
         card.append(badge, img, overlay);
-        el.append(card);
+        link.append(card);
+        el.append(link);
       });
     }
 
