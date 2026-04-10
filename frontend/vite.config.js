@@ -10,7 +10,7 @@ export default {
     outDir: '../dist'
   },
   server: {
-    port: 8080,
+    port: 8081,
     proxy: {
       '/api/tmdb': {
         target: 'https://api.themoviedb.org',
@@ -35,10 +35,13 @@ export default {
       '/api': {
         target: 'http://localhost:5000',
         changeOrigin: true,
+        secure: false,
+        cookiePathRewrite: '/',      // Preserves cookie path
+        cookieDomainRewrite: '',     // Preserves cookie domain
       },
     },
   },
-  // Optional: Silence Sass deprecation warnings. See note below.
+  // silence Sass deprecation warnings
   css: {
       preprocessorOptions: {
           scss: {

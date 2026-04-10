@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const passwordInput = document.getElementById('password');
     const pwHelp = document.getElementById('passwordHelp');
 
-    // Keep the "Eye" and "Live Help" logic (this is good UX)
+    // show pw and pw check
     if (passwordInput) {
         passwordInput.addEventListener('input', () => {
             const val = passwordInput.value;
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Simplified Signup: Just send the data!
+    // simplified signup
     window.handleSignup = async function(event) {
         event.preventDefault();
         clearFieldErrors();
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('email').value.trim();
         const password = passwordInput.value;
 
-        // The Backend will handle the validation now
+        // backend handle validation
         handleAuth('/api/auth/register', { username, email, password }, "Registration Successful!");
     };
 
@@ -71,8 +71,7 @@ function showErrorOnPage(msg) {
     }
 }
 
-// A reusable function to handle the actual 'fetch' call
-// Replace the response.json() part in your auth.js with this:
+// reusable function to handle the actual 'fetch' call
 async function handleAuth(endpoint, bodyData, successMessage) {
     try {
         const response = await fetch(`${endpoint}`, {
@@ -84,7 +83,7 @@ async function handleAuth(endpoint, bodyData, successMessage) {
 
         // SAFETY CHECK: If response is empty, don't try to parse JSON
         const text = await response.text();
-        const data = text ? JSON.parse(text) : {}; 
+        const data = text ? JSON.parse(text) : {};
 
         if (response.ok && data.success) {
             window.location.href = "index.html";
@@ -116,7 +115,7 @@ async function handleAuth(endpoint, bodyData, successMessage) {
     }
 }
 
-// This function is the "Voice" that shows errors under each input
+// shows errors under each input
 function showFieldError(field, message) {
     const errorEl = document.getElementById(`${field}Error`);
     if (errorEl) {
@@ -128,7 +127,7 @@ function showFieldError(field, message) {
     }
 }
 
-// This clears all errors before a new attempt
+// clears all errors before a new attempt
 function clearFieldErrors() {
     const errorMessages = document.querySelectorAll('.text-danger, #errorMessage');
     errorMessages.forEach(el => {

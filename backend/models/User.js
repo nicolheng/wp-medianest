@@ -16,11 +16,11 @@ const UserSchema = new mongoose.Schema({
             "Please provide a valid email"
         ]
     },
-    password: {
+    password: { type: String, select: false },
+    authProvider: {
         type: String,
-        required: [true, "Please add a password"],
-        minlength: 6,
-        select: false // prevents the password from being sent back in API calls by default
+        enum: ['local', 'google', 'facebook'],
+        default: 'local'
     },
     watchlist: {
         type: Array,
@@ -39,7 +39,7 @@ const UserSchema = new mongoose.Schema({
         default: null
     },
     
-    // Also add your profile defaults while we are here!
+    // add your profile defaults
     profile: {
         bio: { type: String, default: "" },
         avatarUrl: { type: String, default: "https://i.postimg.cc/zvS2kWVk/user.jpg" },
