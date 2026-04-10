@@ -90,10 +90,16 @@ document.addEventListener('DOMContentLoaded', () => {
       items.forEach((item) => {
         const link = document.createElement('a');
         const id = item._id || item.id || item.rank;
-        link.href = `item_details.html?id=${id}`;
+
+        let urlType = item.type; // movies, tv, music, books
+        if (urlType === 'movies') urlType = 'movie';
+        if (urlType === 'tv') urlType = 'show';
+        if (urlType === 'books') urlType = 'book';
+
+        link.href = `item_details.html?type=${urlType}&id=${id}`;
         link.style.display = 'contents'; 
         link.classList.add('text-decoration-none');
-        
+
         const card = document.createElement('article');
         card.className = 'media-card';
         if (item.type === 'music') card.classList.add('media-card--square');

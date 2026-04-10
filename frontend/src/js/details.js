@@ -1,9 +1,10 @@
 // js/details.js
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
-    const itemId = params.get('id');
+    const id = params.get('id');
+    const type = params.get('type')|| 'movie';
 
-    if (!itemId) {
+    if (!id) {
         window.location.href = 'index.html';
         return;
     }
@@ -11,8 +12,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const loadPageData = async () => {
         try {
             // Fetch item and its reviews from our internal API
-            const res = await fetch(`/api/items/${itemId}`);
+            const res = await fetch(`/api/items/${type}/${id}`);
             const data = await res.json();
+
+            if (!res.ok) throw new Error(data.message);
 
             const { item, reviews } = data;
             const meta = item.metadata || {};
@@ -75,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const res = await fetch('/api/reviews', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ itemId, rating, comment }),
+            body: JSON.stringify({ itemId: item._id, rating, comment }),
             credentials: 'include'
         });
 

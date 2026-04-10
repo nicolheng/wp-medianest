@@ -121,6 +121,7 @@ export async function fetchMovies() {
 
   const data = await res.json();
   return (data.results || []).slice(0, 10).map((m, i) => ({
+    id: m.id,
     rank: i + 1,
     title: m.title || 'Untitled',
     sub: (m.release_date || '').slice(0, 4) || 'Unknown year',
@@ -138,6 +139,7 @@ export async function fetchTVShows() {
 
   const data = await res.json();
   return (data.results || []).slice(0, 10).map((show, i) => ({
+    id: show.id,
     rank: i + 1,
     title: show.name || 'Untitled',
     sub: (show.first_air_date || '').slice(0, 4) || 'Unknown year',
@@ -155,6 +157,7 @@ export async function fetchBooks() {
 
   const data = await res.json();
   return (data.results?.books || []).slice(0, 10).map((b, i) => ({
+    id: b.primary_isbn13 || b.primary_isbn10,
     rank: i + 1,
     title: b.title || 'Untitled',
     sub: b.author || 'Unknown author',
@@ -214,6 +217,7 @@ export async function fetchMusic() {
       }
 
       return {
+        id: s.mbid || encodeURIComponent(trackTitle),
         rank: i + 1,
         title: trackTitle,
         sub: artistName,
@@ -246,7 +250,12 @@ export function renderRail(containerId, items, emptyLabel, type) {
   items.forEach((item) => {
     const link = document.createElement('a');
     const id = item._id || item.id || item.rank; 
-    link.href = `item_details.html?id=${id}`;
+
+    let urlType = type;
+    if (type === 'movies') urlType = 'movie';
+    if (type === 'tv') urlType = 'show';
+
+    link.href = `item_details.html?type=${urlType}&id=${id}`;
     link.style.display = 'contents'; 
     link.classList.add('text-decoration-none');
 
