@@ -1,4 +1,3 @@
-// js/session.js
 async function checkAuthStatus() {
     const authButtons = document.getElementById('auth-buttons');
     const profilePlaceholder = document.getElementById('profile-placeholder');
@@ -7,13 +6,13 @@ async function checkAuthStatus() {
     try {
         const res = await fetch('/api/auth/me', {
             method: 'GET',
-            credentials: 'include' // ⚠️ Critical: sends cookies to backend
+            credentials: 'include' // sends cookies to backend
         });
         
         if (res.ok) {
             const data = await res.json();
             if (data.isAuthenticated && data.user) {
-                // ✅ User is logged in
+                // User is logged in
                 if (authButtons) authButtons.classList.add('d-none');
                 if (profilePlaceholder) {
                     profilePlaceholder.classList.remove('d-none');
@@ -21,7 +20,7 @@ async function checkAuthStatus() {
                 }
                 if (navUsername) navUsername.textContent = data.user.username;
             } else {
-                // ❌ Not logged in
+                // Not logged in
                 if (authButtons) authButtons.classList.remove('d-none');
                 if (profilePlaceholder) {
                     profilePlaceholder.classList.add('d-none');

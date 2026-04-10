@@ -1,18 +1,19 @@
-// backend/routes/auth.js
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const passport = require('passport');
+
 
 router.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
-        // 1. Check for empty fields
+        // check for empty fields
         if (!username || !email || !password) {
             return res.status(400).json({ success: false, message: "All fields are required." });
         }
 
-        // 2. Strict Password Rules
+        // password rules
         if (password.length < 6 || !/[A-Z]/.test(password)) {
             return res.status(400).json({
                 success: false,
@@ -53,31 +54,31 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ success: false, message: "Email and password are required." });
         }
 
-        // 1. Explicitly fetch the password hash
+        // explicitly fetch the password hash
         const user = await User.findOne({ email }).select('+password');
         
         if (!user) {
             return res.status(400).json({ success: false, message: "Invalid email or password." });
         }
 
-        // 2. Log this in your terminal to make sure 'user.password' isn't undefined
+        // make sure 'user.password' isn't undefined
         console.log("User found, comparing passwords...");
 
-        // 3. Compare using the method we defined in User.js
+        // compare using method defined in User.js
         const isMatch = await user.comparePassword(password);
         
         if (!isMatch) {
             return res.status(400).json({ success: false, message: "Invalid email or password." });
         }
-        // Save user to session
+        // save user to session
         req.session.userId = user._id.toString();
         req.session.username = user.username;
 
-        // 4. Success!
+        // success login
         res.status(200).json({
             success: true,
             message: "Login successful!",
-            user: { id: user._id, username: user.username, email: user.email } 
+            user: { id: user._id, username: user.username, email: user.email }
         });
 
     } catch (err) {
@@ -86,28 +87,44 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// backend/routes/auth.js
 router.post('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) return res.status(500).json({ success: false, message: "Logout failed" });
         res.clearCookie('connect.sid');
-        return res.status(200).json({ success: true }); // Must send this!
+        return res.status(200).json({ success: true });
     });
 });
 
-// GET /api/auth/me - Check if user is logged in (for navbar)
+// GET /api/auth/me - Check if user is logged in (to update navbar)
+// works for email/password AND OAuth
 router.get('/me', (req, res) => {
-    if (req.session.userId) {
+    // passport populates req.user automatically via deserializeUser
+    // works for BOTH session types
+    const user = req.user || (req.session?.userId ? { _id: req.session.userId, username: req.session.username } : null);
+    
+    if (user?._id) {
         res.json({
-        isAuthenticated: true,
-        user: {
-            id: req.session.userId,
-            username: req.session.username
-        }
+            isAuthenticated: true,
+            user: {
+                id: user._id.toString(),
+                username: user.username
+            }
         });
     } else {
         res.status(401).json({ isAuthenticated: false });
     }
 });
+
+// Google
+router.get('/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+router.get('/google/callback',
+    passport.authenticate('google', {
+        failureRedirect: '/login.html',
+        successRedirect: `${process.env.CLIENT_URL || 'http://localhost:8081'}/index.html`
+    })
+);
 
 module.exports = router;
