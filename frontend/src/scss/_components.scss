@@ -270,6 +270,7 @@
   display: none;
 }
 
+<<<<<<< HEAD
 // Profile page styles (preserved from feature branch)
 .profile-avatar {
   width: 110px;
@@ -361,4 +362,18 @@
   &:hover {
     color: $primary;
   }
+=======
+#item-poster {
+    width: 100%;
+    aspect-ratio: 2 / 3; 
+    /* CHANGED: 'contain' prevents stretching/blurring */
+    object-fit: contain; 
+    
+    /* ADDED: A background color fills the gaps for thin/small books */
+    background-color: var(--bs-tertiary-bg); 
+    
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    padding: 10px; /* Optional: gives the book some breathing room */
+>>>>>>> 08cd8ea (fix: book & music item details)
 }

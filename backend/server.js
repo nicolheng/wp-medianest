@@ -9,6 +9,7 @@ const MongoStore = require('connect-mongo').default;
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const authRoutes = require('./routes/auth');
+const itemRoutes = require('./routes/items');
 
 const app = express();
 
@@ -122,6 +123,10 @@ app.use(passport.session());
 // ROUTES
 app.use('/api/auth', authRoutes);
 app.get('/', (req, res) => res.send("MediaNest Backend is LIVE"));
+
+app.use('/api/items', itemRoutes);
+app.use('/api/reviews', require('./routes/reviews'));
+
 
 // START THE SERVER
 const PORT = process.env.PORT || 5000;

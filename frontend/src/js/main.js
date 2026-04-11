@@ -216,8 +216,10 @@ export async function fetchMusic() {
         image = buildMusicFallback(trackTitle);
       }
 
+      const combinedId = `${encodeURIComponent(s.artist.name)}|${encodeURIComponent(s.name)}`;
+
       return {
-        id: s.mbid || encodeURIComponent(trackTitle),
+        id: combinedId,
         rank: i + 1,
         title: trackTitle,
         sub: artistName,

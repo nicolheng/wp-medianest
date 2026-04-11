@@ -27,3 +27,13 @@
     color: #cab621; 
   }
 }
+
+/* Layout & Z-Index Fixes */
+header.sticky-top {
+    z-index: 1050 !important; 
+}
+
+.dropdown-menu {
+    z-index: 2000 !important; 
+}
+

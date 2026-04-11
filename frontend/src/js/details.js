@@ -1,8 +1,10 @@
-// js/details.js
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
-    const type = params.get('type')|| 'movie';
+    const type = params.get('type') || 'movie';
+    
+    // We store this globally in the script so the Form can use it
+    let currentMongoId = null; 
 
     if (!id) {
         window.location.href = 'index.html';
@@ -10,83 +12,95 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const loadPageData = async () => {
+        const titleEl = document.getElementById('item-title');
+        const descEl = document.getElementById('item-description');
+        const posterEl = document.getElementById('item-poster');
+
+        // STEP 1: Optimistic UI - Set placeholders
+        titleEl.innerHTML = '<span class="placeholder col-6 bg-secondary"></span>';
+        descEl.innerHTML = '<span class="placeholder col-12 bg-secondary"></span><span class="placeholder col-8 bg-secondary"></span>';
+        posterEl.style.opacity = '0.3'; // Dim the poster while loading
+
         try {
-            // Fetch item and its reviews from our internal API
             const res = await fetch(`/api/items/${type}/${id}`);
             const data = await res.json();
-
             if (!res.ok) throw new Error(data.message);
 
             const { item, reviews } = data;
             const meta = item.metadata || {};
 
-            // 1. RENDER CORE INFO
-            document.getElementById('item-title').textContent = item.title;
+            // STEP 2: Render Text Immediately (Fastest)
+            titleEl.textContent = item.title;
+            descEl.textContent = meta.description || "No description provided.";
             document.getElementById('avg-rating').textContent = item.averageRating?.toFixed(1) || '0.0';
             document.getElementById('total-reviews').textContent = `${reviews.length} reviews`;
 
-            // 2. RENDER FROM METADATA
-            // Accessing the image and description stored inside metadata
-            document.getElementById('item-poster').src = meta.image || 'https://placehold.co/400x600?text=No+Image';
-            document.getElementById('item-description').textContent = meta.description || "No description provided for this title.";
+            // STEP 3: Handle Image with a "Fade-in"
+            const img = new Image();
+            img.src = meta.image || 'https://placehold.co/400x600?text=No+Image';
+            img.onload = () => {
+                posterEl.src = img.src;
+                posterEl.style.opacity = '1';
+                posterEl.classList.add('fade-in-animation');
+            };
 
-            // 3. RENDER SUB-INFO BASED ON TYPE
-            let subInfo = `${item.type.toUpperCase()} • ${item.releaseYear || 'Unknown Year'}`;
-            if (item.genres && item.genres.length > 0) {
-                subInfo += ` • ${item.genres.join(', ')}`;
-            }
-            
-            // Add specific metadata details
-            if (item.type === 'movie' || item.type === 'show') {
-                if (meta.director) subInfo += ` • Dir: ${meta.director}`;
-            } else if (item.type === 'music') {
-                if (meta.artist) subInfo += ` • Artist: ${meta.artist}`;
-            } else if (item.type === 'book') {
-                if (meta.author) subInfo += ` • Author: ${meta.author}`;
-            }
-            document.getElementById('item-meta').textContent = subInfo;
+            renderReviews(reviews);
 
-            // 4. RENDER REVIEWS (Card Shadow-sm style 4.1)
-            const container = document.getElementById('reviews-container');
-            if (reviews.length === 0) {
-                container.innerHTML = `<p class="text-muted small">No reviews yet. Be the first to share your thoughts!</p>`;
-            } else {
-                container.innerHTML = reviews.map(rev => `
-                    <div class="card shadow-sm border-0 mb-3 rounded-4 bg-body-tertiary">
-                        <div class="card-body p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h6 class="fw-bold mb-0">${rev.username}</h6>
-                                <span class="badge bg-warning text-dark">${rev.rating} ★</span>
-                            </div>
-                            <p class="small mb-1 mt-2">${rev.comment}</p>
-                            <div class="text-muted" style="font-size: 0.7rem;">${new Date(rev.createdAt).toLocaleDateString()}</div>
-                        </div>
-                    </div>
-                `).join('');
-            }
         } catch (err) {
-            console.error("Failed to load item details:", err);
+            titleEl.textContent = "Error loading details.";
+            console.error(err);
         }
     };
 
-    // FORM SUBMISSION (Rule 4.3 & 4.5)
+    const renderReviews = (reviews) => {
+        const container = document.getElementById('reviews-container');
+        if (reviews.length === 0) {
+            container.innerHTML = `<p class="text-muted small">No reviews yet.</p>`;
+            return;
+        }
+        container.innerHTML = reviews.map(rev => `
+            <div class="card shadow-sm border-0 mb-3 rounded-4 bg-body-tertiary">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0">${rev.username}</h6>
+                        <span class="badge bg-warning text-dark">${rev.rating} ★</span>
+                    </div>
+                    <p class="small mb-1 mt-2">${rev.comment}</p>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    // FORM SUBMISSION FIX
     document.getElementById('reviewForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const rating = document.getElementById('ratingSelect').value;
-        const comment = document.getElementById('commentText').value;
+        
+        // Visual feedback
+        const btn = e.target.querySelector('button');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
 
-        const res = await fetch('/api/reviews', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ itemId: item._id, rating, comment }),
-            credentials: 'include'
-        });
+        try {
+            const res = await fetch('/api/reviews', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    itemId: currentMongoId, // Using the MongoDB _id
+                    rating: document.getElementById('ratingSelect').value, 
+                    comment: document.getElementById('commentText').value 
+                }),
+                credentials: 'include'
+            });
 
-        if (res.ok) {
-            document.getElementById('reviewForm').reset();
-            loadPageData(); // Reload to show new review and updated average
-        } else {
-            alert("Please log in to submit a review.");
+            if (res.ok) {
+                document.getElementById('reviewForm').reset();
+                loadPageData(); 
+            } else {
+                alert("Please log in to submit a review.");
+            }
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Submit Review';
         }
     });
 
