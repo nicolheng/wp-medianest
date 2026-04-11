@@ -1,17 +1,69 @@
 import '../scss/style.scss';
 import * as bootstrap from 'bootstrap';
 
-// ─── Mock User Data ────────────────────────────────────────────────────────────
-const currentUser = {
-  name: 'Alex Rivera',
-  username: 'alexrivera',
-  email: 'alex.rivera@example.com',
-  bio: 'Movie buff, bookworm, and music enthusiast. Always hunting for the next great story.',
-  joinDate: 'January 12, 2024',
+let currentUser = null;
+
+const formatMemberSince = (dateValue) => {
+  if (!dateValue) return '—';
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return '—';
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+};
+
+const asDisplayName = (user) => {
+  return user.profile?.displayName || user.username || 'User';
+};
+
+const setText = (id, value) => {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+};
+
+const setValue = (id, value) => {
+  const el = document.getElementById(id);
+  if (el) el.value = value;
+};
+
+const renderProfile = (user) => {
+  const username = user.username || 'user';
+  const displayName = asDisplayName(user);
+  const bio = user.profile?.bio?.trim() || '—';
+  const memberSince = formatMemberSince(user.profile?.joinDate || user.createdAt);
+
+  setText('view-name', displayName);
+  setText('view-username', `@${username}`);
+  setText('view-email', user.email || '—');
+  setText('view-bio', bio);
+  setText('view-join-date', memberSince);
+  setText('sidebar-name', displayName);
+  setText('sidebar-username', `@${username}`);
+
+  setValue('edit-name', displayName);
+  setValue('edit-username', username);
+  setValue('edit-email', user.email || '');
+  setValue('edit-bio', user.profile?.bio || '');
+};
+
+const fetchCurrentUser = async () => {
+  const response = await fetch('/api/auth/me', {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  const payload = await response.json();
+  if (!response.ok || !payload?.isAuthenticated || !payload?.user) {
+    throw new Error(payload?.message || 'Unable to load profile data.');
+  }
+
+  return payload.user;
 };
 
 // ─── Theme Toggle (mirrors main.js logic) ──────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const htmlEl = document.documentElement;
   const themeToggleBtn = document.getElementById('theme-toggle');
   const themeIcon = document.getElementById('theme-icon');
@@ -50,27 +102,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ─── Populate Profile View ─────────────────────────────────────────────────
-  const set = (id, val) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = val;
-  };
-
-  set('view-name', currentUser.name);
-  set('view-username', `@${currentUser.username}`);
-  set('view-email', currentUser.email);
-  set('view-bio', currentUser.bio || '—');
-  set('view-join-date', currentUser.joinDate);
-  set('sidebar-name', currentUser.name);
-  set('sidebar-username', `@${currentUser.username}`);
-
-  // Pre-fill edit modal fields
-  const setVal = (id, val) => {
-    const el = document.getElementById(id);
-    if (el) el.value = val;
-  };
-  setVal('edit-name', currentUser.name);
-  setVal('edit-email', currentUser.email);
-  setVal('edit-bio', currentUser.bio);
+  try {
+    currentUser = await fetchCurrentUser();
+    renderProfile(currentUser);
+  } catch (err) {
+    showToast('Please log in to view your profile.', 'warning');
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 600);
+    return;
+  }
 
   // ─── Sidebar Nav Active State ──────────────────────────────────────────────
   document.querySelectorAll('.profile-nav-link[data-section]').forEach((link) => {
@@ -86,25 +127,40 @@ document.addEventListener('DOMContentLoaded', () => {
   // ─── Edit Profile Modal ────────────────────────────────────────────────────
   const editForm = document.getElementById('edit-profile-form');
   if (editForm) {
-    editForm.addEventListener('submit', (e) => {
+    editForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       editForm.classList.add('was-validated');
       if (!editForm.checkValidity()) return;
 
       const data = {
-        name: document.getElementById('edit-name').value.trim(),
+        username: document.getElementById('edit-username').value.trim(),
         email: document.getElementById('edit-email').value.trim(),
-        bio: document.getElementById('edit-bio').value.trim(),
+        profile: {
+          bio: document.getElementById('edit-bio').value.trim(),
+        },
       };
 
-      // Update mock state & UI
-      Object.assign(currentUser, data);
-      set('view-name', data.name);
-      set('view-email', data.email);
-      set('view-bio', data.bio || '—');
-      set('sidebar-name', data.name);
+      try {
+        const response = await fetch('/api/auth/profile', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(data),
+        });
 
-      console.log('[MediaNest] Edit Profile →', JSON.stringify(data, null, 2));
+        const payload = await response.json();
+        if (!response.ok || !payload?.success) {
+          throw new Error(payload?.message || 'Unable to update profile.');
+        }
+
+        currentUser = payload.user;
+        renderProfile(currentUser);
+      } catch (err) {
+        showToast(err.message || 'Unable to update profile.', 'danger');
+        return;
+      }
 
       const modalEl = document.getElementById('editProfileModal');
       bootstrap.Modal.getInstance(modalEl)?.hide();
@@ -187,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     deleteBtn.addEventListener('click', () => {
-      const data = { action: 'DELETE_ACCOUNT', username: currentUser.username };
+      const data = { action: 'DELETE_ACCOUNT', username: currentUser?.username || '' };
       console.log('[MediaNest] Delete Account →', JSON.stringify(data, null, 2));
 
       const modalEl = document.getElementById('deleteAccountModal');

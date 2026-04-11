@@ -16,7 +16,7 @@ const app = express();
 // come BEFORE routes so they can read the data send
 app.use(express.json());
 app.use(require('cors')({
-    origin: 'http://localhost:8081', // frontend URL
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
@@ -120,7 +120,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // ROUTES
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth', authRoutes);
 app.get('/', (req, res) => res.send("MediaNest Backend is LIVE"));
 
 // START THE SERVER
