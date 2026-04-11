@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 avgRatingEl.textContent = "NEW";
                 if (starIcon) starIcon.classList.add('d-none');
                 const formattedListeners = Number(meta.listeners || 0).toLocaleString();
-                totalReviewsEl.textContent = `${reviews.length} reviews • ${formattedListeners} Listeners`;
+                totalReviewsEl.textContent = `${reviews.length} reviews`;
             } else {
                 avgRatingEl.textContent = meta.apiRating ? meta.apiRating.toFixed(1) : "0.0";
                 totalReviewsEl.textContent = `${reviews.length} reviews`;
@@ -101,10 +101,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 castContainer.innerHTML = meta.castData.map(actor => `
                     <div class="cast-card text-center" style="min-width: 100px; flex: 0 0 auto;">
                         <img src="${actor.profile_path ? 'https://image.tmdb.org/t/p/w185' + actor.profile_path : 'https://placehold.co/100x150?text=No+Photo'}" 
-                             class="rounded-3 mb-2 shadow-sm" 
-                             style="width: 90px; height: 120px; object-fit: cover; transition: transform 0.2s;">
-                        <p class="small fw-bold mb-0 text-truncate" style="width: 90px;">${actor.name}</p>
-                        <p class="text-muted" style="font-size: 0.65rem; width: 90px; line-height: 1;">${actor.character}</p>
+                            class="rounded-3 mb-2 shadow-sm" 
+                            style="width: 90px; height: 120px; object-fit: cover;">
+                        <p class="small fw-bold mb-0 text-truncate">${actor.name}</p>
+                        <p class="text-muted small">${actor.character}</p>
                     </div>
                 `).join('');
             } else {

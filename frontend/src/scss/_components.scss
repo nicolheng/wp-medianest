@@ -403,3 +403,22 @@
         }
     }
 }
+
+/* Standardized Media Poster */
+#item-poster {
+    width: 100%;
+    aspect-ratio: 2 / 3; 
+    object-fit: cover;
+    border: none; 
+    outline: none; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    background-color: #212529;
+    image-rendering: -webkit-optimize-contrast; 
+}
+
+/* Ensure the container doesn't squash the image */
+.col-md-3.text-center {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
