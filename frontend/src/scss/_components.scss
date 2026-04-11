@@ -270,7 +270,6 @@
   display: none;
 }
 
-<<<<<<< HEAD
 // Profile page styles (preserved from feature branch)
 .profile-avatar {
   width: 110px;
@@ -362,7 +361,8 @@
   &:hover {
     color: $primary;
   }
-=======
+}
+
 #item-poster {
     width: 100%;
     aspect-ratio: 2 / 3; 
@@ -375,5 +375,31 @@
     border-radius: 1rem;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     padding: 10px; /* Optional: gives the book some breathing room */
->>>>>>> 08cd8ea (fix: book & music item details)
+}
+
+/* Cast Carousel Component */
+#cast-container {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; 
+    
+    /* Hide scrollbars */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+}
+
+.cast-card {
+    transition: transform 0.2s;
+    
+    img {
+        transition: transform 0.2s ease-in-out;
+        &:hover {
+            transform: scale(1.05);
+        }
+    }
 }

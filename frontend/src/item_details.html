@@ -77,16 +77,27 @@
                     <h1 id="item-title" class="h2 fw-bold mb-2">Loading...</h1>
                     <p id="item-meta" class="text-muted small mb-3"></p>
                     
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <span class="h4 mb-0" style="color: #FFDE42;">
-                            <span id="avg-rating">0.0</span> <i class="bi bi-star-fill"></i>
-                        </span>
-                        <span class="text-muted small" id="total-reviews">0 reviews</span>
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <span id="avg-rating" class="h4 fw-bold mb-0 text-warning">0.0</span>
+                        <i id="star-icon" class="bi bi-star-fill text-warning"></i>
+                        <span id="total-reviews" class="text-muted small ms-2">0 reviews</span>
                     </div>
+                    
+                    <h3 id="reviews-section-title" class="fw-bold mb-4">Reviews</h3>
 
                     <div class="card shadow-sm border-0 bg-body-tertiary">
                         <div class="card-body p-3">
                             <h6 class="fw-bold card-title">Overview</h6>
+
+                            <div id="item-info" class="mt-4 border-top pt-3">
+                            </div>
+                            
+                            <div id="cast-section" class="mt-4 d-none">
+                                <h5 class="fw-bold mb-3">Top Cast</h5>
+                                <div id="cast-container" class="d-flex gap-3 overflow-auto pb-3" style="scrollbar-width: thin;">
+                                </div>
+                            </div>
+                            
                             <p id="item-description" class="small text-body mb-0">Fetching details...</p>
                         </div>
                     </div>
