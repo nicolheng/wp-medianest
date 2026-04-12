@@ -284,8 +284,67 @@ export function renderRail(containerId, items, emptyLabel, type) {
     };
 
     const overlay = document.createElement('div');
-    overlay.className = 'media-card-overlay';
+    overlay.className = 'media-card-overlay d-flex flex-column justify-content-between p-2';
 
+    // --- NEW BUTTON LOGIC STARTS HERE ---
+    const actionContainer = document.createElement('div');
+    actionContainer.className = 'd-flex gap-2 justify-content-end w-100 z-3';
+    actionContainer.style.position = 'relative'; 
+
+    const watchlist = JSON.parse(localStorage.getItem('watchlist')) || { movies: [], tv: [], books: [], music: [] };
+    const history = JSON.parse(localStorage.getItem('history')) || { movies: [], tv: [], books: [], music: [] };
+    
+    const currentWatchlist = watchlist[type] || [];
+    const currentHistory = history[type] || [];
+    const idStr = String(id); 
+
+    // Helper variable for perfect circle buttons
+    const circleStyle = "width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center;";
+
+    if (currentHistory.includes(idStr)) {
+        // State 3: History (Just a clean, elegant badge, no buttons)
+        const badge = document.createElement('span');
+        badge.className = 'badge bg-dark bg-opacity-75 text-light rounded-pill border border-secondary align-self-start px-3 py-2';
+        
+        let label = 'Watched';
+        if (type === 'books') label = 'Read';
+        if (type === 'music') label = 'Listened';
+        
+        badge.innerHTML = `<i class="bi bi-check2-all me-1"></i> ${label}`;
+        actionContainer.append(badge);
+
+    } else if (currentWatchlist.includes(idStr)) {
+        // State 2: In Watchlist (Circle Tick & Bin icons)
+        const watchBtn = document.createElement('button');
+        watchBtn.className = 'btn btn-success rounded-circle shadow';
+        watchBtn.style = circleStyle;
+        watchBtn.innerHTML = '<i class="bi bi-check-lg fs-5"></i>';
+        watchBtn.title = "Mark as Done";
+        watchBtn.onclick = (e) => { e.preventDefault(); window.moveToHistory(idStr, type); };
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn btn-danger rounded-circle shadow';
+        removeBtn.style = circleStyle;
+        removeBtn.innerHTML = '<i class="bi bi-trash fs-5"></i>';
+        removeBtn.title = "Remove";
+        removeBtn.onclick = (e) => { e.preventDefault(); window.removeFromWatchlist(idStr, type); };
+
+        actionContainer.append(watchBtn, removeBtn);
+
+    } else {
+        // State 1: Unsaved (Circle Add icon)
+        const addBtn = document.createElement('button');
+        addBtn.className = 'btn btn-primary rounded-circle shadow';
+        addBtn.style = circleStyle;
+        addBtn.innerHTML = '<i class="bi bi-plus-lg fs-5"></i>';
+        addBtn.title = "Add to Watchlist";
+        addBtn.onclick = (e) => { e.preventDefault(); window.addToWatchlist(idStr, type); };
+
+        actionContainer.append(addBtn);
+    }
+    // --- NEW BUTTON LOGIC ENDS HERE ---
+    // FIX 2: Group the text elements together
+    const textContainer = document.createElement('div');
     const title = document.createElement('div');
     title.className = 'media-title';
     title.textContent = item.title;
@@ -293,6 +352,8 @@ export function renderRail(containerId, items, emptyLabel, type) {
     const sub = document.createElement('div');
     sub.className = 'media-sub';
     sub.textContent = item.sub;
+
+    textContainer.append(title, sub);
 
     const badgeText = (item.rank !== undefined && item.rank !== null) ? `#${item.rank}` : '';
     if (badgeText) {
@@ -302,7 +363,7 @@ export function renderRail(containerId, items, emptyLabel, type) {
       card.append(badge);
     }
 
-    overlay.append(title, sub);
+    overlay.append(actionContainer, textContainer);
     card.append(img, overlay);
     link.append(card);
     el.append(link);
@@ -329,24 +390,30 @@ function updateLiveSnapshot(movies, tvShows, books, music) {
   updateSnapshotItem('snapshot-music', music[0], FALLBACK_MUSIC);
 }
 
+let cachedCharts = null;
+
 async function loadCharts() {
-  const [moviesRes, tvRes, booksRes, musicRes] = await Promise.allSettled([
-    fetchMovies(),
-    fetchTVShows(),
-    fetchBooks(),
-    fetchMusic()
-  ]);
+  // Only fetch from APIs if we haven't loaded them yet
+  if (!cachedCharts) {
+    const [moviesRes, tvRes, booksRes, musicRes] = await Promise.allSettled([
+      fetchMovies(), fetchTVShows(), fetchBooks(), fetchMusic()
+    ]);
+    
+    // Save to memory cache
+    cachedCharts = {
+      movies: moviesRes.status === "fulfilled" ? moviesRes.value : [],
+      tv: tvRes.status === "fulfilled" ? tvRes.value : [],
+      books: booksRes.status === "fulfilled" ? booksRes.value : [],
+      music: musicRes.status === "fulfilled" ? musicRes.value : []
+    };
+  }
 
-  const movies = moviesRes.status === "fulfilled" ? moviesRes.value : [];
-  const tvShows = tvRes.status === "fulfilled" ? tvRes.value : [];
-  const books = booksRes.status === "fulfilled" ? booksRes.value : [];
-  const music = musicRes.status === "fulfilled" ? musicRes.value : [];
-
-  renderRail('movies-list', movies, 'Could not load movies', 'movies');
-  renderRail('tv-list', tvShows, 'Could not load TV shows', 'tv');
-  renderRail('books-list', books, 'Could not load books', 'books');
-  renderRail('music-list', music, 'Could not load music', 'music');
-  updateLiveSnapshot(movies, tvShows, books, music);
+  // Draw UI instantly from memory
+  renderRail('movies-list', cachedCharts.movies, 'Could not load movies', 'movies');
+  renderRail('tv-list', cachedCharts.tv, 'Could not load TV shows', 'tv');
+  renderRail('books-list', cachedCharts.books, 'Could not load books', 'books');
+  renderRail('music-list', cachedCharts.music, 'Could not load music', 'music');
+  updateLiveSnapshot(cachedCharts.movies, cachedCharts.tv, cachedCharts.books, cachedCharts.music);
 
   if (moviesRes.status === "rejected") console.error("Movies error:", moviesRes.reason);
   if (tvRes.status === "rejected") console.error("TV error:", tvRes.reason);
@@ -361,44 +428,104 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==========================================
+// WATCHLIST STATE MANAGEMENT
+// ==========================================
+
+// Helper to get or initialize the library object in localStorage
+const getLibrary = (key) => JSON.parse(localStorage.getItem(key)) || { movies: [], tv: [], books: [], music: [] };
+
+window.addToWatchlist = (id, type) => {
+  const list = getLibrary('watchlist');
+  const idStr = String(id);
+  if (!list[type].includes(idStr)) {
+      list[type].push(idStr);
+      localStorage.setItem('watchlist', JSON.stringify(list));
+      if (document.getElementById("libraryTabContent")) loadWatchlistAndHistory();
+      if (document.getElementById("top-charts")) loadCharts();
+  }
+};
+
+window.removeFromWatchlist = (id, type) => {
+  const list = getLibrary('watchlist');
+  const idStr = String(id);
+  list[type] = list[type].filter(itemId => itemId !== idStr);
+  localStorage.setItem('watchlist', JSON.stringify(list));
+  if (document.getElementById("libraryTabContent")) loadWatchlistAndHistory();
+  if (document.getElementById("top-charts")) loadCharts();
+};
+
+window.moveToHistory = (id, type) => {
+  window.removeFromWatchlist(id, type); // Remove from watchlist first
+  const history = getLibrary('history');
+  const idStr = String(id);
+  if (!history[type].includes(idStr)) {
+      history[type].push(idStr);
+      localStorage.setItem('history', JSON.stringify(history));
+  }
+  if (document.getElementById("libraryTabContent")) loadWatchlistAndHistory();
+  if (document.getElementById("top-charts")) loadCharts();
+};
+
+// ==========================================
 // WATCHLIST MODULE ADDITIONS
 // ==========================================
 
-// 1. Fetch specific items by ID
+const itemCache = {}; // The Memory Cache
+
+// 1. Fetch specific items by ID (Instant Cache Version)
 async function fetchMovieById(movieId) {
+  if (itemCache[`movie_${movieId}`]) return itemCache[`movie_${movieId}`]; // Return instant if cached
+
   if (!tmdbToken) throw new Error('Missing VITE_TMDB_READ_TOKEN');
   const res = await fetch(`/api/tmdb/3/movie/${movieId}`, { headers: { Authorization: 'Bearer ' + tmdbToken } });
   if (!res.ok) throw new Error(`Failed to fetch movie ID: ${movieId}`);
   const m = await res.json();
-  return { id: m.id, title: m.title || 'Untitled', sub: (m.release_date || '').slice(0, 4) || 'Unknown year', image: buildTmdbImage(m.poster_path, FALLBACK_MOVIE) };
+  
+  const data = { id: m.id, title: m.title || 'Untitled', sub: (m.release_date || '').slice(0, 4) || 'Unknown year', image: buildTmdbImage(m.poster_path, FALLBACK_MOVIE) };
+  itemCache[`movie_${movieId}`] = data; // Save to cache
+  return data;
 }
 
 async function fetchTVShowById(tvId) {
+  if (itemCache[`tv_${tvId}`]) return itemCache[`tv_${tvId}`];
+
   if (!tmdbToken) throw new Error('Missing VITE_TMDB_READ_TOKEN');
   const res = await fetch(`/api/tmdb/3/tv/${tvId}`, { headers: { Authorization: 'Bearer ' + tmdbToken } });
   if (!res.ok) throw new Error(`Failed to fetch TV ID: ${tvId}`);
   const s = await res.json();
-  return { id: s.id, title: s.name || 'Untitled', sub: (s.first_air_date || '').slice(0, 4) || 'Unknown year', image: buildTmdbImage(s.poster_path, FALLBACK_TV) };
+  
+  const data = { id: s.id, title: s.name || 'Untitled', sub: (s.first_air_date || '').slice(0, 4) || 'Unknown year', image: buildTmdbImage(s.poster_path, FALLBACK_TV) };
+  itemCache[`tv_${tvId}`] = data;
+  return data;
 }
 
 async function fetchBookById(isbn) {
-  // NYT API provides lists. OpenLibrary provides free, direct ISBN lookups.
+  if (itemCache[`book_${isbn}`]) return itemCache[`book_${isbn}`];
+
   const res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
   if (!res.ok) throw new Error(`Failed to fetch book ISBN: ${isbn}`);
-  const data = await res.json();
-  const book = data[`ISBN:${isbn}`];
-  return { id: isbn, title: book?.title || 'Untitled', sub: book?.authors?.[0]?.name || 'Unknown Author', image: book?.cover?.medium || FALLBACK_BOOK };
+  const rawData = await res.json();
+  const book = rawData[`ISBN:${isbn}`];
+  
+  const data = { id: isbn, title: book?.title || 'Untitled', sub: book?.authors?.[0]?.name || 'Unknown Author', image: book?.cover?.medium || FALLBACK_BOOK };
+  itemCache[`book_${isbn}`] = data;
+  return data;
 }
 
 async function fetchTrackById(combinedId) {
+  if (itemCache[`music_${combinedId}`]) return itemCache[`music_${combinedId}`];
+
   if (!lastfmApiKey) throw new Error('Missing VITE_LASTFM_API_KEY');
   const [artist, track] = combinedId.split('|').map(decodeURIComponent);
   const res = await fetch(`/api/lastfm/2.0/?method=track.getInfo&artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(track)}&api_key=${lastfmApiKey}&format=json`);
   if (!res.ok) throw new Error(`Failed to fetch track: ${track}`);
-  const data = await res.json();
-  const t = data.track;
+  const rawData = await res.json();
+  const t = rawData.track;
   let image = t?.album?.image?.find(img => img.size === 'extralarge')?.['#text'] || FALLBACK_MUSIC;
-  return { id: combinedId, title: t?.name || 'Untitled', sub: t?.artist?.name || 'Unknown Artist', image: image };
+  
+  const data = { id: combinedId, title: t?.name || 'Untitled', sub: t?.artist?.name || 'Unknown Artist', image: image };
+  itemCache[`music_${combinedId}`] = data;
+  return data;
 }
 
 // 2. Load the Watchlist and History data (Empty Data Test)
