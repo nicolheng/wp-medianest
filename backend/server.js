@@ -127,6 +127,7 @@ app.get('/', (req, res) => res.send("MediaNest Backend is LIVE"));
 app.use('/api/items', itemRoutes);
 app.use('/api/reviews', require('./routes/reviews'));
 
+app.use(express.static('public'));
 
 // START THE SERVER
 const PORT = process.env.PORT || 5000;

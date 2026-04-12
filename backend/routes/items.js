@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router(); // This defines "router"
+const router = express.Router();
 const axios = require('axios');
 const EntertainmentItem = require('../models/EntertainmentItem');
 const Review = require('../models/Review');
@@ -11,101 +11,137 @@ router.get('/:type/:id', async (req, res) => {
         if (type === 'books') type = 'book';
         if (type === 'movies') type = 'movie';
 
-        let [item, reviews] = await Promise.all([
-            EntertainmentItem.findOne({ "metadata.externalId": id, type }),
-            Review.find({}).populate('userId', 'username') 
-        ]);
+        let item = await EntertainmentItem.findOne({ "metadata.externalId": id, type });
+        let reviews = [];
 
         if (!item) {
             let apiData = {};
 
+            // --- MOVIE & SHOW LOGIC ---
             if (type === 'movie' || type === 'show') {
-                // TMDB API
-
                 const tmdbType = type === 'movie' ? 'movie' : 'tv';
-                const targetUrl = `https://api.themoviedb.org/3/${tmdbType}/${id}`;
-
-                console.log("SENDING REQUEST TO:", targetUrl); // This will show in your terminal
+                const targetUrl = `https://api.themoviedb.org/3/${tmdbType}/${id}?append_to_response=credits`;
 
                 const response = await axios.get(targetUrl, {
-                    headers: {
-                        Authorization: `Bearer ${process.env.TMDB_KEY}` // Use Bearer for long tokens
+                    headers: { Authorization: `Bearer ${process.env.TMDB_KEY}` }
+                });
+
+                const data = response.data;
+                const director = data.credits?.crew?.find(p => p.job === 'Director')?.name;
+                const castArray = data.credits?.cast?.slice(0, 8).map(actor => ({
+                    name: actor.name,
+                    character: actor.character,
+                    profile_path: actor.profile_path
+                }));
+
+                apiData = {
+                    title: data.title || data.name,
+                    releaseYear: new Date(data.release_date || data.first_air_date).getFullYear(),
+                    image: data.poster_path ? `https://image.tmdb.org/t/p/w780${data.poster_path}` : "/images/movie.png",
+                    description: data.overview,
+                    apiRating: data.vote_average || 0,
+                    extra: {
+                        director: director || "N/A",
+                        castData: castArray,
+                        genres: data.genres?.map(g => g.name).join(', '),
+                        runtime: data.runtime ? `${data.runtime} mins` : "N/A"
+                    }
+                };
+            }
+
+            // --- MUSIC LOGIC ---
+            else if (type === 'music') {
+                const artistName = id.includes('|') ? decodeURIComponent(id.split('|')[0]) : null;
+                const trackName = id.includes('|') ? decodeURIComponent(id.split('|')[1]) : id;
+
+                const response = await axios.get(`https://ws.audioscrobbler.com/2.0/`, {
+                    params: {
+                        method: 'track.getInfo',
+                        api_key: process.env.LASTFM_KEY,
+                        format: 'json',
+                        autocorrect: 1,
+                        track: trackName,
+                        artist: artistName
                     }
                 });
 
-                apiData = {
-                    title: response.data.title || response.data.name,
-                    releaseYear: new Date(response.data.release_date || response.data.first_air_date).getFullYear(),
-                    image: `https://image.tmdb.org/t/p/w500${response.data.poster_path}`,
-                    description: response.data.overview,
-                    extra: { director: "" } 
-                };
-            } 
-            else if (type === 'music') {
-            // If the ID contains the pipe '|', we split it. 
-            // Otherwise, we treat the whole ID as a search term.
-            const artistName = id.includes('|') ? decodeURIComponent(id.split('|')[0]) : null;
-            const trackName = id.includes('|') ? decodeURIComponent(id.split('|')[1]) : id;
+                const track = response.data?.track;
+                const trackWiki = track?.wiki?.summary;
+                const cleanDescription = trackWiki
+                    ? trackWiki.replace(/<[^>]*>?/gm, '').split('Read more on Last.fm')[0].trim()
+                    : `"${trackName}" is a standout track by ${artistName || "this artist"}. Check the community feedback below!`;
 
-            const queryParams = {
-                method: 'track.getInfo',
-                api_key: process.env.LASTFM_KEY,
-                format: 'json',
-                autocorrect: 1,
-                track: trackName
-            };
-            if (artistName) queryParams.artist = artistName;
+                let musicImage = track?.album?.image?.[3]?.['#text'] || track?.image?.[3]?.['#text'];
 
-            const response = await axios.get(`https://ws.audioscrobbler.com/2.0/`, { params: queryParams });
-            const track = response.data?.track;
+                // Check for empty or Last.fm default placeholders
+                if (!musicImage || musicImage.includes('default_album') || musicImage === "" || musicImage.includes('2a96') || musicImage.includes('noimage')) {
+                    musicImage = "/images/music.png";
+                }
 
-            if (!track) {
-                // Fallback: If no deep info, just return what we know so the page loads
                 apiData = {
-                    title: trackName,
-                    image: "https://placehold.co/400x400?text=No+Cover",
-                    description: "Detailed wiki for this track is currently unavailable.",
-                    extra: { artist: artistName || "Various Artists" }
-                };
-            } else {
-                apiData = {
-                    title: track.name,
-                    image: track.album?.image?.[3]?.['#text'] || "",
-                    description: track.wiki?.summary || `A popular track by ${track.artist.name}.`,
-                    extra: { artist: track.artist.name }
+                    title: track?.name || trackName,
+                    image: musicImage,
+                    description: cleanDescription,
+                    apiRating: 0,
+                    extra: {
+                        artist: track?.artist?.name || artistName,
+                        album: track?.album?.title || "Single",
+                        genres: track?.toptags?.tag?.slice(0, 3).map(t => t.name).join(', ') || "N/A"
+                    }
                 };
             }
-        }
+
+
+            // --- BOOK LOGIC (WITH WATERFALL FALLBACK) ---
             else if (type === 'book') {
                 try {
-                // Use Google Books API: It's faster and includes images!
-                const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${id}`);
-                const bookData = response.data.items?.[0]?.volumeInfo;
+                    // Try by ISBN
+                    let bookRes = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${id}&key=${process.env.GOOGLE_BOOKS_KEY}`);
+                    let bookData = bookRes.data.items?.[0]?.volumeInfo;
 
-                if (!bookData) {
-                    apiData = {
-                        title: "Book Details",
-                        releaseYear: 2026,
-                        image: "https://placehold.co/400x600?text=No+Cover+Found",
-                        description: "Synopsis unavailable.",
-                        extra: { author: "Unknown Author" }
-                    };
-                } else {
-                    apiData = {
-                        title: bookData.title,
-                        releaseYear: bookData.publishedDate ? new Date(bookData.publishedDate).getFullYear() : 2026,
-                        // Google Books provides the image link here:
-                        image: bookData.imageLinks?.thumbnail?.replace('http:', 'https:') || "", 
-                        description: bookData.description || "No description available.",
-                        extra: { author: bookData.authors?.join(', ') || "Unknown Author" }
-                    };
+                    // Fallback to Title if ISBN fails
+                    if (!bookData) {
+                        bookRes = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(id)}&key=${process.env.GOOGLE_BOOKS_KEY}`);
+                        bookData = bookRes.data.items?.[0]?.volumeInfo;
+                    }
+
+                    if (bookData) {
+                        let bookImage = bookData.imageLinks?.thumbnail;
+
+                        // FIXED: Check for blurry/unavailable thumbnails (using ||)
+                        if (!bookImage || bookImage.includes('printsec=frontcover') || bookImage.includes('img=1&zoom=5') || bookImage.includes('fife')) {
+                            bookImage = "/images/book.png";
+                        } else {
+                            bookImage = bookImage.replace('http:', 'https:').replace('&zoom=1', '&zoom=2');
+                        }
+
+                        apiData = {
+                            title: bookData.title,
+                            releaseYear: bookData.publishedDate ? new Date(bookData.publishedDate).getFullYear() : "N/A",
+                            image: bookImage,
+                            description: bookData.description || "No description available.",
+                            apiRating: bookData.averageRating ? (bookData.averageRating * 2) : 0,
+                            extra: {
+                                author: bookData.authors?.join(', ') || "Unknown Author",
+                                genres: bookData.categories?.join(', ') || "N/A",
+                                pageCount: bookData.pageCount ? `${bookData.pageCount} pages` : "N/A"
+                            }
+                        };
+                    } else {
+                        apiData = {
+                            title: id.replace(/-/g, ' '),
+                            image: "/images/book.png",
+                            description: "Library details are currently unavailable for this specific edition.",
+                            apiRating: 0,
+                            extra: { author: "Various" }
+                        };
+                    }
+                } catch (err) {
+                    apiData = { title: "Library Entry", image: "/images/book.png", description: "Loading offline record..." };
                 }
-            } catch (bookErr) {
-                throw new Error("Failed to fetch book from library.");
-            }
             }
 
-            // 3. Save to MongoDB
+            // Save the newly fetched item
             item = new EntertainmentItem({
                 title: apiData.title,
                 type: type,
@@ -114,27 +150,22 @@ router.get('/:type/:id', async (req, res) => {
                     externalId: id,
                     image: apiData.image,
                     description: apiData.description,
+                    apiRating: apiData.apiRating,
                     ...apiData.extra
                 }
             });
             await item.save();
             reviews = [];
         } else {
-            // STEP 2: If item was found, fetch its specific reviews
-            // (Only needed if the first parallel search was too generic)
+            // Fetch reviews if item already exists in DB
             reviews = await Review.find({ itemId: item._id }).sort({ createdAt: -1 });
         }
 
-        console.log(`Found ${reviews.length} reviews. Sending response...`);
         res.json({ item, reviews });
 
     } catch (err) {
-        console.error("DETAILED BACKEND ERROR:", err.response ? err.response.data : err.message);
-        res.status(500).json({ 
-            message: "Internal Server Error", 
-            error: err.message,
-            details: err.response ? err.response.data : null 
-        });
+        console.error("BACKEND ERROR:", err.message);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
 

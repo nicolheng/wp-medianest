@@ -11,10 +11,15 @@ const EntertainmentItemSchema = new mongoose.Schema({
         image: { type: String, default: "" }, 
         description: { type: String, default: "" }, 
         director: String,
-        cast: [String],
+        castData: [{
+            name: String,
+            character: String,
+            profile_path: String
+        }],
         artist: String,
         author: String,
-        publisher: String
+        publisher: String,
+        apiRating: Number
     }
 });
 
