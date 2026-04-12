@@ -57,7 +57,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             img.src = (meta.image && !meta.image.includes('images/book.png') && !meta.image.includes('placeholder') && !isLocalPlaceholder)
                 ? meta.image
                 : (backupImg || localPlaceholder);
-            cd..
             img.onload = () => {
                 posterEl.src = img.src;
                 posterEl.style.opacity = '1';
