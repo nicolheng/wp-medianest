@@ -360,3 +360,92 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(loadCharts, 10 * 60 * 1000);
 });
 
+// ==========================================
+// WATCHLIST MODULE ADDITIONS
+// ==========================================
+
+// 1. Fetch specific items by ID
+async function fetchMovieById(movieId) {
+  if (!tmdbToken) throw new Error('Missing VITE_TMDB_READ_TOKEN');
+  const res = await fetch(`/api/tmdb/3/movie/${movieId}`, { headers: { Authorization: 'Bearer ' + tmdbToken } });
+  if (!res.ok) throw new Error(`Failed to fetch movie ID: ${movieId}`);
+  const m = await res.json();
+  return { id: m.id, title: m.title || 'Untitled', sub: (m.release_date || '').slice(0, 4) || 'Unknown year', image: buildTmdbImage(m.poster_path, FALLBACK_MOVIE) };
+}
+
+async function fetchTVShowById(tvId) {
+  if (!tmdbToken) throw new Error('Missing VITE_TMDB_READ_TOKEN');
+  const res = await fetch(`/api/tmdb/3/tv/${tvId}`, { headers: { Authorization: 'Bearer ' + tmdbToken } });
+  if (!res.ok) throw new Error(`Failed to fetch TV ID: ${tvId}`);
+  const s = await res.json();
+  return { id: s.id, title: s.name || 'Untitled', sub: (s.first_air_date || '').slice(0, 4) || 'Unknown year', image: buildTmdbImage(s.poster_path, FALLBACK_TV) };
+}
+
+async function fetchBookById(isbn) {
+  // NYT API provides lists. OpenLibrary provides free, direct ISBN lookups.
+  const res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
+  if (!res.ok) throw new Error(`Failed to fetch book ISBN: ${isbn}`);
+  const data = await res.json();
+  const book = data[`ISBN:${isbn}`];
+  return { id: isbn, title: book?.title || 'Untitled', sub: book?.authors?.[0]?.name || 'Unknown Author', image: book?.cover?.medium || FALLBACK_BOOK };
+}
+
+async function fetchTrackById(combinedId) {
+  if (!lastfmApiKey) throw new Error('Missing VITE_LASTFM_API_KEY');
+  const [artist, track] = combinedId.split('|').map(decodeURIComponent);
+  const res = await fetch(`/api/lastfm/2.0/?method=track.getInfo&artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(track)}&api_key=${lastfmApiKey}&format=json`);
+  if (!res.ok) throw new Error(`Failed to fetch track: ${track}`);
+  const data = await res.json();
+  const t = data.track;
+  let image = t?.album?.image?.find(img => img.size === 'extralarge')?.['#text'] || FALLBACK_MUSIC;
+  return { id: combinedId, title: t?.name || 'Untitled', sub: t?.artist?.name || 'Unknown Artist', image: image };
+}
+
+// 2. Load the Watchlist and History data (Empty Data Test)
+async function loadWatchlistAndHistory() {
+  // Empty arrays to trigger the empty states
+  const savedMovies = [550, 157336]; // Fight Club, Interstellar
+  const savedTVShows = [1399, 66732]; // Game of Thrones, Stranger Things
+  const savedBooks = ['9780553103540', '9780439064873']; // Game of Thrones, Harry Potter
+  const savedTracks = ['Radiohead|Creep', 'Nirvana|Smells%20Like%20Teen%20Spirit'];
+
+  const watchedMovies = [120]; // LOTR 
+  const watchedTVShows = []; 
+  const readBooks = []; 
+  const listenedTracks = []; 
+   
+  try {
+    // These will resolve to empty arrays immediately
+    const movieData = await Promise.all(savedMovies.map(fetchMovieById));
+    const tvData = await Promise.all(savedTVShows.map(fetchTVShowById));
+    const bookData = await Promise.all(savedBooks.map(fetchBookById));
+    const trackData = await Promise.all(savedTracks.map(fetchTrackById));
+    
+    const historyMovieData = await Promise.all(watchedMovies.map(fetchMovieById));
+    const historyTvData = await Promise.all(watchedTVShows.map(fetchTVShowById));
+    const historyBookData = await Promise.all(readBooks.map(fetchBookById));
+    const historyTrackData = await Promise.all(listenedTracks.map(fetchTrackById));
+
+    // Render Watchlist Rails
+    renderRail('watchlist-movies-list', movieData, 'Your movie watchlist is empty.', 'movies');
+    renderRail('watchlist-tv-list', tvData, 'Your TV show watchlist is empty.', 'tv');
+    renderRail('watchlist-books-list', bookData, 'Your book watchlist is empty.', 'books');
+    renderRail('watchlist-music-list', trackData, 'Your music watchlist is empty.', 'music');
+
+    // Render History Rails
+    renderRail('history-movies-list', historyMovieData, 'You have no watched movies.', 'movies');
+    renderRail('history-tv-list', historyTvData, 'You have no watched TV shows.', 'tv');
+    renderRail('history-books-list', historyBookData, 'You have no read books.', 'books');
+    renderRail('history-music-list', historyTrackData, 'You have no listened tracks.', 'music');
+
+  } catch (error) {
+    console.error("Error loading library:", error);
+  }
+}
+
+// 3. Trigger the function when the page loads
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("libraryTabContent")) {
+     loadWatchlistAndHistory();
+  }
+});
