@@ -360,5 +360,3 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(loadCharts, 10 * 60 * 1000);
 });
 
-// Search form handling and search-result page logic
-// Search logic has been moved to ./search.js

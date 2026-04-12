@@ -95,13 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
               empty.textContent = `No ${info.label} found`;
               listEl.append(empty);
             } else {
-              // Reuse your existing card creation logic here
-              info.matches.forEach(item => {
-                // ... (Create your link/card/img elements as per your previous code) ...
-                // Note: For brevity, ensure you copy your card creation loop here
-                const cardLink = createMediaCard(item, type); 
-                listEl.append(cardLink);
-              });
+              // Render matches using the shared rail renderer for consistency
+              renderRail(info.list, info.matches, `No ${info.label} found`, type);
             }
           } else {
             containerEl.classList.add('d-none');
