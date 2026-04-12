@@ -168,9 +168,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function createMediaCard(item, type) {
     const link = document.createElement('a');
     const id = item._id || item.id || item.rank;
-    let urlType = type === 'movies' ? 'movie' : type === 'tv' ? 'show' : type === 'books' ? 'book' : 'music';
+    //let urlType = type === 'movies' ? 'movie' : type === 'tv' ? 'show' : type === 'books' ? 'book' : 'music';
+    const itemImg = encodeURIComponent(item.image || '');
 
-    link.href = `item_details.html?type=${urlType}&id=${id}`;
+    link.href = `item_details.html?type=${urlType}&id=${id}&img=${itemImg}`;
     link.className = 'text-decoration-none';
     link.style.display = 'contents';
 
