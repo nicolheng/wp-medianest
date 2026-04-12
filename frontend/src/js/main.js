@@ -257,7 +257,8 @@ export function renderRail(containerId, items, emptyLabel, type) {
     if (type === 'movies') urlType = 'movie';
     if (type === 'tv') urlType = 'show';
 
-    link.href = `item_details.html?type=${urlType}&id=${id}`;
+    const itemImg = encodeURIComponent(item.image || '');
+    link.href = `item_details.html?type=${urlType}&id=${id}&img=${itemImg}`;
     link.style.display = 'contents'; 
     link.classList.add('text-decoration-none');
 

@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
+    const backupImg = params.get('img');
     const id = params.get('id');
     const type = params.get('type') || 'movie';
     let currentMongoId = null;
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const starIcon = document.getElementById('star-icon');
         const castSection = document.getElementById('cast-section');
         const castContainer = document.getElementById('cast-container');
-
+        let displayType = type === 'books' ? 'book' : type;
         try {
             const res = await fetch(`/api/items/${type}/${id}?t=${Date.now()}`);
             const data = await res.json();
@@ -50,9 +51,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             // 3. POSTER & FALLBACK
-            const localPlaceholder = type === 'music' ? '/images/music.png' : '/images/book.png';
+            const localPlaceholder = displayType === 'music' ? '/images/music.png' : '/images/book.png';
             const img = new Image();
-            img.src = (meta.image && !meta.image.includes('placeholder')) ? meta.image : localPlaceholder;
+            img.src = (meta.image && !meta.image.includes('images/book.png') && !meta.image.includes('placeholder'))
+                ? meta.image
+                : (backupImg || localPlaceholder);
 
             img.onload = () => {
                 posterEl.src = img.src;
