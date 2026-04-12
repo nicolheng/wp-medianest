@@ -103,18 +103,36 @@
 				<div id="results-content">
 					<h1 id="results-title" class="fs-3 fw-bold mb-3">Results</h1>
 
+					<div id="no-results-msg" class="text-center py-5 d-none">
+						<i class="bi bi-search-heart fs-1 text-secondary opacity-50 mb-3 d-block"></i>
+						<h2 class="fs-4 fw-bold">No matched results found</h2>
+						<p class="text-muted">We couldn't find anything matching your search. Check out some recommendations below!</p>
+					</div>
+
 					<section id="matches-section" class="mb-4">
 						<h2 class="fs-5 fw-bold mb-2">Matches</h2>
-						<div id="matches-list" class="d-flex gap-3 overflow-auto"></div>
+						<div id="matches-list" class="">
+							<section id="matches-movies" class="mb-3 d-none">
+								<h3 class="fs-6 fw-semibold mb-2">Movies</h3>
+								<div id="matches-movies-list" class="d-flex gap-3 overflow-auto"></div>
+							</section>
+							<section id="matches-tv" class="mb-3 d-none">
+								<h3 class="fs-6 fw-semibold mb-2">TV Shows</h3>
+								<div id="matches-tv-list" class="d-flex gap-3 overflow-auto"></div>
+							</section>
+							<section id="matches-books" class="mb-3 d-none">
+								<h3 class="fs-6 fw-semibold mb-2">Books</h3>
+								<div id="matches-books-list" class="d-flex gap-3 overflow-auto"></div>
+							</section>
+							<section id="matches-music" class="mb-3 d-none">
+								<h3 class="fs-6 fw-semibold mb-2">Tracks</h3>
+								<div id="matches-music-list" class="d-flex gap-3 overflow-auto"></div>
+							</section>
+						</div>
 					</section>
 
 					<section id="other-section" class="mb-4">
 						<h2 class="fs-5 fw-bold mb-2">Other</h2>
-
-					<!-- <div id="results-loader" class="mb-3 d-none">
-						<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
-						<span class="ms-2">Loading results…</span>
-					</div> -->
 
 					<section id="movies-section" class="mb-4">
 						<h2 class="fs-5 fw-bold mb-2">Movies</h2>

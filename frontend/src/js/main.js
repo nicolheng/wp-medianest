@@ -294,12 +294,16 @@ export function renderRail(containerId, items, emptyLabel, type) {
     sub.className = 'media-sub';
     sub.textContent = item.sub;
 
-    const badge = document.createElement('span');
-    badge.className = 'badge text-bg-primary position-absolute top-0 start-0 m-2';
-    badge.textContent = `#${item.rank}`;
+    const badgeText = (item.rank !== undefined && item.rank !== null) ? `#${item.rank}` : '';
+    if (badgeText) {
+      const badge = document.createElement('span');
+      badge.className = 'badge text-bg-primary position-absolute top-0 start-0 m-2';
+      badge.textContent = badgeText;
+      card.append(badge);
+    }
 
     overlay.append(title, sub);
-    card.append(badge, img, overlay);
+    card.append(img, overlay);
     link.append(card);
     el.append(link);
   });
