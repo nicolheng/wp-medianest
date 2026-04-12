@@ -1,52 +1,44 @@
-import '../scss/style.scss'
-import 'bootstrap'
+import '../scss/style.scss';
+import 'bootstrap';
+import { fetchMovies, fetchTVShows, fetchBooks, fetchMusic } from './api.js';
+import { renderRail, updateLiveSnapshot } from './ui.js';
+import { loadWatchlistAndHistory } from './library.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const htmlElement = document.documentElement;
     const themeToggleBtn = document.getElementById('theme-toggle');
     const themeIcon = document.getElementById('theme-icon');
 
-    // 1. Helper function to update the button's look
     const updateButtonUI = (theme) => {
         if (!themeToggleBtn || !themeIcon ) return;
-
-        // Strip away both icons to create a blank slate
         themeIcon.classList.remove('bi-moon-stars-fill', 'bi-sun-fill');
-
         if (theme === 'dark') {
-            // Add the sun icon for Dark Mode
             themeIcon.classList.add('bi-sun-fill');
         } else {
-            // Add the moon icon for Light Mode
             themeIcon.classList.add('bi-moon-stars-fill');
         }
     };
 
-    // 2. The Theme Detective
     const getPreferredTheme = () => {
         const storedTheme = localStorage.getItem('theme');
         if (storedTheme) return storedTheme;
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     };
 
-    // 3. Initialize
     const initialTheme = getPreferredTheme();
     htmlElement.setAttribute('data-bs-theme', initialTheme);
     updateButtonUI(initialTheme);
 
-    // 4. Manual Toggle
     if (themeToggleBtn) {
         themeToggleBtn.addEventListener('click', () => {
             const currentTheme = htmlElement.getAttribute('data-bs-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
             htmlElement.setAttribute('data-bs-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             updateButtonUI(newTheme);
         });
     }
 
-    // 5. System Change Listener
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
         if (!localStorage.getItem('theme')) {
             const systemTheme = e.matches ? 'dark' : 'light';
@@ -56,350 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-const tmdbToken = import.meta.env.VITE_TMDB_READ_TOKEN;
-const lastfmApiKey = import.meta.env.VITE_LASTFM_API_KEY;
-const nytBooksApiKey = import.meta.env.VITE_NYT_BOOKS_API_KEY;
-
-const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w342';
-const FALLBACK_MOVIE = 'https://placehold.co/342x513/1b1f24/f8f9fa?text=No+Poster';
-const FALLBACK_TV = 'https://placehold.co/342x513/1b1f24/f8f9fa?text=No+Poster';
-const FALLBACK_BOOK = 'https://placehold.co/300x450/1b1f24/f8f9fa?text=No+Cover';
-const FALLBACK_MUSIC = 'https://placehold.co/300x300/1b1f24/f8f9fa?text=No+Art';
-const ITUNES_ENDPOINT = '/api/itunes/search';
-
-const buildTmdbImage = (posterPath, fallback) => {
-  if (!posterPath) return fallback;
-  return `${TMDB_IMAGE_BASE}${posterPath}`;
-};
-
-async function getHighResArt(trackName, artistName) {
-  const cleanTrack = (trackName || '').replace(/\s*[\(\[][^(\)\]]*[\)\]]/g, '').trim();
-  const combinedQuery = encodeURIComponent(`${cleanTrack || trackName} ${artistName}`.trim());
-  const artistOnlyQuery = encodeURIComponent((artistName || '').trim());
-
-  const extractArtwork = (payload) => {
-    const artwork = payload?.results?.[0]?.artworkUrl100;
-    return artwork ? artwork.replace('100x100bb', '400x400bb') : null;
-  };
-
-  const firstRes = await fetch(`${ITUNES_ENDPOINT}?term=${combinedQuery}&entity=song&limit=1`);
-  if (firstRes.ok) {
-    const firstData = await firstRes.json();
-    const firstArtwork = extractArtwork(firstData);
-    if (firstArtwork) return firstArtwork;
-  }
-
-  if (!artistOnlyQuery) return null;
-
-  const secondRes = await fetch(`${ITUNES_ENDPOINT}?term=${artistOnlyQuery}&entity=song&limit=1`);
-  if (!secondRes.ok) return null;
-  const secondData = await secondRes.json();
-  return extractArtwork(secondData);
-}
-
-function isLastFmPlaceholderImage(url) {
-  if (!url) return true;
-  const normalized = String(url).toLowerCase();
-  return normalized.includes('2a96')
-    || normalized.includes('default')
-    || normalized.includes('noimage')
-    || normalized.includes('last.fm');
-}
-
-function buildMusicFallback(title) {
-  if (!title) return FALLBACK_MUSIC;
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=random&color=fff&size=500&font-size=0.33`;
-}
-
-export async function fetchMovies() {
-  if (!tmdbToken) throw new Error('Missing VITE_TMDB_READ_TOKEN');
-
-  const res = await fetch('/api/tmdb/3/trending/movie/week', {
-    headers: { Authorization: 'Bearer ' + tmdbToken }
-  });
-  if (!res.ok) throw new Error('Movies fetch failed');
-
-  const data = await res.json();
-  return (data.results || []).slice(0, 10).map((m, i) => ({
-    id: m.id,
-    rank: i + 1,
-    title: m.title || 'Untitled',
-    sub: (m.release_date || '').slice(0, 4) || 'Unknown year',
-    image: buildTmdbImage(m.poster_path, FALLBACK_MOVIE)
-  }));
-}
-
-export async function fetchTVShows() {
-  if (!tmdbToken) throw new Error('Missing VITE_TMDB_READ_TOKEN');
-
-  const res = await fetch('/api/tmdb/3/trending/tv/week', {
-    headers: { Authorization: 'Bearer ' + tmdbToken }
-  });
-  if (!res.ok) throw new Error('TV fetch failed');
-
-  const data = await res.json();
-  return (data.results || []).slice(0, 10).map((show, i) => ({
-    id: show.id,
-    rank: i + 1,
-    title: show.name || 'Untitled',
-    sub: (show.first_air_date || '').slice(0, 4) || 'Unknown year',
-    image: buildTmdbImage(show.poster_path, FALLBACK_TV)
-  }));
-}
-
-export async function fetchBooks() {
-  if (!nytBooksApiKey) throw new Error('Missing VITE_NYT_BOOKS_API_KEY');
-
-  const res = await fetch(
-    `/api/nyt/svc/books/v3/lists/current/hardcover-fiction.json?api-key=${nytBooksApiKey}`
-  );
-  if (!res.ok) throw new Error('Books fetch failed');
-
-  const data = await res.json();
-  return (data.results?.books || []).slice(0, 10).map((b, i) => ({
-    id: b.primary_isbn13 || b.primary_isbn10,
-    rank: i + 1,
-    title: b.title || 'Untitled',
-    sub: b.author || 'Unknown author',
-    image: b.book_image || FALLBACK_BOOK
-  }));
-}
-
-export async function fetchMusic() {
-  if (!lastfmApiKey) throw new Error('Missing VITE_LASTFM_API_KEY');
-
-  const res = await fetch(
-    `/api/lastfm/2.0/?method=chart.gettoptracks&api_key=${lastfmApiKey}&format=json&limit=10`
-  );
-  if (!res.ok) throw new Error('Music fetch failed');
-
-  const data = await res.json();
-  const topTracks = (data.tracks?.track || []).slice(0, 10);
-
-  const tracksWithImages = await Promise.all(
-    topTracks.map(async (s, i) => {
-      const trackTitle = s.name || 'Untitled';
-      const artistName = s.artist?.name || 'Unknown artist';
-      const lastfmImage = s.image?.[3]?.['#text'] || s.image?.find((img) => img.size === 'large')?.['#text'] || '';
-      const placeholderFromChart = isLastFmPlaceholderImage(lastfmImage);
-      let image = placeholderFromChart ? '' : lastfmImage;
-
-      try {
-        const artist = encodeURIComponent(s.artist?.name || '');
-        const track = encodeURIComponent(s.name || '');
-        const infoRes = await fetch(
-          `/api/lastfm/2.0/?method=track.getInfo&artist=${artist}&track=${track}&api_key=${lastfmApiKey}&format=json&autocorrect=1`
-        );
-
-        if (infoRes.ok) {
-          const infoData = await infoRes.json();
-          const albumImage = infoData?.track?.album?.image
-            ?.find((img) => img.size === 'extralarge')?.['#text']
-            || infoData?.track?.album?.image?.find((img) => img.size === 'large')?.['#text']
-            || '';
-
-          if (!isLastFmPlaceholderImage(albumImage)) {
-            image = albumImage;
-          }
-        }
-
-        if (!image || isLastFmPlaceholderImage(image)) {
-          const itunesArt = await getHighResArt(trackTitle, artistName);
-          if (itunesArt) image = itunesArt;
-        }
-      } catch {
-        const itunesArt = await getHighResArt(trackTitle, artistName).catch(() => null);
-        if (itunesArt) image = itunesArt;
-      }
-
-      if (!image || isLastFmPlaceholderImage(image)) {
-        image = buildMusicFallback(trackTitle);
-      }
-
-      const combinedId = `${encodeURIComponent(s.artist.name)}|${encodeURIComponent(s.name)}`;
-
-      return {
-        id: combinedId,
-        rank: i + 1,
-        title: trackTitle,
-        sub: artistName,
-        image,
-      };
-    })
-  );
-
-  return tracksWithImages.map((item) => ({
-    ...item,
-    image: item.image || FALLBACK_MUSIC,
-  }));
-}
-
-export function renderRail(containerId, items, emptyLabel, type) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-
-  el.replaceChildren();
-  el.classList.add('media-rail');
-
-  if (!items.length) {
-    const empty = document.createElement('p');
-    empty.className = 'text-body-secondary small mb-0';
-    empty.textContent = emptyLabel;
-    el.append(empty);
-    return;
-  }
-
-  items.forEach((item) => {
-    const link = document.createElement('a');
-    const id = item._id || item.id || item.rank; 
-
-    let urlType = type;
-    if (type === 'movies') urlType = 'movie';
-    if (type === 'tv') urlType = 'show';
-
-    const itemImg = encodeURIComponent(item.image || '');
-    link.href = `item_details.html?type=${urlType}&id=${id}&img=${itemImg}`;
-    link.style.display = 'contents'; 
-    link.classList.add('text-decoration-none');
-
-    const card = document.createElement('article');
-    card.className = 'media-card';
-    if (type === 'music') card.classList.add('media-card--square');
-
-    const img = document.createElement('img');
-    img.className = 'media-thumb';
-    img.src = item.image || FALLBACK_MUSIC;
-    img.alt = item.title;
-    img.loading = 'lazy';
-    img.decoding = 'async';
-    img.referrerPolicy = 'no-referrer';
-    img.onerror = () => {
-      const fallbackByType = {
-        movies: FALLBACK_MOVIE,
-        tv: FALLBACK_TV,
-        books: FALLBACK_BOOK,
-        music: FALLBACK_MUSIC,
-      };
-      img.src = fallbackByType[type] || FALLBACK_MUSIC;
-    };
-
-    const overlay = document.createElement('div');
-    overlay.className = 'media-card-overlay d-flex flex-column justify-content-between p-2';
-
-    // --- NEW BUTTON LOGIC STARTS HERE ---
-    const actionContainer = document.createElement('div');
-    actionContainer.className = 'd-flex gap-2 justify-content-end w-100 z-3';
-    actionContainer.style.position = 'relative'; 
-
-    const watchlist = JSON.parse(localStorage.getItem('watchlist')) || { movies: [], tv: [], books: [], music: [] };
-    const history = JSON.parse(localStorage.getItem('history')) || { movies: [], tv: [], books: [], music: [] };
-    
-    const currentWatchlist = watchlist[type] || [];
-    const currentHistory = history[type] || [];
-    const idStr = String(id); 
-
-    // Helper variable for perfect circle buttons
-    const circleStyle = "width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center;";
-
-    if (currentHistory.includes(idStr)) {
-        // State 3: History (Just a clean, elegant badge, no buttons)
-        const badge = document.createElement('span');
-        badge.className = 'badge bg-dark bg-opacity-75 text-light rounded-pill border border-secondary align-self-start px-3 py-2';
-        
-        let label = 'Watched';
-        if (type === 'books') label = 'Read';
-        if (type === 'music') label = 'Listened';
-        
-        badge.innerHTML = `<i class="bi bi-check2-all me-1"></i> ${label}`;
-        actionContainer.append(badge);
-
-    } else if (currentWatchlist.includes(idStr)) {
-        // State 2: In Watchlist (Circle Tick & Bin icons)
-        const watchBtn = document.createElement('button');
-        watchBtn.className = 'btn btn-success rounded-circle shadow';
-        watchBtn.style = circleStyle;
-        watchBtn.innerHTML = '<i class="bi bi-check-lg fs-5"></i>';
-        watchBtn.title = "Mark as Done";
-        watchBtn.onclick = (e) => { e.preventDefault(); window.moveToHistory(idStr, type); };
-
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'btn btn-danger rounded-circle shadow';
-        removeBtn.style = circleStyle;
-        removeBtn.innerHTML = '<i class="bi bi-trash fs-5"></i>';
-        removeBtn.title = "Remove";
-        removeBtn.onclick = (e) => { e.preventDefault(); window.removeFromWatchlist(idStr, type); };
-
-        actionContainer.append(watchBtn, removeBtn);
-
-    } else {
-        // State 1: Unsaved (Circle Add icon)
-        const addBtn = document.createElement('button');
-        addBtn.className = 'btn btn-primary rounded-circle shadow';
-        addBtn.style = circleStyle;
-        addBtn.innerHTML = '<i class="bi bi-plus-lg fs-5"></i>';
-        addBtn.title = "Add to Watchlist";
-        addBtn.onclick = (e) => { e.preventDefault(); window.addToWatchlist(idStr, type); };
-
-        actionContainer.append(addBtn);
-    }
-    // --- NEW BUTTON LOGIC ENDS HERE ---
-    // FIX 2: Group the text elements together
-    const textContainer = document.createElement('div');
-    const title = document.createElement('div');
-    title.className = 'media-title';
-    title.textContent = item.title;
-
-    const sub = document.createElement('div');
-    sub.className = 'media-sub';
-    sub.textContent = item.sub;
-
-    textContainer.append(title, sub);
-
-    const badgeText = (item.rank !== undefined && item.rank !== null) ? `#${item.rank}` : '';
-    if (badgeText) {
-      const badge = document.createElement('span');
-      badge.className = 'badge text-bg-primary position-absolute top-0 start-0 m-2';
-      badge.textContent = badgeText;
-      card.append(badge);
-    }
-
-    overlay.append(actionContainer, textContainer);
-    card.append(img, overlay);
-    link.append(card);
-    el.append(link);
-  });
-}
-
-function updateSnapshotItem(prefix, item, fallbackImage) {
-  const titleEl = document.getElementById(`${prefix}-title`);
-  const imageEl = document.getElementById(`${prefix}-image`);
-
-  if (titleEl) {
-    titleEl.textContent = item?.title || 'Not available';
-  }
-
-  if (imageEl) {
-    imageEl.src = item?.image || fallbackImage;
-  }
-}
-
-function updateLiveSnapshot(movies, tvShows, books, music) {
-  updateSnapshotItem('snapshot-movie', movies[0], FALLBACK_MOVIE);
-  updateSnapshotItem('snapshot-tv', tvShows[0], FALLBACK_TV);
-  updateSnapshotItem('snapshot-book', books[0], FALLBACK_BOOK);
-  updateSnapshotItem('snapshot-music', music[0], FALLBACK_MUSIC);
-}
-
 let cachedCharts = null;
 
-async function loadCharts() {
-  // Only fetch from APIs if we haven't loaded them yet
+window.loadCharts = async function() {
   if (!cachedCharts) {
     const [moviesRes, tvRes, booksRes, musicRes] = await Promise.allSettled([
       fetchMovies(), fetchTVShows(), fetchBooks(), fetchMusic()
     ]);
     
-    // Save to memory cache
     cachedCharts = {
       movies: moviesRes.status === "fulfilled" ? moviesRes.value : [],
       tv: tvRes.status === "fulfilled" ? tvRes.value : [],
@@ -408,170 +64,21 @@ async function loadCharts() {
     };
   }
 
-  // Draw UI instantly from memory
   renderRail('movies-list', cachedCharts.movies, 'Could not load movies', 'movies');
   renderRail('tv-list', cachedCharts.tv, 'Could not load TV shows', 'tv');
   renderRail('books-list', cachedCharts.books, 'Could not load books', 'books');
   renderRail('music-list', cachedCharts.music, 'Could not load music', 'music');
   updateLiveSnapshot(cachedCharts.movies, cachedCharts.tv, cachedCharts.books, cachedCharts.music);
 
-  if (moviesRes.status === "rejected") console.error("Movies error:", moviesRes.reason);
-  if (tvRes.status === "rejected") console.error("TV error:", tvRes.reason);
-  if (booksRes.status === "rejected") console.error("Books error:", booksRes.reason);
-  if (musicRes.status === "rejected") console.error("Music error:", musicRes.reason);
-}
+  if (cachedCharts.movies.length === 0) console.error("Movies error");
+};
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (!document.getElementById("top-charts")) return;
-  loadCharts();
-  setInterval(loadCharts, 10 * 60 * 1000);
-});
-
-// ==========================================
-// WATCHLIST STATE MANAGEMENT
-// ==========================================
-
-// Helper to get or initialize the library object in localStorage
-const getLibrary = (key) => JSON.parse(localStorage.getItem(key)) || { movies: [], tv: [], books: [], music: [] };
-
-window.addToWatchlist = (id, type) => {
-  const list = getLibrary('watchlist');
-  const idStr = String(id);
-  if (!list[type].includes(idStr)) {
-      list[type].push(idStr);
-      localStorage.setItem('watchlist', JSON.stringify(list));
-      if (document.getElementById("libraryTabContent")) loadWatchlistAndHistory();
-      if (document.getElementById("top-charts")) loadCharts();
+  if (document.getElementById("top-charts")) {
+      window.loadCharts();
+      setInterval(window.loadCharts, 10 * 60 * 1000);
   }
-};
-
-window.removeFromWatchlist = (id, type) => {
-  const list = getLibrary('watchlist');
-  const idStr = String(id);
-  list[type] = list[type].filter(itemId => itemId !== idStr);
-  localStorage.setItem('watchlist', JSON.stringify(list));
-  if (document.getElementById("libraryTabContent")) loadWatchlistAndHistory();
-  if (document.getElementById("top-charts")) loadCharts();
-};
-
-window.moveToHistory = (id, type) => {
-  window.removeFromWatchlist(id, type); // Remove from watchlist first
-  const history = getLibrary('history');
-  const idStr = String(id);
-  if (!history[type].includes(idStr)) {
-      history[type].push(idStr);
-      localStorage.setItem('history', JSON.stringify(history));
-  }
-  if (document.getElementById("libraryTabContent")) loadWatchlistAndHistory();
-  if (document.getElementById("top-charts")) loadCharts();
-};
-
-// ==========================================
-// WATCHLIST MODULE ADDITIONS
-// ==========================================
-
-const itemCache = {}; // The Memory Cache
-
-// 1. Fetch specific items by ID (Instant Cache Version)
-async function fetchMovieById(movieId) {
-  if (itemCache[`movie_${movieId}`]) return itemCache[`movie_${movieId}`]; // Return instant if cached
-
-  if (!tmdbToken) throw new Error('Missing VITE_TMDB_READ_TOKEN');
-  const res = await fetch(`/api/tmdb/3/movie/${movieId}`, { headers: { Authorization: 'Bearer ' + tmdbToken } });
-  if (!res.ok) throw new Error(`Failed to fetch movie ID: ${movieId}`);
-  const m = await res.json();
   
-  const data = { id: m.id, title: m.title || 'Untitled', sub: (m.release_date || '').slice(0, 4) || 'Unknown year', image: buildTmdbImage(m.poster_path, FALLBACK_MOVIE) };
-  itemCache[`movie_${movieId}`] = data; // Save to cache
-  return data;
-}
-
-async function fetchTVShowById(tvId) {
-  if (itemCache[`tv_${tvId}`]) return itemCache[`tv_${tvId}`];
-
-  if (!tmdbToken) throw new Error('Missing VITE_TMDB_READ_TOKEN');
-  const res = await fetch(`/api/tmdb/3/tv/${tvId}`, { headers: { Authorization: 'Bearer ' + tmdbToken } });
-  if (!res.ok) throw new Error(`Failed to fetch TV ID: ${tvId}`);
-  const s = await res.json();
-  
-  const data = { id: s.id, title: s.name || 'Untitled', sub: (s.first_air_date || '').slice(0, 4) || 'Unknown year', image: buildTmdbImage(s.poster_path, FALLBACK_TV) };
-  itemCache[`tv_${tvId}`] = data;
-  return data;
-}
-
-async function fetchBookById(isbn) {
-  if (itemCache[`book_${isbn}`]) return itemCache[`book_${isbn}`];
-
-  const res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
-  if (!res.ok) throw new Error(`Failed to fetch book ISBN: ${isbn}`);
-  const rawData = await res.json();
-  const book = rawData[`ISBN:${isbn}`];
-  
-  const data = { id: isbn, title: book?.title || 'Untitled', sub: book?.authors?.[0]?.name || 'Unknown Author', image: book?.cover?.medium || FALLBACK_BOOK };
-  itemCache[`book_${isbn}`] = data;
-  return data;
-}
-
-async function fetchTrackById(combinedId) {
-  if (itemCache[`music_${combinedId}`]) return itemCache[`music_${combinedId}`];
-
-  if (!lastfmApiKey) throw new Error('Missing VITE_LASTFM_API_KEY');
-  const [artist, track] = combinedId.split('|').map(decodeURIComponent);
-  const res = await fetch(`/api/lastfm/2.0/?method=track.getInfo&artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(track)}&api_key=${lastfmApiKey}&format=json`);
-  if (!res.ok) throw new Error(`Failed to fetch track: ${track}`);
-  const rawData = await res.json();
-  const t = rawData.track;
-  let image = t?.album?.image?.find(img => img.size === 'extralarge')?.['#text'] || FALLBACK_MUSIC;
-  
-  const data = { id: combinedId, title: t?.name || 'Untitled', sub: t?.artist?.name || 'Unknown Artist', image: image };
-  itemCache[`music_${combinedId}`] = data;
-  return data;
-}
-
-// 2. Load the Watchlist and History data (Empty Data Test)
-async function loadWatchlistAndHistory() {
-  // Empty arrays to trigger the empty states
-  const savedMovies = [550, 157336]; // Fight Club, Interstellar
-  const savedTVShows = [1399, 66732]; // Game of Thrones, Stranger Things
-  const savedBooks = ['9780553103540', '9780439064873']; // Game of Thrones, Harry Potter
-  const savedTracks = ['Radiohead|Creep', 'Nirvana|Smells%20Like%20Teen%20Spirit'];
-
-  const watchedMovies = [120]; // LOTR 
-  const watchedTVShows = []; 
-  const readBooks = []; 
-  const listenedTracks = []; 
-   
-  try {
-    // These will resolve to empty arrays immediately
-    const movieData = await Promise.all(savedMovies.map(fetchMovieById));
-    const tvData = await Promise.all(savedTVShows.map(fetchTVShowById));
-    const bookData = await Promise.all(savedBooks.map(fetchBookById));
-    const trackData = await Promise.all(savedTracks.map(fetchTrackById));
-    
-    const historyMovieData = await Promise.all(watchedMovies.map(fetchMovieById));
-    const historyTvData = await Promise.all(watchedTVShows.map(fetchTVShowById));
-    const historyBookData = await Promise.all(readBooks.map(fetchBookById));
-    const historyTrackData = await Promise.all(listenedTracks.map(fetchTrackById));
-
-    // Render Watchlist Rails
-    renderRail('watchlist-movies-list', movieData, 'Your movie watchlist is empty.', 'movies');
-    renderRail('watchlist-tv-list', tvData, 'Your TV show watchlist is empty.', 'tv');
-    renderRail('watchlist-books-list', bookData, 'Your book watchlist is empty.', 'books');
-    renderRail('watchlist-music-list', trackData, 'Your music watchlist is empty.', 'music');
-
-    // Render History Rails
-    renderRail('history-movies-list', historyMovieData, 'You have no watched movies.', 'movies');
-    renderRail('history-tv-list', historyTvData, 'You have no watched TV shows.', 'tv');
-    renderRail('history-books-list', historyBookData, 'You have no read books.', 'books');
-    renderRail('history-music-list', historyTrackData, 'You have no listened tracks.', 'music');
-
-  } catch (error) {
-    console.error("Error loading library:", error);
-  }
-}
-
-// 3. Trigger the function when the page loads
-document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("libraryTabContent")) {
      loadWatchlistAndHistory();
   }
