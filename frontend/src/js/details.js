@@ -52,8 +52,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // 3. POSTER & FALLBACK
             const localPlaceholder = displayType === 'music' ? '/images/music.png' : '/images/book.png';
+            const isLocalPlaceholder = meta.image === '/images/book.png' || meta.image === '/images/music.png';
             const img = new Image();
-            img.src = (meta.image && !meta.image.includes('images/book.png') && !meta.image.includes('placeholder'))
+            img.src = (meta.image && !meta.image.includes('images/book.png') && !meta.image.includes('placeholder') && !isLocalPlaceholder)
                 ? meta.image
                 : (backupImg || localPlaceholder);
 
