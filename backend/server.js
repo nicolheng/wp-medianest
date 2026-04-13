@@ -10,6 +10,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const authRoutes = require('./routes/auth');
 const itemRoutes = require('./routes/items');
+const libraryRoutes = require('./routes/library');
 
 const app = express();
 
@@ -121,11 +122,16 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // ROUTES
-app.use('/api/auth', authRoutes);
 app.get('/', (req, res) => res.send("MediaNest Backend is LIVE"));
-
+app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/reviews', require('./routes/reviews'));
+app.use('/api/library', libraryRoutes);
+
+app.use((req, res, next) => {
+    console.log(`${req.method} request made to: ${req.url}`);
+    next();
+});
 
 app.use(express.static('public'));
 
