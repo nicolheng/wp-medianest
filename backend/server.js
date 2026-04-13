@@ -17,7 +17,7 @@ const app = express();
 // come BEFORE routes so they can read the data send
 app.use(express.json());
 app.use(require('cors')({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: process.env.CLIENT_URL || 'http://localhost:8081',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
