@@ -164,27 +164,5 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // Helper function to keep code clean
-  function createMediaCard(item, type) {
-    const link = document.createElement('a');
-    const id = item._id || item.id || item.rank;
-    //let urlType = type === 'movies' ? 'movie' : type === 'tv' ? 'show' : type === 'books' ? 'book' : 'music';
-    const itemImg = encodeURIComponent(item.image || '');
 
-    link.href = `item_details.html?type=${urlType}&id=${id}&img=${itemImg}`;
-    link.className = 'text-decoration-none';
-    link.style.display = 'contents';
-
-    link.innerHTML = `
-      <article class="media-card ${type === 'music' ? 'media-card--square' : ''}">
-        <span class="badge text-bg-primary position-absolute top-0 start-0 m-2">${item.rank ? '#' + item.rank : type}</span>
-        <img class="media-thumb" src="${item.image || ''}" alt="${item.title}" loading="lazy" onerror="this.src='https://placehold.co/300x450?text=No+Image'">
-        <div class="media-card-overlay">
-          <div class="media-title">${item.title}</div>
-          <div class="media-sub">${item.sub}</div>
-        </div>
-      </article>
-    `;
-    return link;
-  }
 });

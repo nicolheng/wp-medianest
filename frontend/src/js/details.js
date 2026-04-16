@@ -1,19 +1,32 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
-    const backupImg = params.get('img');
     const id = params.get('id');
-    const type = params.get('type') || 'movie';
+    const backupImg = sessionStorage.getItem(`poster_${id}`);
+    let type = params.get('type') || 'movie';
     let currentMongoId = null;
+
+    if (type === 'books') type = 'book';
+    if (type === 'movies') type = 'movie';
+
+    const posterEl = document.getElementById('item-poster');
+    const titleEl = document.getElementById('item-title');
+    const descEl = document.getElementById('item-description');
 
     if (!id) {
         window.location.href = 'index.html';
         return;
     }
 
+    const sessionImg = sessionStorage.getItem(`poster_${id}`);
+    if (sessionImg && posterEl) {
+        posterEl.src = sessionImg;
+        posterEl.style.opacity = '1';
+    }
+
     const loadPageData = async () => {
-        const titleEl = document.getElementById('item-title');
-        const descEl = document.getElementById('item-description');
-        const posterEl = document.getElementById('item-poster');
+        //const titleEl = document.getElementById('item-title');
+        //const descEl = document.getElementById('item-description');
+        //const posterEl = document.getElementById('item-poster');
         const infoEl = document.getElementById('item-info');
         const avgRatingEl = document.getElementById('avg-rating');
         const totalReviewsEl = document.getElementById('total-reviews');
@@ -21,9 +34,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const castSection = document.getElementById('cast-section');
         const castContainer = document.getElementById('cast-container');
         let displayType = type === 'books' ? 'book' : type;
+        
         try {
-            const res = await fetch(`/api/items/${type}/${id}?t=${Date.now()}`);
+            const res = await fetch(`/api/items/${type}/${id}`);
             const data = await res.json();
+            
             if (!res.ok) throw new Error(data.message || "Failed to fetch");
 
             const { item, reviews } = data;
@@ -33,6 +48,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 1. Render Title and Description
             titleEl.textContent = item.title || "Untitled";
             descEl.textContent = meta.description || "No description provided.";
+
+            if (meta.image && !meta.image.includes('placeholder')) {
+                posterEl.src = meta.image;
+            }
 
             // 2. SMART RATING LOGIC
             // Priority: App averageRating -> API Rating -> "NEW"

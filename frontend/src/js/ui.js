@@ -19,14 +19,24 @@ export function renderRail(containerId, items, emptyLabel, type) {
     const link = document.createElement('a');
     const id = item._id || item.id || item.rank; 
 
-    let urlType = type;
-    if (type === 'movies') urlType = 'movie';
-    if (type === 'tv') urlType = 'show';
+    const slug = (item.title || 'details')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
 
-    const itemImg = encodeURIComponent(item.image || '');
-    link.href = `item_details.html?type=${urlType}&id=${id}&img=${itemImg}`;
-    link.style.display = 'contents'; 
+    let urlType = type || item.type;
+    if (urlType === 'movies') urlType = 'movie';
+    if (urlType === 'tv') urlType = 'show';
+    if (urlType === 'books') urlType = 'book';
+
+    // PROFESSIONAL URL: Short and clean
+    link.href = `item_details.html?type=${urlType}&id=${id}&title=${slug}`;
     link.classList.add('text-decoration-none');
+    link.style.display = 'contents';
+
+    link.addEventListener('click', () => {
+      sessionStorage.setItem('poster_' + id, item.image);
+    });
 
     const card = document.createElement('article');
     card.className = 'media-card';
