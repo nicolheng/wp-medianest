@@ -75,7 +75,7 @@
             <div class="col-md-9 col-lg-6">
                 
                 <div class="d-flex align-items-center gap-2 mb-4">
-                    <form id="search-form" class="search-card-refined flex-grow-1 p-1 shadow-sm rounded-pill bg-body border">
+                    <form id="search-form" action="search_result.html" method="get" class="search-card-refined flex-grow-1 p-1 shadow-sm rounded-pill bg-body border">
                         <div class="input-group">
                             <span class="input-group-text bg-transparent border-0 pe-0 ps-3">
                                 <i class="bi bi-search text-primary small"></i>
@@ -98,28 +98,28 @@
 
                 <div class="d-flex flex-wrap justify-content-center gap-2" role="group" aria-label="filters">
                     <div class="filter-item">
-                        <input type="checkbox" class="btn-check" id="filter-movies" autocomplete="off">
+                        <input type="checkbox" class="btn-check" id="filter-movies" name="filters" value="movies" autocomplete="off">
                         <label class="btn btn-outline-chip-sm rounded-pill" for="filter-movies">
                             <i class="bi bi-film me-1"></i> Movies
                         </label>
                     </div>
 
                     <div class="filter-item">
-                        <input type="checkbox" class="btn-check" id="filter-tv" autocomplete="off">
+                        <input type="checkbox" class="btn-check" id="filter-tv" name="filters" value="tv" autocomplete="off">
                         <label class="btn btn-outline-chip-sm rounded-pill" for="filter-tv">
                             <i class="bi bi-tv me-1"></i> TV
                         </label>
                     </div>
 
                     <div class="filter-item">
-                        <input type="checkbox" class="btn-check" id="filter-books" autocomplete="off">
+                        <input type="checkbox" class="btn-check" id="filter-books" name="filters" value="books" autocomplete="off">
                         <label class="btn btn-outline-chip-sm rounded-pill" for="filter-books">
                             <i class="bi bi-book me-1"></i> Books
                         </label>
                     </div>
 
                     <div class="filter-item">
-                        <input type="checkbox" class="btn-check" id="filter-music" autocomplete="off">
+                        <input type="checkbox" class="btn-check" id="filter-music" name="filters" value="music" autocomplete="off">
                         <label class="btn btn-outline-chip-sm rounded-pill" for="filter-music">
                             <i class="bi bi-music-note-beamed me-1"></i> Music
                         </label>

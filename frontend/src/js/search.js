@@ -1,5 +1,5 @@
 import { searchMovies, searchTVShows, searchBooks, searchMusic } from './search_api.js';
-import { renderRail } from './main.js';
+import { renderRail } from './ui.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Submit from search.html -> navigate to search_result.html with query params
