@@ -18,6 +18,9 @@ async function checkAuthStatus() {
                     profilePlaceholder.classList.remove('d-none');
                     profilePlaceholder.classList.add('d-flex');
                 }
+
+                updateNavProfile(data.user);
+
                 if (navUsername) navUsername.textContent = data.user.username;
             } else {
                 // Not logged in
@@ -61,4 +64,30 @@ window.handleLogout = async function() {
     }
     localStorage.removeItem('user'); // Clean up if any leftover
     window.location.href = 'index.html'; // Redirect + triggers navbar refresh
+};
+
+const updateNavProfile = (user) => {
+    const navPic = document.getElementById('nav-profile-pic');
+    const navUsername = document.getElementById('nav-username'); // Standardized name
+    const placeholder = document.getElementById('profile-placeholder');
+
+    if (user && placeholder) {
+        const icon = placeholder.querySelector('.bi-person-circle');
+        if (icon) icon.classList.add('d-none');
+
+        const name = user.username || 'User';
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=fadb5f&color=000&bold=true&length=1`;
+
+        if (navPic) {
+            navPic.src = user.profilePic || avatarUrl;
+            navPic.classList.remove('d-none');
+        }
+
+        if (navUsername) { 
+            navUsername.textContent = name;
+            navUsername.classList.remove('d-none');
+        }
+        placeholder.classList.remove('d-none');
+        placeholder.classList.add('d-flex');
+    }
 };

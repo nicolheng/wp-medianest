@@ -46,6 +46,20 @@ const renderProfile = (user) => {
   setValue('edit-username', username);
   setValue('edit-email', user.email || '');
   setValue('edit-bio', user.profile?.bio || '');
+
+  const sidebarAvatarContainer = document.querySelector('.profile-avatar');
+  if (sidebarAvatarContainer) {
+    const name = user.username || 'User';
+    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=fadb5f&color=000&bold=true&length=1`;
+
+    sidebarAvatarContainer.innerHTML = `
+            <img src="${avatarUrl}" 
+                 alt="${name}" 
+                 class="rounded-circle shadow" 
+                 style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #fadb5f;">
+        `;
+  }
+
 };
 
 const fetchCurrentUser = async () => {
