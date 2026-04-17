@@ -1,4 +1,4 @@
-async function checkAuthStatus() {
+export async function checkAuthStatus() {
     const authButtons = document.getElementById('auth-buttons');
     const profilePlaceholder = document.getElementById('profile-placeholder');
     const navUsername = document.getElementById('nav-username');
@@ -12,6 +12,7 @@ async function checkAuthStatus() {
         if (res.ok) {
             const data = await res.json();
             if (data.isAuthenticated && data.user) {
+                window.currentUser = data.user;
                 // User is logged in
                 if (authButtons) authButtons.classList.add('d-none');
                 if (profilePlaceholder) {
@@ -62,7 +63,11 @@ window.handleLogout = async function() {
     } catch (err) {
         console.error('Logout failed:', err);
     }
-    localStorage.removeItem('user'); // Clean up if any leftover
+    window.currentUser = null;
+    window.userLibrary = null;
+    localStorage.removeItem('user');
+    localStorage.removeItem('watchlist');
+    localStorage.removeItem('history');
     window.location.href = 'index.html'; // Redirect + triggers navbar refresh
 };
 

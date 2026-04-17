@@ -2,7 +2,8 @@ import '../scss/style.scss';
 import 'bootstrap';
 import { fetchMovies, fetchTVShows, fetchBooks, fetchMusic } from './api.js';
 import { renderRail, updateLiveSnapshot } from './ui.js';
-import { loadWatchlistAndHistory } from './library.js';
+import { loadWatchlistAndHistory,  fetchFullLibrary } from './library.js';
+import { checkAuthStatus } from './session.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const htmlElement = document.documentElement;
@@ -73,13 +74,22 @@ window.loadCharts = async function() {
   if (cachedCharts.movies.length === 0) console.error("Movies error");
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.getElementById("top-charts")) {
-      window.loadCharts();
-      setInterval(window.loadCharts, 10 * 60 * 1000);
-  }
-  
-  if (document.getElementById("libraryTabContent")) {
-     loadWatchlistAndHistory();
-  }
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        console.log("Syncing with MongoDB...");
+        await checkAuthStatus();
+        if (window.currentUser) {
+            await fetchFullLibrary();
+        }
+    } catch (err) {
+        console.log(err);
+        console.warn("Could not sync library, operating in offline mode.");
+    }
+    if (document.getElementById("top-charts")) {
+        await window.loadCharts();
+        setInterval(window.loadCharts, 10 * 60 * 1000);
+    }
+    if (document.getElementById("libraryTabContent")) {
+        loadWatchlistAndHistory();
+    }
 });
