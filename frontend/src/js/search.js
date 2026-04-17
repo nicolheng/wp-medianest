@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // On search_result.html: parse params and fetch/render selected items
+  window.renderSearchResults = async function() {
   const resultsPage = document.getElementById('search-results-page');
   if (resultsPage) {
     resultsPage.classList.add('loading-active');
@@ -163,6 +164,9 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsPage.classList.remove('loading-active');
       });
   }
-
+  }
+  if (document.getElementById('search-results-page')) {
+      window.renderSearchResults();
+  }
 
 });

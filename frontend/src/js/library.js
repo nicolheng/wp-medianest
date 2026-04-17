@@ -8,6 +8,9 @@ const refreshUI = () => {
     if (window.loadCharts && document.getElementById("top-charts")) {
         window.loadCharts();
     }
+    if (window.renderSearchResults && document.getElementById('search-results-page')) {
+        window.renderSearchResults();
+    }
 };
 
 const API_URL = 'http://localhost:5000/api/library';
