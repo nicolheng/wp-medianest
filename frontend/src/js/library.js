@@ -1,63 +1,146 @@
 import { fetchMovieById, fetchTVShowById, fetchBookById, fetchTrackById } from './api.js';
 import { renderRail } from './ui.js';
 
-export const getLibrary = (key) => {
-  let data = JSON.parse(localStorage.getItem(key));
-  
-  // If data doesn't exist, OR if it's the old array format, reset it!
-  if (!data || Array.isArray(data) || !data.movies) {
-      data = { movies: [], tv: [], books: [], music: [] };
-      localStorage.setItem(key, JSON.stringify(data));
-  }
-  return data;
+const refreshUI = () => {
+    if (document.getElementById("libraryTabContent")) {
+        loadWatchlistAndHistory();
+    }
+    if (window.loadCharts && document.getElementById("top-charts")) {
+        window.loadCharts();
+    }
 };
 
-window.addToWatchlist = (id, type) => {
-  const list = getLibrary('watchlist');
-  const idStr = String(id);
-  if (!list[type].includes(idStr)) {
-      list[type].push(idStr);
-      localStorage.setItem('watchlist', JSON.stringify(list));
-      if (document.getElementById("libraryTabContent")) loadWatchlistAndHistory();
-      if (window.loadCharts && document.getElementById("top-charts")) window.loadCharts();
+const API_URL = 'http://localhost:5000/api/library';
+
+export async function fetchFullLibrary() {
+  if (!window.currentUser) {
+        console.error("User data missing! Please log in.");
+        alert("You must be logged in to save items.");
+        return; 
   }
+  const userId = window.currentUser.id;
+  try {
+      const response = await fetch(`${API_URL}/${userId}`, {
+        method: 'GET',
+        credentials: 'include' // Important for session-protected routes
+      });
+      if (!response.ok) throw new Error("DB Fetch Failed");
+      
+      const data = await response.json();
+      window.userLibrary = data; 
+      return data;
+  } catch (error) {
+      console.error("Library Error:", error);
+      // Fallback so the app doesn't crash
+      return { watchlist: {movies: [], tv: [], books: [], music: []}, history: {movies: [], tv: [], books: [], music: []} };
+  }
+}
+
+window.addToWatchlist = async (id, type) => {
+    if (!window.currentUser) {
+          console.error("User data missing! Please log in.");
+          alert("You must be logged in to save items.");
+          return; 
+    }
+    const userId = window.currentUser.id;
+
+    try {
+        const response = await fetch(`${API_URL}/add`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, itemId: id, itemType: type }),
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            await fetchFullLibrary(); // Sync local state with DB
+            refreshUI();
+        }
+    } catch (err) {
+        console.error("Failed to add item:", err);
+    }
 };
 
-window.removeFromWatchlist = (id, type) => {
-  const list = getLibrary('watchlist');
-  const idStr = String(id);
-  list[type] = list[type].filter(itemId => itemId !== idStr);
-  localStorage.setItem('watchlist', JSON.stringify(list));
-  if (document.getElementById("libraryTabContent")) loadWatchlistAndHistory();
-  if (window.loadCharts && document.getElementById("top-charts")) window.loadCharts();
+window.removeFromWatchlist = async (id, type) => {
+    if (!window.currentUser) {
+          console.error("User data missing! Please log in.");
+          alert("You must be logged in to save items.");
+          return; 
+    }
+    const userId = window.currentUser.id;
+
+    try {
+        const response = await fetch(`${API_URL}/remove`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, itemId: id, itemType: type }),
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            await fetchFullLibrary();
+            refreshUI();
+        }
+    } catch (err) {
+        console.error("Failed to remove item:", err);
+    }
 };
 
-window.moveToHistory = (id, type) => {
-  window.removeFromWatchlist(id, type); 
-  const history = getLibrary('history');
-  const idStr = String(id);
-  if (!history[type].includes(idStr)) {
-      history[type].push(idStr);
-      localStorage.setItem('history', JSON.stringify(history));
-  }
-  if (document.getElementById("libraryTabContent")) loadWatchlistAndHistory();
-  if (window.loadCharts && document.getElementById("top-charts")) window.loadCharts();
+window.moveToHistory = async (id, type) => {
+    if (!window.currentUser) {
+          console.error("User data missing! Please log in.");
+          alert("You must be logged in to save items.");
+          return; 
+    }
+    const userId = window.currentUser.id;
+
+    try {
+        const response = await fetch(`${API_URL}/watched`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, itemId: id, itemType: type }),
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            await fetchFullLibrary();
+            refreshUI();
+        }
+    } catch (err) {
+        console.error("Failed to move item:", err);
+    }
 };
+ async function getSafeData(idArray, fetchFunction) {
+    if (!idArray || !Array.isArray(idArray)) return [];
+
+    // Use allSettled so one failed ID doesn't stop the rest
+    const results = await Promise.allSettled(idArray.map(fetchFunction));
+
+    // Only keep the successful ones
+    return results
+        .filter(res => res.status === 'fulfilled' && res.value)
+        .map(res => res.value);
+}
 
 export async function loadWatchlistAndHistory() {
-  const watchlist = getLibrary('watchlist');
-  const history = getLibrary('history');
+  const library = window.userLibrary || { watchlist: {}, history: {} };
+  const watchlist = library.watchlist;
+  const history = library.history;
    
   try {
-    const movieData = await Promise.all(watchlist.movies.map(fetchMovieById));
-    const tvData = await Promise.all(watchlist.tv.map(fetchTVShowById));
-    const bookData = await Promise.all(watchlist.books.map(fetchBookById));
-    const trackData = await Promise.all(watchlist.music.map(fetchTrackById));
-    
-    const historyMovieData = await Promise.all(history.movies.map(fetchMovieById));
-    const historyTvData = await Promise.all(history.tv.map(fetchTVShowById));
-    const historyBookData = await Promise.all(history.books.map(fetchBookById));
-    const historyTrackData = await Promise.all(history.music.map(fetchTrackById));
+    const [
+        movieData, tvData, bookData, trackData,
+        historyMovieData, historyTvData, historyBookData, historyTrackData
+    ] = await Promise.all([
+        getSafeData(watchlist?.movies, fetchMovieById),
+        getSafeData(watchlist?.tv, fetchTVShowById),
+        getSafeData(watchlist?.books, fetchBookById),
+        getSafeData(watchlist?.music, fetchTrackById),
+        getSafeData(history?.movies, fetchMovieById),
+        getSafeData(history?.tv, fetchTVShowById),
+        getSafeData(history?.books, fetchBookById),
+        getSafeData(history?.music, fetchTrackById)
+    ]);
 
     renderRail('watchlist-movies-list', movieData, 'Your movie watchlist is empty.', 'movies');
     renderRail('watchlist-tv-list', tvData, 'Your TV show watchlist is empty.', 'tv');

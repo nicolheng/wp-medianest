@@ -60,16 +60,12 @@ export function renderRail(containerId, items, emptyLabel, type) {
     const actionContainer = document.createElement('div');
     actionContainer.className = 'd-flex gap-2 justify-content-end w-100 z-3';
     actionContainer.style.position = 'relative'; 
-
-    let watchlist = JSON.parse(localStorage.getItem('watchlist'));
-    if (!watchlist || Array.isArray(watchlist)) watchlist = { movies: [], tv: [], books: [], music: [] };
-
-    let history = JSON.parse(localStorage.getItem('history'));
-    if (!history || Array.isArray(history)) history = { movies: [], tv: [], books: [], music: [] };
     
-    const currentWatchlist = watchlist[type] || [];
-    const currentHistory = history[type] || [];
-    const idStr = String(id); 
+    const library = window.userLibrary || { watchlist: {movies: [], tv: [], books: [], music: []}, history: {movies: [], tv: [], books: [], music: []} };
+    
+    const currentWatchlist = library.watchlist[type] || [];
+    const currentHistory = library.history[type] || [];
+    const idStr = String(id);
 
     const circleStyle = "width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center;";
 
