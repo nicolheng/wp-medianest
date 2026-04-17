@@ -10,7 +10,7 @@ export default {
     outDir: '../dist'
   },
   server: {
-    port: 5173,
+    port: 8081,
     proxy: {
       '/api/tmdb': {
         target: 'https://api.themoviedb.org',
