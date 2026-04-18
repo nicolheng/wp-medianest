@@ -19,7 +19,7 @@
                 <div class="collapse navbar-collapse w-100 order-3 order-lg-2" id="navbarNav">
                     <ul class="navbar-nav ms-lg-3 mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="watchList.html">WatchList</a></li>
+                        <li class="nav-item"><a class="nav-link" href="library.html">My Library</a></li>
                     </ul>
                 </div>
 
@@ -45,16 +45,15 @@
                     </button>
 
                     <div id="profile-placeholder" class="d-none dropdown">
-                        <button class="btn btn-link text-decoration-none dropdown-toggle text-primary p-0" 
-                                type="button" 
-                                data-bs-toggle="dropdown" 
-                                aria-expanded="false">
-                            <i class="bi bi-person-circle fs-4"></i>
-                            <span id="nav-username" class="ms-1 d-none d-md-inline small fw-semibold"></span>
+                        <button class="btn btn-link p-0 d-flex align-items-center text-decoration-none dropdown-toggle"
+                            data-bs-toggle="dropdown">
+                            <span id="nav-username" class="me-2 d-none d-md-inline small fw-bold text-white"></span>
+                            <img id="nav-profile-pic" src="" class="rounded-circle border border-2 border-primary d-none"
+                                style="width: 35px; height: 35px; object-fit: cover;">
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li><a class="dropdown-item py-2" href="profile.html">Profile</a></li>
-                            <li><a class="dropdown-item py-2" href="watchList.html">My WatchList</a></li>
+                            <li><a class="dropdown-item py-2" href="library.html">My Library</a></li>
                             <li><hr class="dropdown-divider my-1"></li>
                             <li>
                                 <button class="dropdown-item py-2 text-danger" onclick="handleLogout()">

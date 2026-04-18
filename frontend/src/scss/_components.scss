@@ -269,3 +269,156 @@
 .media-rail::-webkit-scrollbar {
   display: none;
 }
+
+// Profile page styles (preserved from feature branch)
+.profile-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 4px solid $primary;
+  background: linear-gradient(135deg, rgba($primary, 0.22), rgba($secondary, 0.22));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: $primary;
+  flex-shrink: 0;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    box-shadow: 0 0 0 6px rgba($primary, 0.18);
+  }
+}
+
+.profile-sidebar-card {
+  position: sticky;
+  top: 80px;
+}
+
+.profile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.5rem;
+  color: var(--bs-body-color);
+  text-decoration: none;
+  font-size: 0.93rem;
+  transition: background-color 0.18s ease, color 0.18s ease;
+
+  &:hover,
+  &.active {
+    background-color: rgba($primary, 0.14);
+    color: darken($primary, 14%);
+  }
+}
+
+[data-bs-theme="dark"] .profile-nav-link:hover,
+[data-bs-theme="dark"] .profile-nav-link.active {
+  background-color: rgba($primary, 0.16);
+  color: $primary;
+}
+
+.profile-info-row {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--bs-border-color);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.profile-info-label {
+  font-size: 0.73rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--bs-secondary-color);
+  margin-bottom: 0.15rem;
+}
+
+.profile-info-value {
+  font-size: 0.97rem;
+  color: var(--bs-body-color);
+}
+
+.danger-zone-card {
+  border: 1px solid rgba(var(--bs-danger-rgb), 0.45) !important;
+  background: rgba(var(--bs-danger-rgb), 0.04);
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(var(--bs-danger-rgb), 0.7) !important;
+  }
+}
+
+.btn-show-pwd {
+  border-color: var(--bs-border-color);
+  background: transparent;
+  color: var(--bs-secondary-color);
+  transition: color 0.18s ease;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+#item-poster {
+    width: 100%;
+    aspect-ratio: 2 / 3; 
+    /* CHANGED: 'contain' prevents stretching/blurring */
+    object-fit: contain; 
+    
+    /* ADDED: A background color fills the gaps for thin/small books */
+    background-color: var(--bs-tertiary-bg); 
+    
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    padding: 10px; /* Optional: gives the book some breathing room */
+}
+
+/* Cast Carousel Component */
+#cast-container {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; 
+    
+    /* Hide scrollbars */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+}
+
+.cast-card {
+    transition: transform 0.2s;
+    
+    img {
+        transition: transform 0.2s ease-in-out;
+        &:hover {
+            transform: scale(1.05);
+        }
+    }
+}
+
+/* Standardized Media Poster */
+#item-poster {
+    width: 100%;
+    aspect-ratio: 2 / 3; 
+    object-fit: cover;
+    border: none; 
+    outline: none; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    background-color: #212529;
+    image-rendering: -webkit-optimize-contrast; 
+}
+
+/* Ensure the container doesn't squash the image */
+.col-md-3.text-center {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}

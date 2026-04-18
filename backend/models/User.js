@@ -23,8 +23,16 @@ const UserSchema = new mongoose.Schema({
         default: 'local'
     },
     watchlist: {
-        type: Array,
-        default: [] // always starts as [] and not 'undefined'
+        movies: { type: [String], default: [] },
+        tv: { type: [String], default: [] },
+        books: { type: [String], default: [] },
+        music: { type: [String], default: [] }
+    },
+    history: {
+        movies: { type: [String], default: [] },
+        tv: { type: [String], default: [] },
+        books: { type: [String], default: [] },
+        music: { type: [String], default: [] }
     },
     searchHistory: {
         type: [{

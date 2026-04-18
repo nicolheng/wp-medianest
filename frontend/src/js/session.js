@@ -1,4 +1,4 @@
-async function checkAuthStatus() {
+export async function checkAuthStatus() {
     const authButtons = document.getElementById('auth-buttons');
     const profilePlaceholder = document.getElementById('profile-placeholder');
     const navUsername = document.getElementById('nav-username');
@@ -12,12 +12,16 @@ async function checkAuthStatus() {
         if (res.ok) {
             const data = await res.json();
             if (data.isAuthenticated && data.user) {
+                window.currentUser = data.user;
                 // User is logged in
                 if (authButtons) authButtons.classList.add('d-none');
                 if (profilePlaceholder) {
                     profilePlaceholder.classList.remove('d-none');
                     profilePlaceholder.classList.add('d-flex');
                 }
+
+                updateNavProfile(data.user);
+
                 if (navUsername) navUsername.textContent = data.user.username;
             } else {
                 // Not logged in
@@ -59,6 +63,36 @@ window.handleLogout = async function() {
     } catch (err) {
         console.error('Logout failed:', err);
     }
-    localStorage.removeItem('user'); // Clean up if any leftover
+    window.currentUser = null;
+    window.userLibrary = null;
+    localStorage.removeItem('user');
+    localStorage.removeItem('watchlist');
+    localStorage.removeItem('history');
     window.location.href = 'index.html'; // Redirect + triggers navbar refresh
+};
+
+const updateNavProfile = (user) => {
+    const navPic = document.getElementById('nav-profile-pic');
+    const navUsername = document.getElementById('nav-username'); // Standardized name
+    const placeholder = document.getElementById('profile-placeholder');
+
+    if (user && placeholder) {
+        const icon = placeholder.querySelector('.bi-person-circle');
+        if (icon) icon.classList.add('d-none');
+
+        const name = user.username || 'User';
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=fadb5f&color=000&bold=true&length=1`;
+
+        if (navPic) {
+            navPic.src = user.profilePic || avatarUrl;
+            navPic.classList.remove('d-none');
+        }
+
+        if (navUsername) { 
+            navUsername.textContent = name;
+            navUsername.classList.remove('d-none');
+        }
+        placeholder.classList.remove('d-none');
+        placeholder.classList.add('d-flex');
+    }
 };

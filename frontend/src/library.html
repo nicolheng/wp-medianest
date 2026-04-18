@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>MediaNest</title>
+    <link rel="icon" type="image/png" href="./assets/logo.png">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+            <div class="container d-flex align-items-center flex-wrap flex-lg-nowrap">
+
+                <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="index.html">
+                    <img src="./assets/logo.png" alt="MediaNest" class="logo">
+                    MediaNest
+                </a>
+
+                <div class="collapse navbar-collapse w-100 order-3 order-lg-2" id="navbarNav">
+                    <ul class="navbar-nav ms-lg-3 mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="library.html">My Library</a></li>
+                    </ul>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 ms-auto flex-shrink-0 order-2 order-lg-3">
+
+                    <a href="search.html" class="text-secondary hover-primary p-1">
+                        <i class="bi bi-search fs-5"></i>
+                    </a>
+
+                    <div id="auth-buttons" class="d-flex gap-2 flex-nowrap">
+                        <a class="btn btn-outline-primary btn-sm d-none d-md-inline-block text-nowrap"
+                            href="login.html">Log In</a>
+                        <a class="btn btn-primary btn-sm text-nowrap" href="signup.html">Sign Up</a>
+                    </div>
+
+                    <button class="btn btn-outline-secondary rounded-circle p-1 lh-1" id="theme-toggle" type="button">
+                        <i class="bi bi-sun-fill fs-5" id="theme-icon"></i>
+                    </button>
+
+                    <button class="navbar-toggler border-1 p-1 ms-1.5" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div id="profile-placeholder" class="d-none dropdown">
+                        <button class="btn btn-link p-0 d-flex align-items-center text-decoration-none dropdown-toggle"
+                            data-bs-toggle="dropdown">
+                            <span id="nav-username" class="me-2 d-none d-md-inline small fw-bold text-white"></span>
+                            <img id="nav-profile-pic" src="" class="rounded-circle border border-2 border-primary d-none"
+                                style="width: 35px; height: 35px; object-fit: cover;">
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                            <li><a class="dropdown-item py-2" href="profile.html">Profile</a></li>
+                            <li><a class="dropdown-item py-2" href="library.html">My Library</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <button class="dropdown-item py-2 text-danger" onclick="handleLogout()">
+                                    Logout
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow-1">
+        <div class="container mb-5 py-5">
+            <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+                <h2 class="h1 fw-bold mb-0">Your Library</h2>
+            </div>
+
+            <ul class="nav nav-tabs" id="libraryTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="watchlist-tab" data-bs-toggle="tab" data-bs-target="#watchlist-tab-pane" type="button" role="tab" aria-controls="watchlist-tab-pane" aria-selected="true">WatchList</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-tab-pane" type="button" role="tab" aria-controls="history-tab-pane" aria-selected="false">History</button>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-4" id="libraryTabContent">
+                <div class="tab-pane fade show active" id="watchlist-tab-pane" role="tabpanel" aria-labelledby="watchlist-tab" tabindex="0">
+                    <div class="chart-rails">
+                        <div class="chart-rail-block mb-5">
+                            <div class="media-rail-wrap">
+                                <h3 class="h4 mb-3">Movies to Watch</h3>
+                                <div id="watchlist-movies-list" class="media-rail"></div>
+                            </div>
+                        </div>
+                        <div class="chart-rail-block mb-5">
+                            <div class="media-rail-wrap">
+                                <h3 class="h4 mb-3">TV Shows to Watch</h3>
+                                <div id="watchlist-tv-list" class="media-rail"></div>
+                            </div>
+                        </div>
+                        <div class="chart-rail-block mb-5">
+                            <div class="media-rail-wrap">
+                                <h3 class="h4 mb-3">Books to Read</h3>
+                                <div id="watchlist-books-list" class="media-rail"></div>
+                            </div>
+                        </div>
+                        <div class="chart-rail-block mb-5">
+                            <div class="media-rail-wrap">
+                                <h3 class="h4 mb-3">Track to Listen</h3>
+                                <div id="watchlist-music-list" class="media-rail"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="history-tab-pane" role="tabpanel" aria-labelledby="history-tab" tabindex="0">
+                    <div class="chart-rails">
+                        <div class="chart-rail-block mb-5">
+                            <div class="media-rail-wrap">
+                                <h3 class="h4 mb-3">Watched Movies</h3>
+                                <div id="history-movies-list" class="media-rail"></div>
+                            </div>
+                        </div>
+                        <div class="chart-rail-block mb-5">
+                            <div class="media-rail-wrap">
+                                <h3 class="h4 mb-3">Watched TV Shows</h3>
+                                <div id="history-tv-list" class="media-rail"></div>
+                            </div>
+                        </div>
+                        <div class="chart-rail-block mb-5">
+                            <div class="media-rail-wrap">
+                                <h3 class="h4 mb-3">Read Books</h3>
+                                <div id="history-books-list" class="media-rail"></div>
+                            </div>
+                        </div>
+                        <div class="chart-rail-block mb-5">
+                            <div class="media-rail-wrap">
+                                <h3 class="h4 mb-3">Listened Track</h3>
+                                <div id="history-music-list" class="media-rail"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-5 mt-auto">
+        <div class="container d-flex justify-content-between gap-2">
+            <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="index.html">
+                    <img src="./assets/logo.png" alt="MediaNest" class="logo">
+                    MediaNest
+            </a>
+            <div class="d-flex justify-content-end gap-2 align-items-center">
+                <i class="bi bi-c-circle"></i>
+                    <div>2026 MediaNest. All rights reserved.</div>     
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="./js/main.js"></script>
+    <script type="module" src="./js/session.js"></script>
+    </body>
+
+</html>
