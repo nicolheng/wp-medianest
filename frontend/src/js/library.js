@@ -11,39 +11,43 @@ const refreshUI = () => {
     if (window.renderSearchResults && document.getElementById('search-results-page')) {
         window.renderSearchResults();
     }
+    if(window.loadDetailButton && document.getElementById('action-container')){
+        const params = new URLSearchParams(window.location.search);
+        window.loadDetailButton(params.get('id'), params.get('type'));
+    }
 };
 
 const API_URL = 'http://localhost:5000/api/library';
 
 export async function fetchFullLibrary() {
-  if (!window.currentUser) {
-        console.error("User data missing! Please log in.");
-        alert("You must be logged in to save items.");
-        return; 
-  }
-  const userId = window.currentUser.id;
-  try {
-      const response = await fetch(`${API_URL}/${userId}`, {
-        method: 'GET',
-        credentials: 'include' // Important for session-protected routes
-      });
-      if (!response.ok) throw new Error("DB Fetch Failed");
-      
-      const data = await response.json();
-      window.userLibrary = data; 
-      return data;
-  } catch (error) {
-      console.error("Library Error:", error);
-      // Fallback so the app doesn't crash
-      return { watchlist: {movies: [], tv: [], books: [], music: []}, history: {movies: [], tv: [], books: [], music: []} };
-  }
+    if (!window.currentUser) {
+            console.error("User data missing! Please log in.");
+            alert("You must be logged in to save items.");
+            return; 
+    }
+    const userId = window.currentUser.id;
+    try {
+        const response = await fetch(`${API_URL}/${userId}`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+        if (!response.ok) throw new Error("DB Fetch Failed");
+        
+        const data = await response.json();
+        window.userLibrary = data; 
+        return data;
+    } catch (error) {
+        console.error("Library Error:", error);
+        // Fallback so the app doesn't crash
+        return { watchlist: {movies: [], tv: [], books: [], music: []}, history: {movies: [], tv: [], books: [], music: []} };
+    }
 }
 
 window.addToWatchlist = async (id, type) => {
     if (!window.currentUser) {
-          console.error("User data missing! Please log in.");
-          alert("You must be logged in to save items.");
-          return; 
+        console.error("User data missing! Please log in.");
+        alert("You must be logged in to save items.");
+        return; 
     }
     const userId = window.currentUser.id;
 
@@ -56,7 +60,7 @@ window.addToWatchlist = async (id, type) => {
         });
 
         if (response.ok) {
-            await fetchFullLibrary(); // Sync local state with DB
+            await fetchFullLibrary();
             refreshUI();
         }
     } catch (err) {
@@ -116,10 +120,8 @@ window.moveToHistory = async (id, type) => {
  async function getSafeData(idArray, fetchFunction) {
     if (!idArray || !Array.isArray(idArray)) return [];
 
-    // Use allSettled so one failed ID doesn't stop the rest
     const results = await Promise.allSettled(idArray.map(fetchFunction));
 
-    // Only keep the successful ones
     return results
         .filter(res => res.status === 'fulfilled' && res.value)
         .map(res => res.value);

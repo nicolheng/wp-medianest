@@ -1,3 +1,74 @@
+import { fetchFullLibrary } from "./library";
+import { checkAuthStatus } from './session.js';
+
+window.loadDetailButton = async (id, type) => {
+    try {
+        await checkAuthStatus();
+        if (window.currentUser) {
+            await fetchFullLibrary();
+        }
+    } catch (err) {
+        console.warn("Auth/Library sync failed", err);
+    }
+    const actionContainer = document.getElementById('action-container');
+    if (!actionContainer) return;
+
+    // Map singular types to the plural keys used in window.userLibrary
+    const typeMap = {
+        'movie': 'movies',
+        'show': 'tv',
+        'tv': 'tv',
+        'book': 'books',
+        'music': 'music'
+    };
+    type = typeMap[type] || type;
+    const library = window.userLibrary || { watchlist: {movies: [], tv: [], books: [], music: []}, history: {movies: [], tv: [], books: [], music: []} };
+    const currentWatchlist = library.watchlist[type] || [];
+    const currentHistory = library.history[type] || [];
+    const idStr = String(id);
+
+    console.log(library);
+    console.log(currentHistory);
+    console.log(currentWatchlist);
+
+    actionContainer.replaceChildren();
+    if (currentHistory.includes(idStr)) {
+        const badge = document.createElement('span');
+        badge.className = 'badge bg-dark bg-opacity-75 text-light rounded-4 border border-secondary align-self-start px-3 py-2';
+        let label = 'Watched';
+        if (type === 'books') label = 'Read';
+        if (type === 'music') label = 'Listened';
+        badge.innerHTML = `<i class="bi bi-check2-all me-1"></i> ${label}`;
+        actionContainer.append(badge);
+
+    } else if (currentWatchlist.includes(idStr)) {
+        const watchBtn = document.createElement('button');
+        watchBtn.className = 'btn btn-success rounded-2 shadow';
+        let label = 'Watched';
+        if (type === 'books') label = 'Read';
+        if (type === 'music') label = 'Listened';
+        watchBtn.innerHTML = `<i class="bi bi-check-lg"></i> Mark as ${label}`;
+        watchBtn.title = "Mark as Done";
+        watchBtn.onclick = (e) => { e.preventDefault(); window.moveToHistory(idStr, type); };
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn btn-danger rounded-2 shadow';
+        removeBtn.innerHTML = '<i class="bi bi-trash"></i> Remove';
+        removeBtn.title = "Remove";
+        removeBtn.onclick = (e) => { e.preventDefault(); window.removeFromWatchlist(idStr, type); };
+
+        actionContainer.append(watchBtn, removeBtn);
+
+    } else {
+        const addBtn = document.createElement('button');
+        addBtn.className = 'btn btn-primary rounded-3 shadow align-items-center';
+        addBtn.innerHTML = '<i class="bi bi-plus-lg"></i> Add to Watchlist';
+        addBtn.title = "Add to Watchlist";
+        addBtn.onclick = (e) => { e.preventDefault(); window.addToWatchlist(idStr, type); };
+        actionContainer.append(addBtn);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
@@ -51,6 +122,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (meta.image && !meta.image.includes('placeholder')) {
                 posterEl.src = meta.image;
+            }
+            if (id && type) {
+                window.loadDetailButton(id, type);
             }
 
             // 2. SMART RATING LOGIC

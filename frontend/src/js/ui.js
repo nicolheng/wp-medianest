@@ -67,8 +67,6 @@ export function renderRail(containerId, items, emptyLabel, type) {
     const currentHistory = library.history[type] || [];
     const idStr = String(id);
 
-    const circleStyle = "width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center;";
-
     if (currentHistory.includes(idStr)) {
         const badge = document.createElement('span');
         badge.className = 'badge bg-dark bg-opacity-75 text-light rounded-pill border border-secondary align-self-start px-3 py-2';
@@ -80,16 +78,14 @@ export function renderRail(containerId, items, emptyLabel, type) {
 
     } else if (currentWatchlist.includes(idStr)) {
         const watchBtn = document.createElement('button');
-        watchBtn.className = 'btn btn-success rounded-circle shadow';
-        watchBtn.style = circleStyle;
-        watchBtn.innerHTML = '<i class="bi bi-check-lg fs-5"></i>';
+        watchBtn.className = 'btn btn-success btn-circle shadow';
+        watchBtn.innerHTML = '<i class="bi bi-check-lg"></i>';
         watchBtn.title = "Mark as Done";
         watchBtn.onclick = (e) => { e.preventDefault(); window.moveToHistory(idStr, type); };
 
         const removeBtn = document.createElement('button');
-        removeBtn.className = 'btn btn-danger rounded-circle shadow';
-        removeBtn.style = circleStyle;
-        removeBtn.innerHTML = '<i class="bi bi-trash fs-5"></i>';
+        removeBtn.className = 'btn btn-danger btn-circle shadow';
+        removeBtn.innerHTML = '<i class="bi bi-trash"></i>';
         removeBtn.title = "Remove";
         removeBtn.onclick = (e) => { e.preventDefault(); window.removeFromWatchlist(idStr, type); };
 
@@ -97,12 +93,10 @@ export function renderRail(containerId, items, emptyLabel, type) {
 
     } else {
         const addBtn = document.createElement('button');
-        addBtn.className = 'btn btn-primary rounded-circle shadow';
-        addBtn.style = circleStyle;
-        addBtn.innerHTML = '<i class="bi bi-plus-lg fs-5"></i>';
+        addBtn.className = 'btn btn-primary btn-circle shadow';
+        addBtn.innerHTML = '<i class="bi bi-plus-lg"></i>';
         addBtn.title = "Add to Watchlist";
         addBtn.onclick = (e) => { e.preventDefault(); window.addToWatchlist(idStr, type); };
-
         actionContainer.append(addBtn);
     }
 
