@@ -1,5 +1,6 @@
 import '../scss/style.scss';
-import 'bootstrap';
+import * as bootstrap from 'bootstrap';
+window.bootstrap = bootstrap;
 import { fetchMovies, fetchTVShows, fetchBooks, fetchMusic } from './api.js';
 import { renderRail, updateLiveSnapshot } from './ui.js';
 import { loadWatchlistAndHistory,  fetchFullLibrary } from './library.js';
@@ -91,5 +92,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     if (document.getElementById("libraryTabContent")) {
         loadWatchlistAndHistory();
+    }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const libraryLink = document.getElementById("nav-library");
+    if (libraryLink){
+        libraryLink.addEventListener('click', (e) => {
+            if(!window.currentUser){
+                e.preventDefault();
+                const modalEl = document.getElementById('auth-modal');
+                if (modalEl) {
+                    const authModal = new bootstrap.Modal(modalEl);
+                    authModal.show();
+                } else {
+                    console.warn("Auth Modal not found on this page.");
+                    alert("Please login to access your library.");
+                }
+            }
+        });
     }
 });

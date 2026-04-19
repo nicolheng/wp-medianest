@@ -20,7 +20,7 @@
                 <div class="collapse navbar-collapse w-100 order-3 order-lg-2" id="navbarNav">
                     <ul class="navbar-nav ms-lg-3 mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="library.html">My Library</a></li>
+                        <li class="nav-item"><a class="nav-link" href="library.html" id="nav-library">My Library</a></li>
                     </ul>
                 </div>
 
@@ -74,7 +74,11 @@
                 </div>
                 
                 <div class="col-12 col-md-7">
-                    <h1 id="item-title" class="h2 fw-bold mb-2">Loading...</h1>
+                    <div class="d-flex justify-content-between">
+                        <h1 id="item-title" class="h2 fw-bold mb-2">Loading...</h1>
+                        <div id="action-container" class="d-flex justify-content-end gap-2"></div>
+                    </div>
+                    
                     <p id="item-meta" class="text-muted small mb-3"></p>
                     
                     <div class="d-flex align-items-center gap-2 mb-4">
@@ -149,6 +153,23 @@
             <div class="d-flex justify-content-end gap-2 align-items-center">
                 <i class="bi bi-c-circle"></i>
                 <div>2026 MediaNest. All rights reserved.</div> 
+            </div>
+        </div>
+        <div class="modal" tabindex="-1" id="auth-modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login Required</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Save movies and track your progress by signing in.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Maybe Later</button>
+                    <a type="button" class="btn btn-primary" href="login.html">Login Now</a>
+                </div>
+                </div>
             </div>
         </div>
     </footer>

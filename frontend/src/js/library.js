@@ -1,5 +1,6 @@
 import { fetchMovieById, fetchTVShowById, fetchBookById, fetchTrackById } from './api.js';
 import { renderRail } from './ui.js';
+import { checkAuthStatus } from './session.js';
 
 const refreshUI = () => {
     if (document.getElementById("libraryTabContent")) {
@@ -11,39 +12,45 @@ const refreshUI = () => {
     if (window.renderSearchResults && document.getElementById('search-results-page')) {
         window.renderSearchResults();
     }
+    if(window.loadDetailButton && document.getElementById('action-container')){
+        const params = new URLSearchParams(window.location.search);
+        window.loadDetailButton(params.get('id'), params.get('type'));
+    }
 };
 
 const API_URL = 'http://localhost:5000/api/library';
 
 export async function fetchFullLibrary() {
-  if (!window.currentUser) {
+    if (!window.currentUser) {
         console.error("User data missing! Please log in.");
-        alert("You must be logged in to save items.");
+        const authModal = new bootstrap.Modal(document.getElementById('auth-modal'));
+        authModal.show();
         return; 
-  }
-  const userId = window.currentUser.id;
-  try {
-      const response = await fetch(`${API_URL}/${userId}`, {
-        method: 'GET',
-        credentials: 'include' // Important for session-protected routes
-      });
-      if (!response.ok) throw new Error("DB Fetch Failed");
-      
-      const data = await response.json();
-      window.userLibrary = data; 
-      return data;
-  } catch (error) {
-      console.error("Library Error:", error);
-      // Fallback so the app doesn't crash
-      return { watchlist: {movies: [], tv: [], books: [], music: []}, history: {movies: [], tv: [], books: [], music: []} };
-  }
+    }
+    const userId = window.currentUser.id;
+    try {
+        const response = await fetch(`${API_URL}/${userId}`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+        if (!response.ok) throw new Error("DB Fetch Failed");
+        
+        const data = await response.json();
+        window.userLibrary = data; 
+        return data;
+    } catch (error) {
+        console.error("Library Error:", error);
+        // Fallback so the app doesn't crash
+        return { watchlist: {movies: [], tv: [], books: [], music: []}, history: {movies: [], tv: [], books: [], music: []} };
+    }
 }
 
 window.addToWatchlist = async (id, type) => {
     if (!window.currentUser) {
-          console.error("User data missing! Please log in.");
-          alert("You must be logged in to save items.");
-          return; 
+        console.error("User data missing! Please log in.");
+        const authModal = new bootstrap.Modal(document.getElementById('auth-modal'));
+        authModal.show();
+        return; 
     }
     const userId = window.currentUser.id;
 
@@ -56,7 +63,7 @@ window.addToWatchlist = async (id, type) => {
         });
 
         if (response.ok) {
-            await fetchFullLibrary(); // Sync local state with DB
+            await fetchFullLibrary();
             refreshUI();
         }
     } catch (err) {
@@ -66,9 +73,10 @@ window.addToWatchlist = async (id, type) => {
 
 window.removeFromWatchlist = async (id, type) => {
     if (!window.currentUser) {
-          console.error("User data missing! Please log in.");
-          alert("You must be logged in to save items.");
-          return; 
+        console.error("User data missing! Please log in.");
+        const authModal = new bootstrap.Modal(document.getElementById('authModal'));
+        authModal.show();
+        return; 
     }
     const userId = window.currentUser.id;
 
@@ -91,9 +99,10 @@ window.removeFromWatchlist = async (id, type) => {
 
 window.moveToHistory = async (id, type) => {
     if (!window.currentUser) {
-          console.error("User data missing! Please log in.");
-          alert("You must be logged in to save items.");
-          return; 
+        console.error("User data missing! Please log in.");
+        const authModal = new bootstrap.Modal(document.getElementById('authModal'));
+        authModal.show();
+        return; 
     }
     const userId = window.currentUser.id;
 
@@ -116,46 +125,51 @@ window.moveToHistory = async (id, type) => {
  async function getSafeData(idArray, fetchFunction) {
     if (!idArray || !Array.isArray(idArray)) return [];
 
-    // Use allSettled so one failed ID doesn't stop the rest
     const results = await Promise.allSettled(idArray.map(fetchFunction));
 
-    // Only keep the successful ones
     return results
         .filter(res => res.status === 'fulfilled' && res.value)
         .map(res => res.value);
 }
 
 export async function loadWatchlistAndHistory() {
-  const library = window.userLibrary || { watchlist: {}, history: {} };
-  const watchlist = library.watchlist;
-  const history = library.history;
-   
-  try {
-    const [
-        movieData, tvData, bookData, trackData,
-        historyMovieData, historyTvData, historyBookData, historyTrackData
-    ] = await Promise.all([
-        getSafeData(watchlist?.movies, fetchMovieById),
-        getSafeData(watchlist?.tv, fetchTVShowById),
-        getSafeData(watchlist?.books, fetchBookById),
-        getSafeData(watchlist?.music, fetchTrackById),
-        getSafeData(history?.movies, fetchMovieById),
-        getSafeData(history?.tv, fetchTVShowById),
-        getSafeData(history?.books, fetchBookById),
-        getSafeData(history?.music, fetchTrackById)
-    ]);
+    await checkAuthStatus(); 
 
-    renderRail('watchlist-movies-list', movieData, 'Your movie watchlist is empty.', 'movies');
-    renderRail('watchlist-tv-list', tvData, 'Your TV show watchlist is empty.', 'tv');
-    renderRail('watchlist-books-list', bookData, 'Your book watchlist is empty.', 'books');
-    renderRail('watchlist-music-list', trackData, 'Your music watchlist is empty.', 'music');
+    // 2. If no user is found, kick them out immediately
+    if (!window.currentUser) {
+        window.location.href = 'index.html'; 
+        return;
+    }
+    const library = window.userLibrary || { watchlist: {}, history: {} };
+    const watchlist = library.watchlist;
+    const history = library.history;
+    
+    try {
+        const [
+            movieData, tvData, bookData, trackData,
+            historyMovieData, historyTvData, historyBookData, historyTrackData
+        ] = await Promise.all([
+            getSafeData(watchlist?.movies, fetchMovieById),
+            getSafeData(watchlist?.tv, fetchTVShowById),
+            getSafeData(watchlist?.books, fetchBookById),
+            getSafeData(watchlist?.music, fetchTrackById),
+            getSafeData(history?.movies, fetchMovieById),
+            getSafeData(history?.tv, fetchTVShowById),
+            getSafeData(history?.books, fetchBookById),
+            getSafeData(history?.music, fetchTrackById)
+        ]);
 
-    renderRail('history-movies-list', historyMovieData, 'You have no watched movies.', 'movies');
-    renderRail('history-tv-list', historyTvData, 'You have no watched TV shows.', 'tv');
-    renderRail('history-books-list', historyBookData, 'You have no read books.', 'books');
-    renderRail('history-music-list', historyTrackData, 'You have no listened tracks.', 'music');
+        renderRail('watchlist-movies-list', movieData, 'Your movie watchlist is empty.', 'movies');
+        renderRail('watchlist-tv-list', tvData, 'Your TV show watchlist is empty.', 'tv');
+        renderRail('watchlist-books-list', bookData, 'Your book watchlist is empty.', 'books');
+        renderRail('watchlist-music-list', trackData, 'Your music watchlist is empty.', 'music');
 
-  } catch (error) {
-    console.error("Error loading library:", error);
-  }
+        renderRail('history-movies-list', historyMovieData, 'You have no watched movies.', 'movies');
+        renderRail('history-tv-list', historyTvData, 'You have no watched TV shows.', 'tv');
+        renderRail('history-books-list', historyBookData, 'You have no read books.', 'books');
+        renderRail('history-music-list', historyTrackData, 'You have no listened tracks.', 'music');
+
+    } catch (error) {
+        console.error("Error loading library:", error);
+    }
 }
