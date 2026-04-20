@@ -241,8 +241,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const icon = btn.querySelector('i');
       if (icon) {
-        icon.classList.toggle('bi-eye', !isPassword);
-        icon.classList.toggle('bi-eye-slash', isPassword);
+        icon.classList.toggle('bi-eye', isPassword);
+        icon.classList.toggle('bi-eye-slash', !isPassword);
       }
     });
   });
