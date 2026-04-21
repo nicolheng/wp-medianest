@@ -15,6 +15,38 @@ function sanitizeText(v) {
   return (v || '').toString();
 }
 
+const ITUNES_ENDPOINT = '/api/itunes/search';
+
+function isLastFmPlaceholderImage(url) {
+  if (!url) return true;
+  const normalized = String(url).toLowerCase();
+  return normalized.includes('2a96') || normalized.includes('default') || normalized.includes('noimage') || normalized.includes('last.fm');
+}
+
+async function getHighResArt(trackName, artistName) {
+  const cleanTrack = (trackName || '').replace(/\s*[\(\[][^()\]]*[\)\]]/g, '').trim();
+  const combinedQuery = encodeURIComponent(`${cleanTrack || trackName} ${artistName}`.trim());
+  const artistOnlyQuery = encodeURIComponent((artistName || '').trim());
+
+  const extractArtwork = (payload) => {
+    const artwork = payload?.results?.[0]?.artworkUrl100;
+    return artwork ? artwork.replace('100x100bb', '400x400bb') : null;
+  };
+
+  const firstRes = await fetch(`${ITUNES_ENDPOINT}?term=${combinedQuery}&entity=song&limit=1`);
+  if (firstRes.ok) {
+    const firstData = await firstRes.json();
+    const firstArtwork = extractArtwork(firstData);
+    if (firstArtwork) return firstArtwork;
+  }
+
+  if (!artistOnlyQuery) return null;
+  const secondRes = await fetch(`${ITUNES_ENDPOINT}?term=${artistOnlyQuery}&entity=song&limit=1`);
+  if (!secondRes.ok) return null;
+  const secondData = await secondRes.json();
+  return extractArtwork(secondData);
+}
+
 export async function searchMovies(q) {
   if (!tmdbToken) throw new Error('Missing VITE_TMDB_READ_TOKEN');
 
@@ -116,13 +148,30 @@ export async function searchMusic(q) {
       if (res.ok) {
         const data = await res.json();
         const tracks = data.results?.trackmatches?.track || [];
-        return tracks.map((t) => ({
-          id: `${encodeURIComponent(t.artist)}|${encodeURIComponent(t.name)}`,
-          title: sanitizeText(t.name),
-          sub: sanitizeText(t.artist),
-          image: t.image?.[2]?.['#text'] || FALLBACK_MUSIC,
-          type: 'music'
+
+        // Enrich images: prefer Last.fm album art, but fall back to iTunes high-res artwork when missing
+        const processed = await Promise.all(tracks.map(async (t) => {
+          const artistName = t.artist || '';
+          const trackName = t.name || '';
+          let image = t.image?.[2]?.['#text'] || '';
+          if (!image || isLastFmPlaceholderImage(image)) {
+            try {
+              const itunesArt = await getHighResArt(trackName, artistName);
+              if (itunesArt) image = itunesArt;
+            } catch (err) {
+              // ignore and keep fallback
+            }
+          }
+          return {
+            id: `${encodeURIComponent(artistName)}|${encodeURIComponent(trackName)}`,
+            title: sanitizeText(trackName),
+            sub: sanitizeText(artistName),
+            image: image || FALLBACK_MUSIC,
+            type: 'music'
+          };
         }));
+
+        return processed;
       }
     } catch (e) {
       // fallback to iTunes below
