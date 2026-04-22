@@ -125,6 +125,7 @@ app.use(passport.session());
 app.get('/', (req, res) => res.send("MediaNest Backend is LIVE"));
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
+app.use('/api/googlebooks', require('./routes/googlebooks'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/library', libraryRoutes);
 

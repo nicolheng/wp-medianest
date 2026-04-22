@@ -89,7 +89,7 @@ export async function searchTVShows(q) {
 export async function searchBooks(q) {
   // Use Google Books public endpoint. If no query specified, fetch a broad subject list.
   const qParam = q ? encodeURIComponent(q) : 'subject:fiction';
-  const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${qParam}&maxResults=20`);
+  const res = await fetch(`/api/googlebooks?q=${qParam}&maxResults=20`);
   if (!res.ok) return [];
   const data = await res.json();
   const items = data.items || [];
