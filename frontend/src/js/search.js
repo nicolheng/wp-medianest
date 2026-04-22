@@ -1,5 +1,7 @@
 import { searchMovies, searchTVShows, searchBooks, searchMusic } from './search_api.js';
 import { renderRail } from './ui.js';
+import { fetchFullLibrary } from './library.js';
+import { checkAuthStatus } from './session.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Submit from search.html -> navigate to search_result.html with query params
@@ -30,6 +32,13 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsPage.classList.add('loading-active');
     
     const params = new URLSearchParams(window.location.search);
+    // Ensure auth & library are loaded so UI shows correct added/watchlist state
+    try {
+      await checkAuthStatus();
+      if (window.currentUser) await fetchFullLibrary();
+    } catch (e) {
+      // ignore - rendering can continue without user library
+    }
     const q = (params.get('q') || '').trim();
     const filters = (params.get('filters') || '').split(',').filter(Boolean);
     const isFilterActive = filters.length > 0; // Boolean to check if any filter is chosen
@@ -40,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper to match query against result item fields
     const qLower = q.toLowerCase();
     const matchItem = (item) => {
-      if (!qLower) return false; // If no query, technically nothing matches specifically
+      if (!qLower) return true; 
       const title = (item.title || '').toString().toLowerCase();
       const sub = (item.sub || '').toString().toLowerCase();
       return title.includes(qLower) || sub.includes(qLower);
