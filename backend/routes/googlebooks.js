@@ -23,4 +23,18 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Proxy to fetch a single volume by its Google Books volume ID
+router.get('/volume/:id', async (req, res) => {
+  try {
+    const volumeId = req.params.id;
+    const response = await axios.get(`https://www.googleapis.com/books/v1/volumes/${encodeURIComponent(volumeId)}`, {
+      params: { key: process.env.GOOGLE_BOOKS_KEY }
+    });
+    res.json(response.data);
+  } catch (err) {
+    console.error('Google Books volume proxy error:', err.message);
+    res.status(500).json({ message: 'Google Books volume proxy error' });
+  }
+});
+
 module.exports = router;

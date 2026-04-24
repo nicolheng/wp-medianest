@@ -147,7 +147,29 @@ export async function fetchBookById(isbn) {
   if (!res.ok) throw new Error(`Failed to fetch book ISBN: ${isbn}`);
   const rawData = await res.json();
   const book = rawData[`ISBN:${isbn}`];
-  const data = { id: isbn, title: book?.title || 'Untitled', sub: book?.authors?.[0]?.name || 'Unknown Author', image: book?.cover?.medium || FALLBACK_BOOK };
+  let data = { id: isbn, title: book?.title || 'Untitled', sub: book?.authors?.[0]?.name || 'Unknown Author', image: book?.cover?.medium || FALLBACK_BOOK };
+
+  // If OpenLibrary had no entry for this id, try Google Books volume lookup (covers when id is a Google Books volume id)
+  if (!book) {
+    try {
+      const volRes = await fetch(`/api/googlebooks/volume/${encodeURIComponent(isbn)}`);
+      if (volRes.ok) {
+        const volData = await volRes.json();
+        const info = volData.volumeInfo || {};
+        const img = info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || '';
+        const image = img ? String(img).replace(/^http:/, 'https:') : FALLBACK_BOOK;
+        data = {
+          id: isbn,
+          title: info.title || 'Untitled',
+          sub: (info.authors || []).join(', ') || 'Unknown Author',
+          image
+        };
+      }
+    } catch (err) {
+      // ignore and fall back to OpenLibrary fallback image
+    }
+  }
+
   itemCache[`book_${isbn}`] = data;
   return data;
 }
