@@ -169,8 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 infoHTML = `<div class="col-6"><strong>Artist:</strong><br>${meta.artist || 'Unknown'}</div>
                             <div class="col-6"><strong>Album:</strong><br>${meta.album || 'Single'}</div>`;
             } else if (type === 'book') {
-                infoHTML = `<div class="col-6"><strong>Author:</strong><br>${meta.author || 'Unknown Author'}</div>
-                            <div class="col-6"><strong>Pages:</strong><br>${meta.pageCount || 'N/A'}</div>`;
+                infoHTML = `<div class="col-6"><strong>Author:</strong><br>${meta.author || 'Unknown Author'}</div>`;
             }
             if (infoEl) infoEl.innerHTML = `<div class="row g-3 small">${infoHTML}</div>`;
 
