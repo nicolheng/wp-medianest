@@ -50,8 +50,16 @@ export function renderRail(containerId, items, emptyLabel, type) {
     img.decoding = 'async';
     img.referrerPolicy = 'no-referrer';
     img.onerror = () => {
-      const fallbackByType = { movies: FALLBACK_MOVIE, tv: FALLBACK_TV, books: FALLBACK_BOOK, music: FALLBACK_MUSIC };
-      img.src = fallbackByType[type] || FALLBACK_MUSIC;
+      const fallbackByType = { 
+        movies: FALLBACK_MOVIE, 
+        tv: FALLBACK_TV, 
+        books: FALLBACK_BOOK, 
+        music: FALLBACK_MUSIC,
+        movie: FALLBACK_MOVIE,
+        show: FALLBACK_TV,
+        book: FALLBACK_BOOK
+      };
+      img.src = fallbackByType[type] || fallbackByType[urlType] || FALLBACK_BOOK;
     };
 
     const overlay = document.createElement('div');
