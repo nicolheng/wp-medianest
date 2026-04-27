@@ -117,7 +117,7 @@ export async function fetchMusic() {
   return tracksWithImages.map((item) => ({ ...item, image: item.image || FALLBACK_MUSIC }));
 }
 
-const itemCache = {};
+export const itemCache = {};
 
 export async function fetchMovieById(movieId) {
   if (itemCache[`movie_${movieId}`]) return itemCache[`movie_${movieId}`];

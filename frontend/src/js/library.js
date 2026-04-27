@@ -1,4 +1,4 @@
-import { fetchMovieById, fetchTVShowById, fetchBookById, fetchTrackById } from './api.js';
+import { fetchMovieById, fetchTVShowById, fetchBookById, fetchTrackById, itemCache } from './api.js';
 import { renderRail } from './ui.js';
 import { checkAuthStatus } from './session.js';
 
