@@ -28,9 +28,10 @@ export function renderRail(containerId, items, emptyLabel, type) {
     if (urlType === 'movies') urlType = 'movie';
     if (urlType === 'tv') urlType = 'show';
     if (urlType === 'books') urlType = 'book';
+    if (urlType === 'tracks') urlType = 'music';
 
     // PROFESSIONAL URL: Short and clean
-    link.href = `item_details.html?type=${urlType}&id=${id}&title=${slug}`;
+    link.href = `item_details.html?type=${urlType}&id=${encodeURIComponent(id)}&title=${slug}`;
     link.classList.add('text-decoration-none');
     link.style.display = 'contents';
 
@@ -50,8 +51,16 @@ export function renderRail(containerId, items, emptyLabel, type) {
     img.decoding = 'async';
     img.referrerPolicy = 'no-referrer';
     img.onerror = () => {
-      const fallbackByType = { movies: FALLBACK_MOVIE, tv: FALLBACK_TV, books: FALLBACK_BOOK, music: FALLBACK_MUSIC };
-      img.src = fallbackByType[type] || FALLBACK_MUSIC;
+      const fallbackByType = { 
+        movies: FALLBACK_MOVIE, 
+        tv: FALLBACK_TV, 
+        books: FALLBACK_BOOK, 
+        music: FALLBACK_MUSIC,
+        movie: FALLBACK_MOVIE,
+        show: FALLBACK_TV,
+        book: FALLBACK_BOOK
+      };
+      img.src = fallbackByType[type] || fallbackByType[urlType] || FALLBACK_BOOK;
     };
 
     const overlay = document.createElement('div');
@@ -96,7 +105,7 @@ export function renderRail(containerId, items, emptyLabel, type) {
         addBtn.className = 'btn btn-primary btn-circle shadow';
         addBtn.innerHTML = '<i class="bi bi-plus-lg"></i>';
         addBtn.title = "Add to Watchlist";
-        addBtn.onclick = (e) => { e.preventDefault(); window.addToWatchlist(idStr, type); };
+        addBtn.onclick = (e) => { e.preventDefault(); window.addToWatchlist(idStr, type, item); };
         actionContainer.append(addBtn);
     }
 

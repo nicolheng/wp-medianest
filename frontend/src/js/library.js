@@ -45,7 +45,9 @@ export async function fetchFullLibrary() {
     }
 }
 
-window.addToWatchlist = async (id, type) => {
+window.addToWatchlist = async (id, type, itemData) => {
+    if (itemData) itemCache[`${type === 'movie' || type === 'movies' ? 'movie' : type === 'show' || type === 'tv' ? 'tv' : type === 'book' || type === 'books' ? 'book' : 'music'}_${id}`] = itemData;
+
     if (!window.currentUser) {
         console.error("User data missing! Please log in.");
         const authModal = new bootstrap.Modal(document.getElementById('auth-modal'));

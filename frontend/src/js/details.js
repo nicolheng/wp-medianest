@@ -77,7 +77,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentMongoId = null;
 
     if (type === 'books') type = 'book';
+    if (type === 'books') type = 'book';
     if (type === 'movies') type = 'movie';
+    if (type === 'tracks') type = 'music';
 
     const posterEl = document.getElementById('item-poster');
     const titleEl = document.getElementById('item-title');
@@ -104,10 +106,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const starIcon = document.getElementById('star-icon');
         const castSection = document.getElementById('cast-section');
         const castContainer = document.getElementById('cast-container');
-        let displayType = type === 'books' ? 'book' : type;
+        let displayType = (type === 'books' || type === 'book') ? 'book' : type;
         
         try {
-            const res = await fetch(`/api/items/${type}/${id}`);
+            const res = await fetch(`/api/items/${type}/${encodeURIComponent(id)}`);
             const data = await res.json();
             
             if (!res.ok) throw new Error(data.message || "Failed to fetch");
@@ -169,8 +171,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 infoHTML = `<div class="col-6"><strong>Artist:</strong><br>${meta.artist || 'Unknown'}</div>
                             <div class="col-6"><strong>Album:</strong><br>${meta.album || 'Single'}</div>`;
             } else if (type === 'book') {
-                infoHTML = `<div class="col-6"><strong>Author:</strong><br>${meta.author || 'Unknown Author'}</div>
-                            <div class="col-6"><strong>Pages:</strong><br>${meta.pageCount || 'N/A'}</div>`;
+                infoHTML = `<div class="col-6"><strong>Author:</strong><br>${meta.author || 'Unknown Author'}</div>`;
             }
             if (infoEl) infoEl.innerHTML = `<div class="row g-3 small">${infoHTML}</div>`;
 

@@ -3,10 +3,10 @@ const lastfmApiKey = import.meta.env.VITE_LASTFM_API_KEY;
 const nytBooksApiKey = import.meta.env.VITE_NYT_BOOKS_API_KEY;
 
 export const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w342';
-export const FALLBACK_MOVIE = 'https://placehold.co/342x513/1b1f24/f8f9fa?text=No+Poster';
-export const FALLBACK_TV = 'https://placehold.co/342x513/1b1f24/f8f9fa?text=No+Poster';
-export const FALLBACK_BOOK = 'https://placehold.co/300x450/1b1f24/f8f9fa?text=No+Cover';
-export const FALLBACK_MUSIC = 'https://placehold.co/300x300/1b1f24/f8f9fa?text=No+Art';
+export const FALLBACK_MOVIE = '/images/book.png';
+export const FALLBACK_TV = '/images/book.png';
+export const FALLBACK_BOOK = '/images/book.png';
+export const FALLBACK_MUSIC = '/images/music.png';
 const ITUNES_ENDPOINT = '/api/itunes/search';
 
 export const buildTmdbImage = (posterPath, fallback) => {
@@ -141,15 +141,81 @@ export async function fetchTVShowById(tvId) {
   return data;
 }
 
-export async function fetchBookById(isbn) {
-  if (itemCache[`book_${isbn}`]) return itemCache[`book_${isbn}`];
-  const res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
-  if (!res.ok) throw new Error(`Failed to fetch book ISBN: ${isbn}`);
-  const rawData = await res.json();
-  const book = rawData[`ISBN:${isbn}`];
-  const data = { id: isbn, title: book?.title || 'Untitled', sub: book?.authors?.[0]?.name || 'Unknown Author', image: book?.cover?.medium || FALLBACK_BOOK };
-  itemCache[`book_${isbn}`] = data;
-  return data;
+export async function fetchBookById(id) {
+  if (itemCache[`book_${id}`]) return itemCache[`book_${id}`];
+  
+  // 1. Try Google Books Volume ID lookup (Fastest & most likely for Search items)
+  try {
+    const volRes = await fetch(`/api/googlebooks/volume/${encodeURIComponent(id)}`);
+    if (volRes.ok) {
+      const volData = await volRes.json();
+      const info = volData.volumeInfo || {};
+      const img = info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || '';
+      const image = img ? String(img).replace(/^http:/, 'https:') : FALLBACK_BOOK;
+      
+      const data = {
+        id: id,
+        title: info.title || 'Untitled',
+        sub: (info.authors || []).join(', ') || 'Unknown Author',
+        image
+      };
+      itemCache[`book_${id}`] = data;
+      return data;
+    }
+  } catch (err) {
+    console.warn("Volume lookup failed, trying ISBN/Search...");
+  }
+
+  // 2. If ID looks like an ISBN, try OpenLibrary
+  if (/^\d+$/.test(id)) {
+      try {
+        const res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${id}&format=json&jscmd=data`);
+        if (res.ok) {
+          const rawData = await res.json();
+          const book = rawData[`ISBN:${id}`];
+          if (book) {
+            const data = { 
+              id: id, 
+              title: book.title || 'Untitled', 
+              sub: book.authors?.[0]?.name || 'Unknown Author', 
+              image: book.cover?.medium || FALLBACK_BOOK 
+            };
+            itemCache[`book_${id}`] = data;
+            return data;
+          }
+        }
+      } catch (err) {
+        console.warn("OpenLibrary failed");
+      }
+  }
+
+  // 3. Fallback: Search by ISBN or ID string
+  try {
+    const query = /^\d+$/.test(id) ? `isbn:${id}` : id;
+    const searchRes = await fetch(`/api/googlebooks?q=${encodeURIComponent(query)}`);
+    if (searchRes.ok) {
+      const searchData = await searchRes.json();
+      const item = searchData.items?.[0];
+      const info = item?.volumeInfo || {};
+      const img = info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || '';
+      const image = img ? String(img).replace(/^http:/, 'https:') : FALLBACK_BOOK;
+      
+      const data = {
+        id: id,
+        title: info.title || 'Untitled',
+        sub: (info.authors || []).join(', ') || 'Unknown Author',
+        image
+      };
+      itemCache[`book_${id}`] = data;
+      return data;
+    }
+  } catch (err) {
+    console.error("Final book fallback failed:", err);
+  }
+
+  const finalFallback = { id, title: 'Untitled Book', sub: 'Unknown Author', image: FALLBACK_BOOK };
+  itemCache[`book_${id}`] = finalFallback;
+  return finalFallback;
 }
 
 export async function fetchTrackById(combinedId) {
