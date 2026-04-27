@@ -137,7 +137,7 @@ export async function loadWatchlistAndHistory() {
 
     // 2. If no user is found, kick them out immediately
     if (!window.currentUser) {
-        window.location.href = 'index.html'; 
+        window.location.href = 'login.html'; 
         return;
     }
     const library = window.userLibrary || { watchlist: {}, history: {} };
