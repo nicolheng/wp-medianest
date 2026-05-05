@@ -1,3 +1,5 @@
+import { fetchFullLibrary } from '../services/libraryApi.js';
+
 export async function checkAuthStatus() {
     const authButtons = document.getElementById('auth-buttons');
     const profilePlaceholder = document.getElementById('profile-placeholder');
@@ -93,3 +95,21 @@ const updateNavProfile = (user) => {
         placeholder.classList.add('d-flex');
     }
 };
+
+export async function initUserSession({ requireAuth = false, redirectUrl = 'login.html' } = {}) {
+    await checkAuthStatus();
+
+    if (requireAuth && !window.currentUser) {
+        window.location.href = redirectUrl;
+        return false;
+    }
+
+    if (window.currentUser) {
+        try {
+            await fetchFullLibrary();
+        } catch (err) {
+            console.warn("Could not sync library, operating in offline mode.");
+        }
+    }
+    return true;
+}

@@ -1,8 +1,7 @@
 import '../core/globals.js';
 import { searchMovies, searchTVShows, searchBooks, searchMusic } from '../services/searchApi.js';
 import { renderRail } from '../components/rail.js';
-import { fetchFullLibrary } from '../services/libraryApi.js';
-import { checkAuthStatus } from '../core/session.js';
+import { initUserSession } from '../core/session.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Submit from search.html -> navigate to search_result.html with query params
@@ -33,13 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
       resultsPage.classList.add('loading-active');
 
       const params = new URLSearchParams(window.location.search);
-      // Ensure auth & library are loaded so UI shows correct added/watchlist state
-      try {
-        await checkAuthStatus();
-        if (window.currentUser) await fetchFullLibrary();
-      } catch (e) {
-        // ignore - rendering can continue without user library
-      }
+      await initUserSession();
       const q = (params.get('q') || '').trim();
       const filters = (params.get('filters') || '').split(',').filter(Boolean);
       const isFilterActive = filters.length > 0; // Boolean to check if any filter is chosen

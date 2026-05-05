@@ -1,16 +1,8 @@
 import '../core/globals.js';
-import { fetchFullLibrary } from "../services/libraryApi.js";
-import { checkAuthStatus } from '../core/session.js';
+import { initUserSession } from '../core/session.js';
 
 window.loadDetailButton = async (id, type) => {
-    try {
-        await checkAuthStatus();
-        if (window.currentUser) {
-            await fetchFullLibrary();
-        }
-    } catch (err) {
-        console.warn("Auth/Library sync failed", err);
-    }
+    await initUserSession();
     const actionContainer = document.getElementById('action-container');
     if (!actionContainer) return;
 

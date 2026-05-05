@@ -2,9 +2,8 @@ import '../core/globals.js';
 import { fetchBookById } from '../services/book.js';
 import { fetchTrackById } from '../services/music.js';
 import { fetchMovieById, fetchTVShowById } from '../services/tmdb.js';
-import { fetchFullLibrary } from '../services/libraryApi.js';
 import { renderRail } from '../components/rail.js';
-import { checkAuthStatus } from '../core/session.js';
+import { initUserSession } from '../core/session.js';
 
 async function getSafeData(idArray, fetchFunction) {
     if (!idArray || !Array.isArray(idArray)) return [];
@@ -17,13 +16,6 @@ async function getSafeData(idArray, fetchFunction) {
 }
 
 export async function loadWatchlistAndHistory() {
-    await checkAuthStatus();
-
-    // 2. If no user is found, kick them out immediately
-    if (!window.currentUser) {
-        window.location.href = 'login.html';
-        return;
-    }
     const library = window.userLibrary || { watchlist: {}, history: {} };
     const watchlist = library.watchlist;
     const history = library.history;
@@ -59,17 +51,8 @@ export async function loadWatchlistAndHistory() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        console.log("Syncing with MongoDB...");
-        await checkAuthStatus();
-        if (window.currentUser) {
-            await fetchFullLibrary();
-            loadWatchlistAndHistory();
-        } else {
-            window.location.href = 'login.html'; // Kick out logged out users
-        }
-    } catch (err) {
-        console.warn("Could not sync library, operating in offline mode.");
-        loadWatchlistAndHistory();
-    }
+    const isAuth = await initUserSession({ requireAuth: true });
+    if (!isAuth) return;
+
+    loadWatchlistAndHistory();
 });

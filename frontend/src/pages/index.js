@@ -4,12 +4,12 @@ import { fetchMusic } from '../services/music.js';
 import { fetchMovies, fetchTVShows } from '../services/tmdb.js';
 import { renderRail, updateLiveSnapshot } from '../components/rail.js';
 import { fetchFullLibrary } from '../services/libraryApi.js';
-import { checkAuthStatus } from '../core/session.js';
+import { initUserSession } from '../core/session.js';
 
 let cachedCharts = null;
 
 window.loadCharts = async function () {
-    await checkAuthStatus();
+    await initUserSession();
     if (!cachedCharts) {
         const [moviesRes, tvRes, booksRes, musicRes] = await Promise.allSettled([
             fetchMovies(), fetchTVShows(), fetchBooks(), fetchMusic()
@@ -33,16 +33,7 @@ window.loadCharts = async function () {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        console.log("Syncing with MongoDB...");
-        await checkAuthStatus();
-        if (window.currentUser) {
-            await fetchFullLibrary();
-        }
-    } catch (err) {
-        console.log(err);
-        console.warn("Could not sync library, operating in offline mode.");
-    }
+    await initUserSession();
     if (document.getElementById("top-charts")) {
         await window.loadCharts();
         setInterval(window.loadCharts, 10 * 60 * 1000);

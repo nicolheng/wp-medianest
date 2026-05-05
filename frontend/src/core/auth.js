@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // simplified signup
-    window.handleSignup = async function(event) {
+    window.handleSignup = async function (event) {
         event.preventDefault();
         clearFieldErrors();
         const username = document.getElementById('username').value.trim();
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         handleAuth('/api/auth/register', { username, email, password }, "Registration Successful!");
     };
 
-    window.handleLogin = async function(event) {
+    window.handleLogin = async function (event) {
         event.preventDefault();
         clearFieldErrors();
         const email = document.getElementById('email').value;
