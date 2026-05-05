@@ -38,6 +38,11 @@
             <a class="btn btn-primary btn-sm text-nowrap" href="signup.html">Sign Up</a>
           </div>
 
+          <button class="btn btn-outline-secondary rounded-circle p-1 lh-1" id="theme-toggle" type="button"
+            aria-label="Toggle theme">
+            <i class="bi bi-sun-fill fs-5" id="theme-icon"></i>
+          </button>
+
           <button class="navbar-toggler border-1 p-1 ms-1" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
             aria-label="Toggle navigation">
@@ -109,6 +114,24 @@
 
         <!-- ── Main Sections ───────────────────────────────────────────── -->
         <div class="col-lg-9 d-flex flex-column gap-4">
+
+          <!-- ══ ACHIEVEMENTS SECTION (Gamification) ══ -->
+          <section class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0 px-4 pb-2">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-trophy-fill text-warning fs-4"></i>
+                <h2 class="fs-5 fw-bold mb-0">Your Achievements</h2>
+              </div>
+              <p class="text-body-secondary small mb-0">Earn badges by exploring media content.</p>
+            </div>
+            
+            <div class="card-body pt-2 pb-4">
+              <!-- This grid will be populated by JavaScript -->
+              <div id="badge-grid" class="badge-grid d-flex flex-wrap gap-3 justify-content-start">
+                <!-- Items injected here -->
+              </div>
+            </div>
+          </section>
 
           <!-- ── 1. Profile Info Card ──────────────────────────────────── -->
           <section id="section-profile" class="card border rounded-3">
@@ -433,6 +456,7 @@
 
     <script type="module" src="./js/session.js"></script>
     <script type="module" src="./js/profile.js"></script>
+    <script type="module" src="./js/badges.js"></script>
 </body>
 
 </html>
