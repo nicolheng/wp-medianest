@@ -45,6 +45,7 @@ window.addToWatchlist = async (id, type, itemData) => {
 
     // 2. FAST UI UPDATE: Change only the buttons
     updateCardButtons(id, type, 'watchlist', itemData);
+    window.dispatchEvent(new Event('libraryUpdated'));
 
     try {
         const response = await fetch(`${API_URL}/add`, {
@@ -69,6 +70,7 @@ window.removeFromWatchlist = async (id, type) => {
         window.userLibrary.watchlist[type] = window.userLibrary.watchlist[type].filter(itemId => itemId !== String(id));
     }
     updateCardButtons(id, type, 'none');
+    window.dispatchEvent(new Event('libraryUpdated'));
     try {
         const response = await fetch(`${API_URL}/remove`, {
             method: 'DELETE',
@@ -97,6 +99,7 @@ window.moveToHistory = async (id, type) => {
         window.userLibrary.history[type].push(String(id));
     }
     updateCardButtons(id, type, 'history');
+    window.dispatchEvent(new Event('libraryUpdated'));
     try {
         const response = await fetch(`${API_URL}/watched`, {
             method: 'PUT',

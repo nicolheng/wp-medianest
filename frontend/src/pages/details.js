@@ -1,8 +1,7 @@
 import '../core/globals.js';
 import { initUserSession } from '../core/session.js';
 
-window.loadDetailButton = async (id, type) => {
-    await initUserSession();
+window.loadDetailButton = (id, type) => {
     const actionContainer = document.getElementById('action-container');
     if (!actionContainer) return;
 
@@ -63,6 +62,7 @@ window.loadDetailButton = async (id, type) => {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    await initUserSession();
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     const backupImg = sessionStorage.getItem(`poster_${id}`);
@@ -288,6 +288,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+
+    window.addEventListener('libraryUpdated', () => {
+        window.loadDetailButton(id, type);
+    });
 
     loadPageData();
 });
