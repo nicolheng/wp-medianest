@@ -3,8 +3,8 @@ import { fetchBooks } from '../services/book.js';
 import { fetchMusic } from '../services/music.js';
 import { fetchMovies, fetchTVShows } from '../services/tmdb.js';
 import { renderRail, updateLiveSnapshot } from '../components/rail.js';
-import { fetchFullLibrary } from '../services/libraryApi.js';
 import { initUserSession } from '../core/session.js';
+import { APP_CONFIG } from '../services/config.js';
 
 let cachedCharts = null;
 
@@ -36,6 +36,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     await initUserSession();
     if (document.getElementById("top-charts")) {
         await window.loadCharts();
-        setInterval(window.loadCharts, 10 * 60 * 1000);
+        setInterval(window.loadCharts, APP_CONFIG.CHARTS_REFRESH_MS);
     }
 });

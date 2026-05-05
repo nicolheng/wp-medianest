@@ -1,6 +1,8 @@
-const API_URL = 'http://localhost:5000/api/library';
+import { API_ROUTES } from './config.js';
 import { itemCache } from '../core/cache.js';
 import { updateCardButtons } from '../components/rail.js';
+
+const API_URL = API_ROUTES.LIBRARY;
 
 export async function fetchFullLibrary() {
     if (!window.currentUser) {

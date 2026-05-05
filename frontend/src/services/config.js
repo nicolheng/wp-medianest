@@ -13,3 +13,30 @@ export const buildTmdbImage = (posterPath, fallback) => {
   if (!posterPath) return fallback;
   return `${TMDB_IMAGE_BASE}${posterPath}`;
 };
+
+// --- NEW CENTRALIZED CONSTANTS ---
+
+export const API_ROUTES = {
+  TMDB: '/api/tmdb/3',
+  LASTFM: '/api/lastfm/2.0',
+  ITUNES: '/api/itunes',
+  GOOGLE_BOOKS: '/api/googlebooks',
+  OPEN_LIBRARY: 'https://openlibrary.org/api/books',
+  NYT_BOOKS: '/api/nyt/svc/books/v3',
+  AUTH: '/api/auth',
+  LIBRARY: '/api/library',
+  ITEMS: '/api/items',
+  REVIEWS: '/api/reviews'
+};
+
+export const APP_CONFIG = {
+  CHARTS_REFRESH_MS: 10 * 60 * 1000, // 10 minutes
+  TOAST_DELAY_MS: 3500,
+  SEARCH_LIMIT: 20
+};
+
+export const ITEM_STATES = {
+  WATCHLIST: 'watchlist',
+  HISTORY: 'history',
+  NONE: 'none'
+};

@@ -1,4 +1,4 @@
-import { lastfmApiKey, tmdbToken, FALLBACK_BOOK, FALLBACK_MOVIE, FALLBACK_TV, FALLBACK_MUSIC, TMDB_IMAGE_BASE } from "./config.js"
+import { lastfmApiKey, tmdbToken, FALLBACK_BOOK, FALLBACK_MOVIE, FALLBACK_TV, FALLBACK_MUSIC, TMDB_IMAGE_BASE, API_ROUTES, APP_CONFIG } from "./config.js"
 
 function buildTmdbImage(posterPath, fallback) {
   if (!posterPath) return fallback;
@@ -46,8 +46,8 @@ export async function searchMovies(q) {
 
   // If no query provided, use discover endpoint to return a broad set (not just trending)
   const endpoint = q
-    ? `/api/tmdb/3/search/movie?query=${encodeURIComponent(q)}&page=1`
-    : `/api/tmdb/3/discover/movie?sort_by=popularity.desc&page=1`;
+    ? `${API_ROUTES.TMDB}/search/movie?query=${encodeURIComponent(q)}&page=1`
+    : `${API_ROUTES.TMDB}/discover/movie?sort_by=popularity.desc&page=1`;
 
   const res = await fetch(endpoint, { headers: { Authorization: 'Bearer ' + tmdbToken } });
   if (!res.ok) return [];
@@ -65,8 +65,8 @@ export async function searchTVShows(q) {
   if (!tmdbToken) throw new Error('Missing VITE_TMDB_READ_TOKEN');
 
   const endpoint = q
-    ? `/api/tmdb/3/search/tv?query=${encodeURIComponent(q)}&page=1`
-    : `/api/tmdb/3/discover/tv?sort_by=popularity.desc&page=1`;
+    ? `${API_ROUTES.TMDB}/search/tv?query=${encodeURIComponent(q)}&page=1`
+    : `${API_ROUTES.TMDB}/discover/tv?sort_by=popularity.desc&page=1`;
 
   const res = await fetch(endpoint, { headers: { Authorization: 'Bearer ' + tmdbToken } });
   if (!res.ok) return [];
@@ -83,9 +83,9 @@ export async function searchTVShows(q) {
 export async function searchBooks(q) {
   // Use Google Books public endpoint. If no query specified, fetch a broad subject list.
   const qParam = q ? encodeURIComponent(q) : 'subject:fiction';
-  console.log('📚 Fetching books:', `/api/googlebooks?q=${qParam}&maxResults=20`);
+  console.log('📚 Fetching books:', `${API_ROUTES.GOOGLE_BOOKS}?q=${qParam}&maxResults=${APP_CONFIG.SEARCH_LIMIT}`);
 
-  const res = await fetch(`/api/googlebooks?q=${qParam}&maxResults=20`);
+  const res = await fetch(`${API_ROUTES.GOOGLE_BOOKS}?q=${qParam}&maxResults=${APP_CONFIG.SEARCH_LIMIT}`);
   console.log('📚 Response status:', res.status);
 
   if (!res.ok) {
@@ -116,7 +116,7 @@ export async function searchMusic(q) {
   if (!q) {
     if (lastfmApiKey) {
       try {
-        const res = await fetch(`/api/lastfm/2.0/?method=chart.gettoptracks&api_key=${lastfmApiKey}&format=json&limit=20`);
+        const res = await fetch(`${API_ROUTES.LASTFM}/?method=chart.gettoptracks&api_key=${lastfmApiKey}&format=json&limit=${APP_CONFIG.SEARCH_LIMIT}`);
         if (res.ok) {
           const data = await res.json();
           const top = data.tracks?.track || [];
@@ -133,7 +133,7 @@ export async function searchMusic(q) {
       }
     }
     // fallback to iTunes popular search
-    const itRes = await fetch(`/api/itunes/search?term=top&entity=song&limit=20`);
+    const itRes = await fetch(`${API_ROUTES.ITUNES}/search?term=top&entity=song&limit=${APP_CONFIG.SEARCH_LIMIT}`);
     if (!itRes.ok) return [];
     const itData = await itRes.json();
     const results = itData.results || [];
@@ -149,7 +149,7 @@ export async function searchMusic(q) {
   // Prefer Last.fm search (proxied via backend) if key available
   if (lastfmApiKey) {
     try {
-      const res = await fetch(`/api/lastfm/2.0/?method=track.search&track=${encodeURIComponent(q)}&api_key=${lastfmApiKey}&format=json&limit=20`);
+      const res = await fetch(`${API_ROUTES.LASTFM}/?method=track.search&track=${encodeURIComponent(q)}&api_key=${lastfmApiKey}&format=json&limit=${APP_CONFIG.SEARCH_LIMIT}`);
       if (res.ok) {
         const data = await res.json();
         const tracks = data.results?.trackmatches?.track || [];
@@ -184,7 +184,7 @@ export async function searchMusic(q) {
   }
 
   // Fallback: use iTunes search via backend proxy
-  const itRes = await fetch(`/api/itunes/search?term=${encodeURIComponent(q)}&entity=song&limit=20`);
+  const itRes = await fetch(`${API_ROUTES.ITUNES}/search?term=${encodeURIComponent(q)}&entity=song&limit=${APP_CONFIG.SEARCH_LIMIT}`);
   if (!itRes.ok) return [];
   const itData = await itRes.json();
   const results = itData.results || [];

@@ -1,11 +1,11 @@
 import { itemCache } from '../core/cache.js';
-import { lastfmApiKey, FALLBACK_MUSIC, ITUNES_ENDPOINT } from './config.js';
+import { API_ROUTES, lastfmApiKey, FALLBACK_MUSIC, ITUNES_ENDPOINT } from './config.js';
 
 export async function fetchTrackById(combinedId) {
   if (itemCache[`music_${combinedId}`]) return itemCache[`music_${combinedId}`];
   if (!lastfmApiKey) throw new Error('Missing VITE_LASTFM_API_KEY');
   const [artist, track] = combinedId.split('|').map(decodeURIComponent);
-  const res = await fetch(`/api/lastfm/2.0/?method=track.getInfo&artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(track)}&api_key=${lastfmApiKey}&format=json`);
+  const res = await fetch(`${API_ROUTES.LASTFM}/?method=track.getInfo&artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(track)}&api_key=${lastfmApiKey}&format=json`);
   if (!res.ok) throw new Error(`Failed to fetch track: ${track}`);
   const rawData = await res.json();
   const t = rawData.track;
@@ -17,7 +17,7 @@ export async function fetchTrackById(combinedId) {
 
 export async function fetchMusic() {
   if (!lastfmApiKey) throw new Error('Missing VITE_LASTFM_API_KEY');
-  const res = await fetch(`/api/lastfm/2.0/?method=chart.gettoptracks&api_key=${lastfmApiKey}&format=json&limit=10`);
+  const res = await fetch(`${API_ROUTES.LASTFM}?method=chart.gettoptracks&api_key=${lastfmApiKey}&format=json&limit=10`);
   if (!res.ok) throw new Error('Music fetch failed');
   const data = await res.json();
   const topTracks = (data.tracks?.track || []).slice(0, 10);
@@ -32,7 +32,7 @@ export async function fetchMusic() {
       try {
         const artist = encodeURIComponent(s.artist?.name || '');
         const track = encodeURIComponent(s.name || '');
-        const infoRes = await fetch(`/api/lastfm/2.0/?method=track.getInfo&artist=${artist}&track=${track}&api_key=${lastfmApiKey}&format=json&autocorrect=1`);
+        const infoRes = await fetch(`${API_ROUTES.LASTFM}?method=track.getInfo&artist=${artist}&track=${track}&api_key=${lastfmApiKey}&format=json&autocorrect=1`);
         if (infoRes.ok) {
           const infoData = await infoRes.json();
           const albumImage = infoData?.track?.album?.image?.find((img) => img.size === 'extralarge')?.['#text'] || infoData?.track?.album?.image?.find((img) => img.size === 'large')?.['#text'] || '';
