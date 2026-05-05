@@ -1,4 +1,5 @@
-import { fetchFullLibrary } from "../api/libraryApi.js";
+import '../core/globals.js';
+import { fetchFullLibrary } from "../services/libraryApi.js";
 import { checkAuthStatus } from '../core/session.js';
 
 window.loadDetailButton = async (id, type) => {

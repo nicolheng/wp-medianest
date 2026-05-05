@@ -1,5 +1,6 @@
 const API_URL = 'http://localhost:5000/api/library';
 import { itemCache } from '../core/cache.js';
+import { updateCardButtons } from '../components/rail.js';
 
 export async function fetchFullLibrary() {
     if (!window.currentUser) {
@@ -35,19 +36,21 @@ window.addToWatchlist = async (id, type, itemData) => {
         authModal.show();
         return;
     }
-    const userId = window.currentUser.id;
+
+    if (!window.userLibrary) window.userLibrary = { watchlist: {}, history: {} };
+    if (!window.userLibrary.watchlist[type]) window.userLibrary.watchlist[type] = [];
+    window.userLibrary.watchlist[type].push(String(id));
+
+    // 2. FAST UI UPDATE: Change only the buttons
+    updateCardButtons(id, type, 'watchlist', itemData);
 
     try {
         const response = await fetch(`${API_URL}/add`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, itemId: id, itemType: type }),
+            body: JSON.stringify({ userId: window.currentUser.id, itemId: id, itemType: type }),
             credentials: 'include'
         });
-
-        if (response.ok) {
-
-        }
     } catch (err) {
         console.error("Failed to add item:", err);
     }
@@ -60,19 +63,18 @@ window.removeFromWatchlist = async (id, type) => {
         authModal.show();
         return;
     }
-    const userId = window.currentUser.id;
-
+    if (window.userLibrary && window.userLibrary.watchlist[type]) {
+        window.userLibrary.watchlist[type] = window.userLibrary.watchlist[type].filter(itemId => itemId !== String(id));
+    }
+    updateCardButtons(id, type, 'none');
     try {
         const response = await fetch(`${API_URL}/remove`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, itemId: id, itemType: type }),
+            body: JSON.stringify({ userId: window.currentUser.id, itemId: id, itemType: type }),
             credentials: 'include'
         });
 
-        if (response.ok) {
-
-        }
     } catch (err) {
         console.error("Failed to remove item:", err);
     }
@@ -85,19 +87,21 @@ window.moveToHistory = async (id, type) => {
         authModal.show();
         return;
     }
-    const userId = window.currentUser.id;
-
+    if (window.userLibrary) {
+        if (window.userLibrary.watchlist[type]) {
+            window.userLibrary.watchlist[type] = window.userLibrary.watchlist[type].filter(itemId => itemId !== String(id));
+        }
+        if (!window.userLibrary.history[type]) window.userLibrary.history[type] = [];
+        window.userLibrary.history[type].push(String(id));
+    }
+    updateCardButtons(id, type, 'history');
     try {
         const response = await fetch(`${API_URL}/watched`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, itemId: id, itemType: type }),
+            body: JSON.stringify({ userId: window.currentUser.id, itemId: id, itemType: type }),
             credentials: 'include'
         });
-
-        if (response.ok) {
-
-        }
     } catch (err) {
         console.error("Failed to move item:", err);
     }

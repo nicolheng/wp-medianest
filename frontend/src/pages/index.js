@@ -1,21 +1,10 @@
-import '../scss/style.scss';
-import * as bootstrap from 'bootstrap';
-window.bootstrap = bootstrap;
-import { fetchBooks } from '../api/book.js';
-import { fetchMusic } from '../api/music.js';
-import { fetchMovies, fetchTVShows } from '../api/tmdb.js';
+import '../core/globals.js';
+import { fetchBooks } from '../services/book.js';
+import { fetchMusic } from '../services/music.js';
+import { fetchMovies, fetchTVShows } from '../services/tmdb.js';
 import { renderRail, updateLiveSnapshot } from '../components/rail.js';
-import { loadWatchlistAndHistory } from './library.js';
-import { fetchFullLibrary } from '../api/libraryApi.js';
+import { fetchFullLibrary } from '../services/libraryApi.js';
 import { checkAuthStatus } from '../core/session.js';
-
-document.addEventListener('DOMContentLoaded', () => {
-    const htmlElement = document.documentElement;
-
-    htmlElement.setAttribute('data-bs-theme', 'dark');
-
-    localStorage.setItem('theme', 'dark');
-});
 
 let cachedCharts = null;
 
@@ -57,27 +46,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (document.getElementById("top-charts")) {
         await window.loadCharts();
         setInterval(window.loadCharts, 10 * 60 * 1000);
-    }
-    if (document.getElementById("libraryTabContent")) {
-        loadWatchlistAndHistory();
-    }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-    const libraryLink = document.getElementById("nav-library");
-    if (libraryLink) {
-        libraryLink.addEventListener('click', (e) => {
-            if (!window.currentUser) {
-                e.preventDefault();
-                const modalEl = document.getElementById('auth-modal');
-                if (modalEl) {
-                    const authModal = new bootstrap.Modal(modalEl);
-                    authModal.show();
-                } else {
-                    console.warn("Auth Modal not found on this page.");
-                    alert("Please login to access your library.");
-                }
-            }
-        });
     }
 });

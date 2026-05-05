@@ -1,24 +1,10 @@
-import { fetchBookById } from '../api/book.js';
-import { fetchTrackById } from '../api/music.js';
-import { fetchMovieById, fetchTVShowById } from '../api/tmdb.js';
+import '../core/globals.js';
+import { fetchBookById } from '../services/book.js';
+import { fetchTrackById } from '../services/music.js';
+import { fetchMovieById, fetchTVShowById } from '../services/tmdb.js';
+import { fetchFullLibrary } from '../services/libraryApi.js';
 import { renderRail } from '../components/rail.js';
 import { checkAuthStatus } from '../core/session.js';
-
-const refreshUI = () => {
-    if (document.getElementById("libraryTabContent")) {
-        loadWatchlistAndHistory();
-    }
-    if (window.loadCharts && document.getElementById("top-charts")) {
-        window.loadCharts();
-    }
-    if (window.renderSearchResults && document.getElementById('search-results-page')) {
-        window.renderSearchResults();
-    }
-    if (window.loadDetailButton && document.getElementById('action-container')) {
-        const params = new URLSearchParams(window.location.search);
-        window.loadDetailButton(params.get('id'), params.get('type'));
-    }
-};
 
 async function getSafeData(idArray, fetchFunction) {
     if (!idArray || !Array.isArray(idArray)) return [];
@@ -71,3 +57,19 @@ export async function loadWatchlistAndHistory() {
         console.error("Error loading library:", error);
     }
 }
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        console.log("Syncing with MongoDB...");
+        await checkAuthStatus();
+        if (window.currentUser) {
+            await fetchFullLibrary();
+            loadWatchlistAndHistory();
+        } else {
+            window.location.href = 'login.html'; // Kick out logged out users
+        }
+    } catch (err) {
+        console.warn("Could not sync library, operating in offline mode.");
+        loadWatchlistAndHistory();
+    }
+});

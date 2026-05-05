@@ -1,6 +1,7 @@
-import { searchMovies, searchTVShows, searchBooks, searchMusic } from '../api/searchApi.js';
+import '../core/globals.js';
+import { searchMovies, searchTVShows, searchBooks, searchMusic } from '../services/searchApi.js';
 import { renderRail } from '../components/rail.js';
-import { fetchFullLibrary } from '../api/libraryApi.js';
+import { fetchFullLibrary } from '../services/libraryApi.js';
 import { checkAuthStatus } from '../core/session.js';
 
 document.addEventListener('DOMContentLoaded', () => {
