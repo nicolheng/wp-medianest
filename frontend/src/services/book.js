@@ -1,5 +1,5 @@
 import { itemCache } from '../core/cache.js';
-import { API_ROUTES } from './config.js';
+import { API_ROUTES, nytBooksApiKey, FALLBACK_BOOK } from './config.js';
 
 export async function fetchBooks() {
   if (!nytBooksApiKey) throw new Error('Missing VITE_NYT_BOOKS_API_KEY');

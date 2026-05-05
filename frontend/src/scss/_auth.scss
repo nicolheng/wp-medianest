@@ -1,9 +1,10 @@
 .box-area {
     width: 930px;
     height: 550px;
+
     // No need for a separate block at the bottom, nest it here!
-    @media only screen and (max-width: 768px) {
-        width: 100%; // Better for mobile to use 100% instead of a fixed px
+    @include media-breakpoint-down(md) {
+        width: 100%;
         height: auto;
         margin: 20px;
     }
@@ -35,7 +36,7 @@
     }
 
     // Nest the mobile height here too
-    @media only screen and (max-width: 768px) {
+    @include media-breakpoint-down(md) {
         height: 250px;
     }
 }
@@ -46,7 +47,7 @@
     backdrop-filter: blur(5px); // Optional: adds a nice "glass" effect
     padding: 30px 20px; // Gives the text some breathing room inside the gray box
     text-align: center;
-    
+
     h2 {
         font-family: 'Bebas Neue', sans-serif;
         font-size: 3.5rem;
@@ -55,7 +56,7 @@
         color: white;
         margin-bottom: 5px;
     }
-    
+
     p {
         color: white;
         font-weight: bold;
@@ -69,13 +70,14 @@
     background-color: $primary !important;
     border-color: $primary !important;
     color: black !important;
-    }
+}
 
 .auth-link {
     color: $primary !important;
-    }
+}
 
-.divider-text, .btn-google {
+.divider-text,
+.btn-google {
     color: #000000 !important;
 }
 
@@ -84,16 +86,29 @@
     align-items: center;
     margin: 1rem 0;
     width: 100%;
-    
+
     &-line {
         flex: 1;
         height: 1.2px;
         background-color: var(--bs-border-color);
     }
-    
+
     &-text {
         @extend .fw-bold;
         font-size: 0.8rem;
         margin: 0 0.75rem;
     }
+}
+
+// Form text sizing
+.form-text-sm {
+  font-size: 0.85rem;
+}
+
+.form-text-xs {
+  font-size: 0.8rem;
+}
+
+.form-text-md {
+  font-size: 0.9rem;
 }

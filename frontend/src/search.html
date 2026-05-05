@@ -57,8 +57,7 @@
                             data-bs-toggle="dropdown">
                             <span id="nav-username" class="me-2 d-none d-md-inline small fw-bold text-white"></span>
                             <img id="nav-profile-pic" src=""
-                                class="rounded-circle border border-2 border-primary d-none"
-                                style="width: 35px; height: 35px; object-fit: cover;">
+                                class="nav-avatar rounded-circle border border-2 border-primary d-none">
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li><a class="dropdown-item py-2" href="profile.html">Profile</a></li>
@@ -100,8 +99,8 @@
                         </form>
 
                         <a href="index.html"
-                            class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0"
-                            style="width: 42px; height: 42px;" title="Close Search">
+                            class="btn-close-large btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0"
+                            title="Close Search">
                             <i class="bi bi-x-lg"></i>
                         </a>
                     </div>
@@ -150,39 +149,7 @@
         </div>
     </main>
 
-    <style>
-        /* Search Bar Refinement */
-        .search-card-refined {
-            transition: all 0.2s ease-in-out;
-            border: 1px solid #dee2e6 !important;
-        }
 
-        .search-card-refined:focus-within {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
-            border-color: var(--bs-primary) !important;
-        }
-
-        /* Small Filter Chips */
-        .btn-outline-chip-sm {
-            font-size: 0.75rem;
-            padding: 0.3rem 0.9rem;
-            border: 1px solid #dee2e6;
-            color: #6c757d;
-            background-color: transparent;
-            transition: all 0.2s;
-        }
-
-        .btn-check:checked+.btn-outline-chip-sm {
-            background-color: var(--bs-primary);
-            border-color: var(--bs-primary);
-            color: white;
-        }
-
-        .btn-outline-chip-sm:hover {
-            border-color: var(--bs-primary);
-            color: var(--bs-primary);
-        }
-    </style>
 
     <footer class="py-5 mt-auto">
         <div class="container d-flex justify-content-between gap-2">

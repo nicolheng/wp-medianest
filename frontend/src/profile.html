@@ -47,8 +47,7 @@
             <button class="btn btn-link p-0 d-flex align-items-center text-decoration-none dropdown-toggle"
               data-bs-toggle="dropdown">
               <span id="nav-username" class="me-2 d-none d-md-inline small fw-bold text-white"></span>
-              <img id="nav-profile-pic" src="" class="rounded-circle border border-2 border-primary d-none"
-                style="width: 35px; height: 35px; object-fit: cover;">
+              <img id="nav-profile-pic" src="" class="nav-avatar rounded-circle border border-2 border-primary d-none">
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow border-0">
               <li><a class="dropdown-item py-2" href="profile.html">Profile</a></li>
@@ -83,7 +82,7 @@
             <!-- Avatar -->
             <div class="d-flex flex-column align-items-center text-center py-3">
               <div class="profile-avatar mb-3" role="img" aria-label="Profile avatar">
-                <i class="bi bi-person-fill" style="font-size:3.5rem;"></i>
+                <i class="bi bi-person-fill profile-icon-large"></i>
               </div>
               <p class="fw-bold mb-0 fs-6" id="sidebar-name">Alex Rivera</p>
               <p class="text-body-secondary small mb-0" id="sidebar-username">@alexrivera</p>
@@ -427,7 +426,7 @@
   </div>
 
   <!-- ── Toast Container ───────────────────────────────────────────────────── -->
-  <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;"
+  <div id="toast-container" class="toast-container toast-container-high-z position-fixed bottom-0 end-0 p-3"
     aria-live="polite" aria-atomic="true"></div>
 
   <script type="module" src="./core/session.js"></script>

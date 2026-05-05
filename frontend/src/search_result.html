@@ -47,8 +47,7 @@
 							data-bs-toggle="dropdown">
 							<span id="nav-username" class="me-2 d-none d-md-inline small fw-bold text-white"></span>
 							<img id="nav-profile-pic" src=""
-								class="rounded-circle border border-2 border-primary d-none"
-								style="width: 35px; height: 35px; object-fit: cover;">
+								class="nav-avatar rounded-circle border border-2 border-primary d-none">
 						</button>
 						<ul class="dropdown-menu dropdown-menu-end shadow border-0">
 							<li><a class="dropdown-item py-2" href="profile.html">Profile</a></li>
@@ -88,8 +87,8 @@
 					</form>
 
 					<a href="index.html"
-						class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0"
-						style="width: 42px; height: 42px;" title="Close Search">
+						class="btn-close-large btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0"
+						title="Close Search">
 						<i class="bi bi-x-lg"></i>
 					</a>
 				</div>
@@ -163,35 +162,7 @@
 		</div>
 	</main>
 
-	<style>
-		#results-loader h2 {
-			letter-spacing: -0.5px;
-			animation: pulse 1.5s infinite ease-in-out;
-		}
 
-		@keyframes pulse {
-			0% {
-				opacity: 1;
-			}
-
-			50% {
-				opacity: 0.6;
-			}
-
-			100% {
-				opacity: 1;
-			}
-		}
-
-		/* Ensure the results content is hidden when loader is active */
-		.loading-active #results-content {
-			display: none !important;
-		}
-
-		.loading-active #results-loader {
-			display: block !important;
-		}
-	</style>
 
 	<footer class="py-5 mt-auto">
 		<div class="container d-flex justify-content-between gap-2">

@@ -48,8 +48,7 @@
                             data-bs-toggle="dropdown">
                             <span id="nav-username" class="me-2 d-none d-md-inline small fw-bold text-white"></span>
                             <img id="nav-profile-pic" src=""
-                                class="rounded-circle border border-2 border-primary d-none"
-                                style="width: 35px; height: 35px; object-fit: cover;">
+                                class="nav-avatar rounded-circle border border-2 border-primary d-none">
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li><a class="dropdown-item py-2" href="profile.html">Profile</a></li>
@@ -73,8 +72,7 @@
         <div class="container mt-5">
             <div class="row g-4 justify-content-center">
                 <div class="col-12 col-md-3 text-center">
-                    <img id="item-poster" src="" class="img-fluid rounded-3 shadow-sm" alt="Poster"
-                        style="max-height: 400px; object-fit: cover;">
+                    <img id="item-poster" src="" class="img-fluid rounded-3 shadow-sm item-details-backdrop" alt="Poster">
                 </div>
 
                 <div class="col-12 col-md-7">
@@ -102,8 +100,7 @@
 
                             <div id="cast-section" class="mt-4 d-none">
                                 <h5 class="fw-bold mb-3">Top Cast</h5>
-                                <div id="cast-container" class="d-flex gap-3 overflow-auto pb-3"
-                                    style="scrollbar-width: thin;">
+                                <div id="cast-container" class="d-flex gap-3 overflow-auto pb-3 scroll-thin">
                                 </div>
                             </div>
 
@@ -122,8 +119,7 @@
                 </div>
 
                 <div class="col-lg-5">
-                    <div id="reviewFormContainer" class="card shadow-sm border-0 p-4 sticky-top bg-body-tertiary"
-                        style="top: 100px;">
+                    <div id="reviewFormContainer" class="card shadow-sm border-0 p-4 sticky-top bg-body-tertiary sticky-top-100">
                         <h5 class="fw-bold mb-3">Rate this item</h5>
                         <form id="reviewForm">
                             <div class="mb-3">
@@ -142,8 +138,7 @@
                                 <textarea class="form-control form-control-sm bg-body border shadow-none"
                                     id="commentText" rows="3" placeholder="Write a review..." required></textarea>
                             </div>
-                            <button type="submit" class="btn btn-sm w-100 fw-bold"
-                                style="background-color: #FFDE42; color: #212529;">
+                            <button type="submit" class="btn btn-sm w-100 fw-bold text-bg-primary">
                                 Submit Review
                             </button>
                         </form>
