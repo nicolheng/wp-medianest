@@ -1,15 +1,7 @@
-import { fetchFullLibrary } from "./library";
-import { checkAuthStatus } from './session.js';
+import '../core/globals.js';
+import { initUserSession } from '../core/session.js';
 
-window.loadDetailButton = async (id, type) => {
-    try {
-        await checkAuthStatus();
-        if (window.currentUser) {
-            await fetchFullLibrary();
-        }
-    } catch (err) {
-        console.warn("Auth/Library sync failed", err);
-    }
+window.loadDetailButton = (id, type) => {
     const actionContainer = document.getElementById('action-container');
     if (!actionContainer) return;
 
@@ -22,7 +14,7 @@ window.loadDetailButton = async (id, type) => {
         'music': 'music'
     };
     type = typeMap[type] || type;
-    const library = window.userLibrary || { watchlist: {movies: [], tv: [], books: [], music: []}, history: {movies: [], tv: [], books: [], music: []} };
+    const library = window.userLibrary || { watchlist: { movies: [], tv: [], books: [], music: [] }, history: { movies: [], tv: [], books: [], music: [] } };
     const currentWatchlist = library.watchlist[type] || [];
     const currentHistory = library.history[type] || [];
     const idStr = String(id);
@@ -70,6 +62,7 @@ window.loadDetailButton = async (id, type) => {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    await initUserSession();
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     const backupImg = sessionStorage.getItem(`poster_${id}`);
@@ -107,11 +100,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const castSection = document.getElementById('cast-section');
         const castContainer = document.getElementById('cast-container');
         let displayType = (type === 'books' || type === 'book') ? 'book' : type;
-        
+
         try {
             const res = await fetch(`/api/items/${type}/${encodeURIComponent(id)}`);
             const data = await res.json();
-            
+
             if (!res.ok) throw new Error(data.message || "Failed to fetch");
 
             const { item, reviews } = data;
@@ -295,6 +288,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+
+    window.addEventListener('libraryUpdated', () => {
+        window.loadDetailButton(id, type);
+    });
 
     loadPageData();
 });

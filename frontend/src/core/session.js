@@ -1,14 +1,16 @@
+import { fetchFullLibrary } from '../services/libraryApi.js';
+
 export async function checkAuthStatus() {
     const authButtons = document.getElementById('auth-buttons');
     const profilePlaceholder = document.getElementById('profile-placeholder');
     const navUsername = document.getElementById('nav-username');
-    
+
     try {
         const res = await fetch('/api/auth/me', {
             method: 'GET',
             credentials: 'include' // sends cookies to backend
         });
-        
+
         if (res.ok) {
             const data = await res.json();
             if (data.isAuthenticated && data.user) {
@@ -51,7 +53,7 @@ export async function checkAuthStatus() {
 }
 
 // Global Logout function
-window.handleLogout = async function() {
+window.handleLogout = async function () {
     try {
         await fetch('/api/auth/logout', {
             method: 'POST',
@@ -93,3 +95,21 @@ const updateNavProfile = (user) => {
         placeholder.classList.add('d-flex');
     }
 };
+
+export async function initUserSession({ requireAuth = false, redirectUrl = 'login.html' } = {}) {
+    await checkAuthStatus();
+
+    if (requireAuth && !window.currentUser) {
+        window.location.href = redirectUrl;
+        return false;
+    }
+
+    if (window.currentUser) {
+        try {
+            await fetchFullLibrary();
+        } catch (err) {
+            console.warn("Could not sync library, operating in offline mode.");
+        }
+    }
+    return true;
+}

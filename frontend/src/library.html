@@ -19,7 +19,8 @@
                 <div class="collapse navbar-collapse w-100 order-3 order-lg-2" id="navbarNav">
                     <ul class="navbar-nav ms-lg-3 mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="library.html" id="nav-library">My Library</a></li>
+                        <li class="nav-item"><a class="nav-link" href="library.html" id="nav-library">My Library</a>
+                        </li>
                     </ul>
                 </div>
 
@@ -35,7 +36,7 @@
                         <a class="btn btn-primary btn-sm text-nowrap" href="signup.html">Sign Up</a>
                     </div>
 
-                    
+
 
                     <button class="navbar-toggler border-1 p-1 ms-1.5" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
@@ -46,13 +47,15 @@
                         <button class="btn btn-link p-0 d-flex align-items-center text-decoration-none dropdown-toggle"
                             data-bs-toggle="dropdown">
                             <span id="nav-username" class="me-2 d-none d-md-inline small fw-bold text-white"></span>
-                            <img id="nav-profile-pic" src="" class="rounded-circle border border-2 border-primary d-none"
-                                style="width: 35px; height: 35px; object-fit: cover;">
+                            <img id="nav-profile-pic" src=""
+                                class="nav-avatar rounded-circle border border-2 border-primary d-none">
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li><a class="dropdown-item py-2" href="profile.html">Profile</a></li>
                             <li><a class="dropdown-item py-2" href="library.html">My Library</a></li>
-                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <hr class="dropdown-divider my-1">
+                            </li>
                             <li>
                                 <button class="dropdown-item py-2 text-danger" onclick="handleLogout()">
                                     Logout
@@ -73,15 +76,19 @@
 
             <ul class="nav nav-tabs" id="libraryTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="watchlist-tab" data-bs-toggle="tab" data-bs-target="#watchlist-tab-pane" type="button" role="tab" aria-controls="watchlist-tab-pane" aria-selected="true">WatchList</button>
+                    <button class="nav-link active" id="watchlist-tab" data-bs-toggle="tab"
+                        data-bs-target="#watchlist-tab-pane" type="button" role="tab" aria-controls="watchlist-tab-pane"
+                        aria-selected="true">WatchList</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-tab-pane" type="button" role="tab" aria-controls="history-tab-pane" aria-selected="false">History</button>
+                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-tab-pane"
+                        type="button" role="tab" aria-controls="history-tab-pane" aria-selected="false">History</button>
                 </li>
             </ul>
 
             <div class="tab-content mt-4" id="libraryTabContent">
-                <div class="tab-pane fade show active" id="watchlist-tab-pane" role="tabpanel" aria-labelledby="watchlist-tab" tabindex="0">
+                <div class="tab-pane fade show active" id="watchlist-tab-pane" role="tabpanel"
+                    aria-labelledby="watchlist-tab" tabindex="0">
                     <div class="chart-rails">
                         <div class="chart-rail-block mb-5">
                             <div class="media-rail-wrap">
@@ -110,7 +117,8 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="history-tab-pane" role="tabpanel" aria-labelledby="history-tab" tabindex="0">
+                <div class="tab-pane fade" id="history-tab-pane" role="tabpanel" aria-labelledby="history-tab"
+                    tabindex="0">
                     <div class="chart-rails">
                         <div class="chart-rail-block mb-5">
                             <div class="media-rail-wrap">
@@ -145,35 +153,35 @@
     <footer class="py-5 mt-auto">
         <div class="container d-flex justify-content-between gap-2">
             <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="index.html">
-                    <img src="./assets/logo.png" alt="MediaNest" class="logo">
-                    MediaNest
+                <img src="./assets/logo.png" alt="MediaNest" class="logo">
+                MediaNest
             </a>
             <div class="d-flex justify-content-end gap-2 align-items-center">
                 <i class="bi bi-c-circle"></i>
-                    <div>2026 MediaNest. All rights reserved.</div>     
+                <div>2026 MediaNest. All rights reserved.</div>
             </div>
         </div>
         <div class="modal" tabindex="-1" id="auth-modal">
             <div class="modal-dialog">
                 <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Login Required</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Save movies and track your progress by signing in.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Maybe Later</button>
-                    <a type="button" class="btn btn-primary" href="login.html">Login Now</a>
-                </div>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Login Required</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Save movies and track your progress by signing in.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Maybe Later</button>
+                        <a type="button" class="btn btn-primary" href="login.html">Login Now</a>
+                    </div>
                 </div>
             </div>
         </div>
     </footer>
 
-    <script type="module" src="./js/main.js"></script>
-    <script type="module" src="./js/session.js"></script>
-    </body>
+    <script type="module" src="./pages/library.js"></script>
+    <script type="module" src="./core/session.js"></script>
+</body>
 
 </html>

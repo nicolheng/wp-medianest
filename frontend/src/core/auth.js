@@ -1,3 +1,5 @@
+import { API_ROUTES } from '../services/config.js';
+
 document.getElementById('togglePassword')?.addEventListener('click', () => {
     const input = document.getElementById('password');
     const icon = document.getElementById('eyeIcon');
@@ -24,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // simplified signup
-    window.handleSignup = async function(event) {
+    window.handleSignup = async function (event) {
         event.preventDefault();
         clearFieldErrors();
         const username = document.getElementById('username').value.trim();
@@ -32,16 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = passwordInput.value;
 
         // backend handle validation
-        handleAuth('/api/auth/register', { username, email, password }, "Registration Successful!");
+        handleAuth(`${API_ROUTES.AUTH}/register`, { username, email, password }, "Registration Successful!");
     };
 
-    window.handleLogin = async function(event) {
+    window.handleLogin = async function (event) {
         event.preventDefault();
         clearFieldErrors();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
-        handleAuth('/api/auth/login', { email, password }, "Welcome back!");
+        handleAuth(`${API_ROUTES.AUTH}/login`, { email, password }, "Welcome back!");
     };
 });
 

@@ -19,7 +19,8 @@
                 <div class="collapse navbar-collapse w-100 order-3 order-lg-2" id="navbarNav">
                     <ul class="navbar-nav ms-lg-3 mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="library.html" id="nav-library">My Library</a></li>
+                        <li class="nav-item"><a class="nav-link" href="library.html" id="nav-library">My Library</a>
+                        </li>
                     </ul>
                 </div>
 
@@ -35,7 +36,7 @@
                         <a class="btn btn-primary btn-sm text-nowrap" href="signup.html">Sign Up</a>
                     </div>
 
-                    
+
 
                     <button class="navbar-toggler border-1 p-1 ms-1.5" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false">
@@ -46,13 +47,15 @@
                         <button class="btn btn-link p-0 d-flex align-items-center text-decoration-none dropdown-toggle"
                             data-bs-toggle="dropdown">
                             <span id="nav-username" class="me-2 d-none d-md-inline small fw-bold text-white"></span>
-                            <img id="nav-profile-pic" src="" class="rounded-circle border border-2 border-primary d-none"
-                                style="width: 35px; height: 35px; object-fit: cover;">
+                            <img id="nav-profile-pic" src=""
+                                class="nav-avatar rounded-circle border border-2 border-primary d-none">
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li><a class="dropdown-item py-2" href="profile.html">Profile</a></li>
                             <li><a class="dropdown-item py-2" href="library.html">My Library</a></li>
-                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <hr class="dropdown-divider my-1">
+                            </li>
                             <li>
                                 <button class="dropdown-item py-2 text-danger" onclick="handleLogout()">
                                     Logout
@@ -68,80 +71,91 @@
     <main class="flex-grow-1">
         <section class="hero-section py-5">
             <div class="container py-4 py-lg-5">
-            <div class="row align-items-center g-5">
-                <div class="col-lg-7">
-                <h1 class="display-4 fw-bold text-white mb-3">
-                    Discover top movies, shows, books, and music in one place.
-                </h1>
-                <p class="lead text-white-50 mb-4">
-                    Explore curated charts, track what is trending now, and save the titles you love.
-                </p>
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-7">
+                        <h1 class="display-4 fw-bold text-white mb-3">
+                            Discover top movies, shows, books, and music in one place.
+                        </h1>
+                        <p class="lead text-white-50 mb-4">
+                            Explore curated charts, track what is trending now, and save the titles you love.
+                        </p>
 
-                <div class="d-flex flex-wrap gap-3">
-                    <a href="#top-charts" class="btn btn-primary btn-lg px-4">Explore Charts</a>
-                    <a href="signup.html" class="btn btn-outline-light btn-lg px-4">Create Account</a>
-                </div>
+                        <div class="d-flex flex-wrap gap-3">
+                            <a href="#top-charts" class="btn btn-primary btn-lg px-4">Explore Charts</a>
+                            <a href="signup.html" class="btn btn-outline-light btn-lg px-4">Create Account</a>
+                        </div>
 
-                <div class="d-flex flex-wrap gap-3 mt-4 text-white-50 small">
-                    <span><i class="bi bi-check2-circle me-2"></i>Movies</span>
-                    <span><i class="bi bi-check2-circle me-2"></i>Books</span>
-                    <span><i class="bi bi-check2-circle me-2"></i>Music</span>
-                </div>
-                </div>
-
-                <div class="col-lg-5">
-                <div class="hero-panel p-4 p-lg-5 rounded-4 shadow-lg">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 class="h4 text-white mb-0">Today's #1 Picks</h2>
-                    </div>
-                    <span class="badge rounded-pill text-bg-dark">Updated</span>
-                    </div>
-
-                    <div class="chart-preview-list">
-                    <div class="chart-preview-item">
-                        <span class="snapshot-kind">Movie</span>
-                        <img id="snapshot-movie-image" class="snapshot-thumb" src="https://placehold.co/120x180/1b1f24/f8f9fa?text=No+Poster" alt="Top movie thumbnail">
-                        <div class="flex-grow-1">
-                        <div id="snapshot-movie-title" class="text-white fw-semibold">Loading movie...</div>
-                        <div class="text-white-50 small">Movies</div>
+                        <div class="d-flex flex-wrap gap-3 mt-4 text-white-50 small">
+                            <span><i class="bi bi-check2-circle me-2"></i>Movies</span>
+                            <span><i class="bi bi-check2-circle me-2"></i>Books</span>
+                            <span><i class="bi bi-check2-circle me-2"></i>Music</span>
                         </div>
                     </div>
 
-                    <div class="chart-preview-item">
-                        <span class="snapshot-kind">Show</span>
-                        <img id="snapshot-tv-image" class="snapshot-thumb" src="https://placehold.co/120x180/1b1f24/f8f9fa?text=No+Poster" alt="Top show thumbnail">
-                        <div class="flex-grow-1">
-                        <div id="snapshot-tv-title" class="text-white fw-semibold">Loading show...</div>
-                        <div class="text-white-50 small">Shows</div>
-                        </div>
-                    </div>
+                    <div class="col-lg-5">
+                        <div class="hero-panel p-4 p-lg-5 rounded-4 shadow-lg">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h2 class="h4 text-white mb-0">Today's #1 Picks</h2>
+                                </div>
+                                <span class="badge rounded-pill text-bg-dark">Updated</span>
+                            </div>
 
-                    <div class="chart-preview-item">
-                        <span class="snapshot-kind">Book</span>
-                        <img id="snapshot-book-image" class="snapshot-thumb" src="https://placehold.co/120x180/1b1f24/f8f9fa?text=No+Cover" alt="Top book thumbnail">
-                        <div class="flex-grow-1">
-                        <div id="snapshot-book-title" class="text-white fw-semibold">Loading book...</div>
-                        <div class="text-white-50 small">Books</div>
-                        </div>
-                    </div>
+                            <div class="chart-preview-list">
+                                <div class="chart-preview-item">
+                                    <span class="snapshot-kind">Movie</span>
+                                    <img id="snapshot-movie-image" class="snapshot-thumb"
+                                        src="https://placehold.co/120x180/1b1f24/f8f9fa?text=No+Poster"
+                                        alt="Top movie thumbnail">
+                                    <div class="flex-grow-1">
+                                        <div id="snapshot-movie-title" class="text-white fw-semibold">Loading movie...
+                                        </div>
+                                        <div class="text-white-50 small">Movies</div>
+                                    </div>
+                                </div>
 
-                    <div class="chart-preview-item">
-                        <span class="snapshot-kind">Music</span>
-                        <img id="snapshot-music-image" class="snapshot-thumb snapshot-thumb-square" src="https://placehold.co/120x120/1b1f24/f8f9fa?text=No+Art" alt="Top track thumbnail">
-                        <div class="flex-grow-1">
-                        <div id="snapshot-music-title" class="text-white fw-semibold">Loading track...</div>
-                        <div class="text-white-50 small">Music</div>
+                                <div class="chart-preview-item">
+                                    <span class="snapshot-kind">Show</span>
+                                    <img id="snapshot-tv-image" class="snapshot-thumb"
+                                        src="https://placehold.co/120x180/1b1f24/f8f9fa?text=No+Poster"
+                                        alt="Top show thumbnail">
+                                    <div class="flex-grow-1">
+                                        <div id="snapshot-tv-title" class="text-white fw-semibold">Loading show...</div>
+                                        <div class="text-white-50 small">Shows</div>
+                                    </div>
+                                </div>
+
+                                <div class="chart-preview-item">
+                                    <span class="snapshot-kind">Book</span>
+                                    <img id="snapshot-book-image" class="snapshot-thumb"
+                                        src="https://placehold.co/120x180/1b1f24/f8f9fa?text=No+Cover"
+                                        alt="Top book thumbnail">
+                                    <div class="flex-grow-1">
+                                        <div id="snapshot-book-title" class="text-white fw-semibold">Loading book...
+                                        </div>
+                                        <div class="text-white-50 small">Books</div>
+                                    </div>
+                                </div>
+
+                                <div class="chart-preview-item">
+                                    <span class="snapshot-kind">Music</span>
+                                    <img id="snapshot-music-image" class="snapshot-thumb snapshot-thumb-square"
+                                        src="https://placehold.co/120x120/1b1f24/f8f9fa?text=No+Art"
+                                        alt="Top track thumbnail">
+                                    <div class="flex-grow-1">
+                                        <div id="snapshot-music-title" class="text-white fw-semibold">Loading track...
+                                        </div>
+                                        <div class="text-white-50 small">Music</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
-                </div>
-            </div>
             </div>
         </section>
 
-       <section id="top-charts" class="py-5">
+        <section id="top-charts" class="py-5">
             <div class="container mb-5">
                 <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
                     <div>
@@ -200,40 +214,40 @@
                 </div>
             </div>
         </section>
-        </main>
+    </main>
 
     <footer class="py-5 mt-auto">
         <div class="container d-flex justify-content-between gap-2">
             <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="index.html">
-                    <img src="./assets/logo.png" alt="MediaNest" class="logo">
-                    MediaNest
+                <img src="./assets/logo.png" alt="MediaNest" class="logo">
+                MediaNest
             </a>
             <div class="d-flex justify-content-end gap-2 align-items-center">
                 <i class="bi bi-c-circle"></i>
-                    <div>2026 MediaNest. All rights reserved.</div>     
+                <div>2026 MediaNest. All rights reserved.</div>
             </div>
         </div>
         <div class="modal" tabindex="-1" id="auth-modal">
             <div class="modal-dialog">
                 <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Login Required</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Save movies and track your progress by signing in.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Maybe Later</button>
-                    <a type="button" class="btn btn-primary" href="login.html">Login Now</a>
-                </div>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Login Required</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Save movies and track your progress by signing in.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Maybe Later</button>
+                        <a type="button" class="btn btn-primary" href="login.html">Login Now</a>
+                    </div>
                 </div>
             </div>
         </div>
     </footer>
 
-    <script type="module" src="./js/main.js"></script>
-    <script type="module" src="./js/session.js"></script>
-    </body>
+    <script type="module" src="./pages/index.js"></script>
+    <script type="module" src="./core/session.js"></script>
+</body>
 
 </html>

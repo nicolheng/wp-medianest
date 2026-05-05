@@ -1,5 +1,5 @@
-import '../scss/style.scss';
-import * as bootstrap from 'bootstrap';
+import '../core/globals.js';
+import { initUserSession } from '../core/session.js';
 
 let currentUser = null;
 
@@ -62,70 +62,12 @@ const renderProfile = (user) => {
 
 };
 
-const fetchCurrentUser = async () => {
-  const response = await fetch('/api/auth/me', {
-    method: 'GET',
-    credentials: 'include',
-  });
-
-  const payload = await response.json();
-  if (!response.ok || !payload?.isAuthenticated || !payload?.user) {
-    throw new Error(payload?.message || 'Unable to load profile data.');
-  }
-
-  return payload.user;
-};
-
-// ─── Theme Toggle (mirrors main.js logic) ──────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  const htmlEl = document.documentElement;
-  const themeToggleBtn = document.getElementById('theme-toggle');
-  const themeIcon = document.getElementById('theme-icon');
+  const isAuth = await initUserSession({ requireAuth: true });
+  if (!isAuth) return;
 
-  const updateButtonUI = (theme) => {
-    if (!themeToggleBtn || !themeIcon) return;
-    themeIcon.classList.remove('bi-moon-stars-fill', 'bi-sun-fill');
-    themeIcon.classList.add(theme === 'dark' ? 'bi-sun-fill' : 'bi-moon-stars-fill');
-  };
-
-  const getPreferredTheme = () => {
-    const stored = localStorage.getItem('theme');
-    if (stored) return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  };
-
-  const initialTheme = getPreferredTheme();
-  htmlEl.setAttribute('data-bs-theme', initialTheme);
-  updateButtonUI(initialTheme);
-
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
-      const newTheme = htmlEl.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
-      htmlEl.setAttribute('data-bs-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      updateButtonUI(newTheme);
-    });
-  }
-
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    if (!localStorage.getItem('theme')) {
-      const sys = e.matches ? 'dark' : 'light';
-      htmlEl.setAttribute('data-bs-theme', sys);
-      updateButtonUI(sys);
-    }
-  });
-
-  // ─── Populate Profile View ─────────────────────────────────────────────────
-  try {
-    currentUser = await fetchCurrentUser();
-    renderProfile(currentUser);
-  } catch (err) {
-    showToast('Please log in to view your profile.', 'warning');
-    setTimeout(() => {
-      window.location.href = 'login.html';
-    }, 600);
-    return;
-  }
+  currentUser = window.currentUser;
+  renderProfile(currentUser);
 
   // ─── Sidebar Nav Active State ──────────────────────────────────────────────
   document.querySelectorAll('.profile-nav-link[data-section]').forEach((link) => {
