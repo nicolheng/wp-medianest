@@ -1,14 +1,17 @@
 import '../scss/style.scss';
 import * as bootstrap from 'bootstrap';
 window.bootstrap = bootstrap;
-import { fetchMovies, fetchTVShows, fetchBooks, fetchMusic } from './api.js';
-import { renderRail, updateLiveSnapshot } from './ui.js';
-import { loadWatchlistAndHistory,  fetchFullLibrary } from './library.js';
-import { checkAuthStatus } from './session.js';
+import { fetchBooks } from '../api/book.js';
+import { fetchMusic } from '../api/music.js';
+import { fetchMovies, fetchTVShows } from '../api/tmdb.js';
+import { renderRail, updateLiveSnapshot } from '../components/rail.js';
+import { loadWatchlistAndHistory } from './library.js';
+import { fetchFullLibrary } from '../api/libraryApi.js';
+import { checkAuthStatus } from '../core/session.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const htmlElement = document.documentElement;
-    
+
     htmlElement.setAttribute('data-bs-theme', 'dark');
 
     localStorage.setItem('theme', 'dark');
@@ -16,18 +19,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let cachedCharts = null;
 
-window.loadCharts = async function() {
-    await checkAuthStatus(); 
+window.loadCharts = async function () {
+    await checkAuthStatus();
     if (!cachedCharts) {
         const [moviesRes, tvRes, booksRes, musicRes] = await Promise.allSettled([
-        fetchMovies(), fetchTVShows(), fetchBooks(), fetchMusic()
+            fetchMovies(), fetchTVShows(), fetchBooks(), fetchMusic()
         ]);
-        
+
         cachedCharts = {
-        movies: moviesRes.status === "fulfilled" ? moviesRes.value : [],
-        tv: tvRes.status === "fulfilled" ? tvRes.value : [],
-        books: booksRes.status === "fulfilled" ? booksRes.value : [],
-        music: musicRes.status === "fulfilled" ? musicRes.value : []
+            movies: moviesRes.status === "fulfilled" ? moviesRes.value : [],
+            tv: tvRes.status === "fulfilled" ? tvRes.value : [],
+            books: booksRes.status === "fulfilled" ? booksRes.value : [],
+            music: musicRes.status === "fulfilled" ? musicRes.value : []
         };
     }
 
@@ -62,9 +65,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 document.addEventListener("DOMContentLoaded", () => {
     const libraryLink = document.getElementById("nav-library");
-    if (libraryLink){
+    if (libraryLink) {
         libraryLink.addEventListener('click', (e) => {
-            if(!window.currentUser){
+            if (!window.currentUser) {
                 e.preventDefault();
                 const modalEl = document.getElementById('auth-modal');
                 if (modalEl) {

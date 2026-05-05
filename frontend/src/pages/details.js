@@ -1,5 +1,5 @@
-import { fetchFullLibrary } from "./library";
-import { checkAuthStatus } from './session.js';
+import { fetchFullLibrary } from "../api/libraryApi.js";
+import { checkAuthStatus } from '../core/session.js';
 
 window.loadDetailButton = async (id, type) => {
     try {
@@ -22,7 +22,7 @@ window.loadDetailButton = async (id, type) => {
         'music': 'music'
     };
     type = typeMap[type] || type;
-    const library = window.userLibrary || { watchlist: {movies: [], tv: [], books: [], music: []}, history: {movies: [], tv: [], books: [], music: []} };
+    const library = window.userLibrary || { watchlist: { movies: [], tv: [], books: [], music: [] }, history: { movies: [], tv: [], books: [], music: [] } };
     const currentWatchlist = library.watchlist[type] || [];
     const currentHistory = library.history[type] || [];
     const idStr = String(id);
@@ -107,11 +107,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const castSection = document.getElementById('cast-section');
         const castContainer = document.getElementById('cast-container');
         let displayType = (type === 'books' || type === 'book') ? 'book' : type;
-        
+
         try {
             const res = await fetch(`/api/items/${type}/${encodeURIComponent(id)}`);
             const data = await res.json();
-            
+
             if (!res.ok) throw new Error(data.message || "Failed to fetch");
 
             const { item, reviews } = data;

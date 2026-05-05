@@ -1,10 +1,4 @@
-const tmdbToken = import.meta.env.VITE_TMDB_READ_TOKEN;
-const lastfmApiKey = import.meta.env.VITE_LASTFM_API_KEY;
-const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w342';
-const FALLBACK_MOVIE = 'https://placehold.co/342x513/1b1f24/f8f9fa?text=No+Poster';
-const FALLBACK_TV = 'https://placehold.co/342x513/1b1f24/f8f9fa?text=No+Poster';
-const FALLBACK_BOOK = 'https://placehold.co/300x450/1b1f24/f8f9fa?text=No+Cover';
-const FALLBACK_MUSIC = 'https://placehold.co/300x300/1b1f24/f8f9fa?text=No+Art';
+import { lastfmApiKey, tmdbToken, FALLBACK_BOOK, FALLBACK_MOVIE, FALLBACK_TV, FALLBACK_MUSIC, TMDB_IMAGE_BASE } from "./config.js"
 
 function buildTmdbImage(posterPath, fallback) {
   if (!posterPath) return fallback;
@@ -61,7 +55,7 @@ export async function searchMovies(q) {
   return (data.results || []).map((m) => ({
     id: m.id,
     title: sanitizeText(m.title || m.name),
-    sub: (m.release_date || '').slice(0,4) || '',
+    sub: (m.release_date || '').slice(0, 4) || '',
     image: buildTmdbImage(m.poster_path, FALLBACK_MOVIE),
     type: 'movies'
   }));
@@ -80,7 +74,7 @@ export async function searchTVShows(q) {
   return (data.results || []).map((s) => ({
     id: s.id,
     title: sanitizeText(s.name || s.title),
-    sub: (s.first_air_date || '').slice(0,4) || '',
+    sub: (s.first_air_date || '').slice(0, 4) || '',
     image: buildTmdbImage(s.poster_path, FALLBACK_TV),
     type: 'tv'
   }));
@@ -90,7 +84,7 @@ export async function searchBooks(q) {
   // Use Google Books public endpoint. If no query specified, fetch a broad subject list.
   const qParam = q ? encodeURIComponent(q) : 'subject:fiction';
   console.log('📚 Fetching books:', `/api/googlebooks?q=${qParam}&maxResults=20`);
-  
+
   const res = await fetch(`/api/googlebooks?q=${qParam}&maxResults=20`);
   console.log('📚 Response status:', res.status);
 
@@ -102,7 +96,7 @@ export async function searchBooks(q) {
 
   const data = await res.json();
   console.log('📚 Raw response:', data);
-  
+
   const items = data.items || [];
   return items.map((it) => {
     const info = it.volumeInfo || {};
@@ -204,55 +198,55 @@ export async function searchMusic(q) {
 }
 
 export function renderRail(containerId, items, emptyLabel, type) {
-    const el = document.getElementById(containerId);
-    if (!el) return;
-  
-    el.replaceChildren();
-    el.classList.add('media-rail');
-  
-    if (!items.length) {
-      const empty = document.createElement('p');
-      empty.className = 'text-body-secondary small mb-0';
-      empty.textContent = emptyLabel;
-      el.append(empty);
-      return;
-    }
-  
-    items.forEach((item) => {
-      const link = document.createElement('a');
-      const id = item._id || item.id || item.rank; 
-  
-      let urlType = type;
-      if (type === 'movies') urlType = 'movie';
-      if (type === 'tv') urlType = 'show';
-  
-      const itemImg = encodeURIComponent(item.image || '');
-      link.href = `item_details.html?type=${urlType}&id=${id}&img=${itemImg}`;
-      link.style.display = 'contents'; 
-      link.classList.add('text-decoration-none');
-  
-      const card = document.createElement('article');
-      card.className = 'media-card';
-      if (type === 'music') card.classList.add('media-card--square');
-  
-      const img = document.createElement('img');
-      img.className = 'media-thumb';
-      img.src = item.image || FALLBACK_MUSIC;
-      img.alt = item.title;
-      img.loading = 'lazy';
-      img.decoding = 'async';
-      img.referrerPolicy = 'no-referrer';
-      img.onerror = () => {
-        const fallbackByType = {
-          movies: FALLBACK_MOVIE,
-          tv: FALLBACK_TV,
-          books: FALLBACK_BOOK,
-          music: FALLBACK_MUSIC,
-        };
-        img.src = fallbackByType[type] || FALLBACK_MUSIC;
-      };
+  const el = document.getElementById(containerId);
+  if (!el) return;
 
-      
+  el.replaceChildren();
+  el.classList.add('media-rail');
+
+  if (!items.length) {
+    const empty = document.createElement('p');
+    empty.className = 'text-body-secondary small mb-0';
+    empty.textContent = emptyLabel;
+    el.append(empty);
+    return;
+  }
+
+  items.forEach((item) => {
+    const link = document.createElement('a');
+    const id = item._id || item.id || item.rank;
+
+    let urlType = type;
+    if (type === 'movies') urlType = 'movie';
+    if (type === 'tv') urlType = 'show';
+
+    const itemImg = encodeURIComponent(item.image || '');
+    link.href = `item_details.html?type=${urlType}&id=${id}&img=${itemImg}`;
+    link.style.display = 'contents';
+    link.classList.add('text-decoration-none');
+
+    const card = document.createElement('article');
+    card.className = 'media-card';
+    if (type === 'music') card.classList.add('media-card--square');
+
+    const img = document.createElement('img');
+    img.className = 'media-thumb';
+    img.src = item.image || FALLBACK_MUSIC;
+    img.alt = item.title;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.referrerPolicy = 'no-referrer';
+    img.onerror = () => {
+      const fallbackByType = {
+        movies: FALLBACK_MOVIE,
+        tv: FALLBACK_TV,
+        books: FALLBACK_BOOK,
+        music: FALLBACK_MUSIC,
+      };
+      img.src = fallbackByType[type] || FALLBACK_MUSIC;
+    };
+
+
     const overlay = document.createElement('div');
     overlay.className = 'media-card-overlay';
 
