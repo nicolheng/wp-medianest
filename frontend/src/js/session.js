@@ -50,9 +50,6 @@ export async function checkAuthStatus() {
     }
 }
 
-// Run on page load
-document.addEventListener('DOMContentLoaded', checkAuthStatus);
-
 // Global Logout function
 window.handleLogout = async function() {
     try {
@@ -88,7 +85,7 @@ const updateNavProfile = (user) => {
             navPic.classList.remove('d-none');
         }
 
-        if (navUsername) { 
+        if (navUsername) {
             navUsername.textContent = name;
             navUsername.classList.remove('d-none');
         }

@@ -99,8 +99,23 @@ passport.use(new GoogleStrategy({
                 email,
                 password: 'oauth-placeholder',
                 authProvider: 'google',
+                watchlist: {
+                    movies: [],
+                    tv: [],
+                    books: [],
+                    music: []
+                },
+                history: {
+                    movies: [],
+                    tv: [],
+                    books: [],
+                    music: []
+                },
+                searchHistory: [],
                 profile: {
-                    avatarUrl: profile.photos?.[0]?.value || user.profile.avatarUrl
+                    avatarUrl: profile.photos?.[0]?.value || "https://i.postimg.cc/zvS2kWVk/user.jpg",
+                    bio: "",
+                    joinDate: Date.now()
                 }
             });
         } else {

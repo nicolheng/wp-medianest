@@ -10,7 +10,7 @@
 }
 
 .right-box {
-    background-image: url('/images/sign.png'); 
+    background-image: url('/images/sign.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -26,9 +26,9 @@
     &::before {
         content: "";
         position: absolute;
-        top: 0; 
-        left: 0; 
-        width: 100%; 
+        top: 0;
+        left: 0;
+        width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.1);
         border-radius: inherit;
@@ -48,45 +48,52 @@
     text-align: center;
     
     h2 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 3.5rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: white;
         margin-bottom: 5px;
     }
     
     p {
-        margin-bottom: 0; // Tightens up the space at the bottom
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-bottom: 0;
     }
 }
-// --- Theme Specific Logic ---
 
-// 1. LIGHT MODE SETTINGS
-[data-bs-theme="light"] {
-    .auth-button {
-        background-color: $secondary !important; // Green
-        border-color: $secondary !important;
-        color: white !important;
+// At the bottom of _auth.scss, add default styles (no [data-bs-theme] wrapper):
+.auth-button {
+    background-color: $primary !important;
+    border-color: $primary !important;
+    color: black !important;
     }
 
-    .auth-link {
-        color: $secondary !important; // Green Link
+.auth-link {
+    color: $primary !important;
     }
 
-    .divider-text, .btn-google {
-        color: #000000 !important; // Black Text
-    }
-    }
+.divider-text, .btn-google {
+    color: #000000 !important;
+}
 
-    // 2. DARK MODE SETTINGS
-    [data-bs-theme="dark"] {
-    .auth-button {
-        background-color: $primary !important; // Yellow
-        border-color: $primary !important;
-        color: #212529 !important; // Dark text on yellow for readability
+.auth-divider {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+    width: 100%;
+    
+    &-line {
+        flex: 1;
+        height: 1.2px;
+        background-color: var(--bs-border-color);
     }
-
-    .auth-link {
-        color: $primary !important; // Yellow Link
-    }
-
-    .divider-text, .btn-google {
-        color: #ffffff !important; // White Text
+    
+    &-text {
+        @extend .fw-bold;
+        font-size: 0.8rem;
+        margin: 0 0.75rem;
     }
 }

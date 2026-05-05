@@ -1,16 +1,13 @@
-window.togglePasswordVisibility = function() {
-    const passwordInput = document.getElementById('password');
-    const eyeIcon = document.getElementById('eyeIcon');
-    if (passwordInput && eyeIcon) {
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeIcon.classList.replace('bi-eye-slash', 'bi-eye');
-        } else {
-            passwordInput.type = 'password';
-            eyeIcon.classList.replace('bi-eye', 'bi-eye-slash');
-        }
+document.getElementById('togglePassword')?.addEventListener('click', () => {
+    const input = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (input && icon) {
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        icon.classList.toggle('bi-eye', isHidden);
+        icon.classList.toggle('bi-eye-slash', !isHidden);
     }
-}
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     const passwordInput = document.getElementById('password');
