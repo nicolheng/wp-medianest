@@ -12,7 +12,7 @@ footer {
 
 [data-bs-theme="dark"] header,
 [data-bs-theme="dark"] footer {
-  background-color: #141619;
+  background-color: $dark-bg;
   color: var(--bs-white);
 }
 
@@ -21,9 +21,16 @@ footer {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 20% 20%, rgba(253, 228, 38, 0.18), transparent 35%),
-    radial-gradient(circle at 80% 10%, rgba(91, 117, 83, 0.28), transparent 40%),
+    radial-gradient(circle at 20% 20%, rgba($primary, 0.18), transparent 35%),
+    radial-gradient(circle at 80% 10%, rgba($secondary, 0.28), transparent 40%),
     linear-gradient(145deg, #0f141a 0%, #121a22 45%, #1b2430 100%);
+
+  // Nesting the typography media query here!
+  .display-4 {
+    @include media-breakpoint-down(lg) {
+      font-size: 2.2rem;
+    }
+  }
 }
 
 .hero-section::before {
@@ -44,13 +51,6 @@ footer {
 
 #top-charts {
   background:
-    linear-gradient(180deg, rgba(253, 228, 38, 0.04) 0%, rgba(253, 228, 38, 0) 35%),
+    linear-gradient(180deg, rgba($primary, 0.04) 0%, rgba($primary, 0) 35%),
     var(--bs-body-bg);
-}
-
-/* Better spacing on smaller screens */
-@media (max-width: 991.98px) {
-  .hero-section .display-4 {
-    font-size: 2.2rem;
-  }
 }

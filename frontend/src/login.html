@@ -20,7 +20,8 @@
                 <div class="collapse navbar-collapse w-100 order-3 order-lg-2" id="navbarNav">
                     <ul class="navbar-nav ms-lg-3 mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="library.html" id="nav-library">My Library</a></li>
+                        <li class="nav-item"><a class="nav-link" href="library.html" id="nav-library">My Library</a>
+                        </li>
                     </ul>
                 </div>
 
@@ -47,17 +48,17 @@
                     </button>
 
                     <div id="profile-placeholder" class="d-none dropdown">
-                        <button class="btn btn-link text-decoration-none dropdown-toggle text-primary p-0"
-                                type="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle text-primary p-0" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle fs-4"></i>
                             <span id="nav-username" class="ms-1 d-none d-md-inline small fw-semibold"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li><a class="dropdown-item py-2" href="profile.html">Profile</a></li>
                             <li><a class="dropdown-item py-2" href="library.html">My Library</a></li>
-                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <hr class="dropdown-divider my-1">
+                            </li>
                             <li>
                                 <button class="dropdown-item py-2 text-danger" onclick="handleLogout()">
                                     Logout
@@ -69,80 +70,76 @@
             </div>
         </nav>
     </header>
-        <main>
-            <div class="container d-flex justify-content-center align-items-center min-vh-100">
-                <div class="row border rounded-5 p-3 bg-body-tertiary shadow box-area">
-                    
-                    <div class="col-md-6 rounded-4 d-flex justify-content-center align-items-center flex-column left-box">
-                        <div class="row align-items-center">
-                            <div class="header-text mb-4">
-                                <h2>Sign in with email</h2>
-                                <p>Search for movies and check reviews. For free</p>
+    <main>
+        <div class="container d-flex justify-content-center align-items-center min-vh-100">
+            <div class="row border rounded-5 p-3 bg-body-tertiary shadow box-area">
+
+                <div class="col-md-6 rounded-4 d-flex justify-content-center align-items-center flex-column left-box">
+                    <div class="row align-items-center">
+                        <div class="header-text mb-4">
+                            <h2>Sign in with email</h2>
+                            <p>Search for movies and check reviews. For free</p>
+                        </div>
+                        <form id="loginForm" onsubmit="handleLogin(event)">
+                            <div class="input-group mb-3">
+                                <input type="email" id="email" name="email" class="form-control form-control-lg fs-6"
+                                    placeholder="Email" autocomplete="email" required>
                             </div>
-                            <form id="loginForm" onsubmit="handleLogin(event)">
-                                <div class="input-group mb-3">
-                                    <input type="email"
-                                            id="email"
-                                            name="email"
-                                            class="form-control form-control-lg fs-6"
-                                            placeholder="Email"
-                                            autocomplete="email"
-                                            required>
-                                </div>
-                                <div class="input-group mb-2">
-                                    <input type="password"
-                                            id="password"
-                                            name="password"
-                                            class="form-control form-control-lg fs-6"
-                                            placeholder="Password"
-                                            autocomplete="current-password"
-                                            required>
-                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword" onclick="togglePasswordVisibility()">
-                                        <i class="bi bi-eye-slash" id="eyeIcon"></i>
-                                    </button>
-                                </div>
-                                <div id="passwordError" class="form-text text-danger d-none mb-2" style="font-size: 0.85rem;"></div>
-                                <div class="input-group mb-3">
-                                    <button class="btn btn-lg auth-button w-100 fs-6">Sign In</button>
-                                </div>
-                                <div class="row">
-                                    <small>Don't have an account? <a href="signup.html" class="auth-link">Sign Up</a></small>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="auth-divider">
-                            <div class="auth-divider-line"></div>
-                            <span class="auth-divider-text">OR</span>
-                            <div class="auth-divider-line"></div>
-                        </div>
-                        <div class="input-group mb-3">
-                            <a href="/api/auth/google" class="btn btn-google d-flex align-items-center justify-content-center py-2 w-100 mb-2 shadow-sm border-0">
-                                <i class="bi bi-google me-2"></i> Continue with Google
-                            </a>
-                        </div>
-
-                        
+                            <div class="input-group mb-2">
+                                <input type="password" id="password" name="password"
+                                    class="form-control form-control-lg fs-6" placeholder="Password"
+                                    autocomplete="current-password" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword"
+                                    onclick="togglePasswordVisibility()">
+                                    <i class="bi bi-eye-slash" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                            <div id="passwordError" class="form-text text-danger d-none mb-2"
+                                style="font-size: 0.85rem;"></div>
+                            <div class="input-group mb-3">
+                                <button class="btn btn-lg auth-button w-100 fs-6">Sign In</button>
+                            </div>
+                            <div class="row">
+                                <small>Don't have an account? <a href="signup.html" class="auth-link">Sign
+                                        Up</a></small>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="auth-divider">
+                        <div class="auth-divider-line"></div>
+                        <span class="auth-divider-text">OR</span>
+                        <div class="auth-divider-line"></div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <a href="/api/auth/google"
+                            class="btn btn-dark d-flex align-items-center justify-content-center py-2 w-100 mb-2 shadow-sm border-0">
+                            <i class="bi bi-google me-2"></i> Continue with Google
+                        </a>
                     </div>
 
-                    <div class="col-md-6 rounded-4 d-flex right-box">
-                        <div class="featured-text">
-                            <h2>
-                                welcome back!
-                            </h2>
-                            <p>
-                                All your favorites in one place.
-                            </p>
-                        </div>
-                    </div>
 
                 </div>
-            </div>
-        </main>
-        <footer>
 
-        </footer>
-        <script type="module" src="./js/main.js"></script>
-        <script type="module" src="./js/auth.js"></script>
-        <script type="module" src="./js/session.js"></script>
-    </body>
+                <div class="col-md-6 rounded-4 d-flex right-box">
+                    <div class="featured-text">
+                        <h2>
+                            welcome back!
+                        </h2>
+                        <p>
+                            All your favorites in one place.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+    <footer>
+
+    </footer>
+    <script type="module" src="./core/globals.js"></script>
+    <script type="module" src="./core/auth.js"></script>
+    <script type="module" src="./core/session.js"></script>
+</body>
+
 </html>
