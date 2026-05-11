@@ -50,17 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const libraryLink = document.getElementById("nav-library");
     if (libraryLink) {
         libraryLink.addEventListener('click', (e) => {
-            if (!window.currentUser) {
-                e.preventDefault();
-                const modalEl = document.getElementById('auth-modal');
-                if (modalEl) {
-                    const authModal = new bootstrap.Modal(modalEl);
-                    authModal.show();
-                } else {
-                    console.warn("Auth Modal not found on this page.");
-                    alert("Please login to access your library.");
-                }
-            }
         });
     }
 });

@@ -5,6 +5,25 @@ export async function checkAuthStatus() {
     const profilePlaceholder = document.getElementById('profile-placeholder');
     const navUsername = document.getElementById('nav-username');
 
+    // 1. Check LocalStorage First (Standalone Mode)
+    const localUser = localStorage.getItem('medianest_user');
+    if (localUser) {
+        try {
+            const user = JSON.parse(localUser);
+            window.currentUser = user;
+            if (authButtons) authButtons.classList.add('d-none');
+            if (profilePlaceholder) {
+                profilePlaceholder.classList.remove('d-none');
+                profilePlaceholder.classList.add('d-flex');
+            }
+            updateNavProfile(user);
+            if (navUsername) navUsername.textContent = user.username;
+            return; // Successfully "logged in" locally
+        } catch (e) {
+            console.error("Failed to parse local user", e);
+        }
+    }
+
     try {
         const res = await fetch('/api/auth/me', {
             method: 'GET',
@@ -26,29 +45,35 @@ export async function checkAuthStatus() {
 
                 if (navUsername) navUsername.textContent = data.user.username;
             } else {
-                // Not logged in
-                if (authButtons) authButtons.classList.remove('d-none');
-                if (profilePlaceholder) {
-                    profilePlaceholder.classList.add('d-none');
-                    profilePlaceholder.classList.remove('d-flex');
-                }
+                handleNoAuth(authButtons, profilePlaceholder);
             }
         } else {
-            // 401: Not authenticated
-            if (authButtons) authButtons.classList.remove('d-none');
-            if (profilePlaceholder) {
-                profilePlaceholder.classList.add('d-none');
-                profilePlaceholder.classList.remove('d-flex');
-            }
+            handleNoAuth(authButtons, profilePlaceholder);
         }
     } catch (err) {
-        console.error('Auth check failed:', err);
-        // Fallback: show login buttons
-        if (authButtons) authButtons.classList.remove('d-none');
+        console.warn('Backend not detected, using guest session:', err);
+        // Standalone mode: Mock a guest user for navigation purposes
+        window.currentUser = {
+            username: 'Guest',
+            email: 'guest@example.com',
+            profilePic: '',
+            profile: { bio: 'Standalone Frontend Mode', joinDate: new Date().toISOString() }
+        };
+        
+        if (authButtons) authButtons.classList.add('d-none');
         if (profilePlaceholder) {
-            profilePlaceholder.classList.add('d-none');
-            profilePlaceholder.classList.remove('d-flex');
+            profilePlaceholder.classList.remove('d-none');
+            profilePlaceholder.classList.add('d-flex');
         }
+        updateNavProfile(window.currentUser);
+    }
+}
+
+function handleNoAuth(authButtons, profilePlaceholder) {
+    if (authButtons) authButtons.classList.remove('d-none');
+    if (profilePlaceholder) {
+        profilePlaceholder.classList.add('d-none');
+        profilePlaceholder.classList.remove('d-flex');
     }
 }
 
@@ -60,10 +85,11 @@ window.handleLogout = async function () {
             credentials: 'include'
         });
     } catch (err) {
-        console.error('Logout failed:', err);
+        // Ignore errors in standalone
     }
     window.currentUser = null;
     window.userLibrary = null;
+    localStorage.removeItem('medianest_user'); // Clear standalone user
     localStorage.removeItem('user');
     localStorage.removeItem('watchlist');
     localStorage.removeItem('history');

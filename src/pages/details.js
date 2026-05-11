@@ -90,9 +90,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const loadPageData = async () => {
-        //const titleEl = document.getElementById('item-title');
-        //const descEl = document.getElementById('item-description');
-        //const posterEl = document.getElementById('item-poster');
         const infoEl = document.getElementById('item-info');
         const avgRatingEl = document.getElementById('avg-rating');
         const totalReviewsEl = document.getElementById('total-reviews');
@@ -102,92 +99,70 @@ document.addEventListener('DOMContentLoaded', async () => {
         let displayType = (type === 'books' || type === 'book') ? 'book' : type;
 
         try {
-            const res = await fetch(`/api/items/${type}/${encodeURIComponent(id)}`);
-            const data = await res.json();
+            // Standalone Mode: Fetch directly from services instead of /api/items
+            let item = null;
+            let meta = {};
+            let reviews = [];
 
-            if (!res.ok) throw new Error(data.message || "Failed to fetch");
+            if (type === 'movie') {
+                const { fetchMovieById } = await import('../services/tmdb.js');
+                item = await fetchMovieById(id);
+                meta = { ...item, description: 'Direct from TMDB', genres: 'Trending' };
+            } else if (type === 'show' || type === 'tv') {
+                const { fetchTVShowById } = await import('../services/tmdb.js');
+                item = await fetchTVShowById(id);
+                meta = { ...item, description: 'Direct from TMDB', genres: 'Trending' };
+            } else if (type === 'book') {
+                const { fetchBookById } = await import('../services/book.js');
+                item = await fetchBookById(id);
+                meta = { ...item, description: 'Direct from Google Books/OpenLibrary', author: item.sub };
+            } else if (type === 'music') {
+                const { fetchTrackById } = await import('../services/music.js');
+                item = await fetchTrackById(id);
+                meta = { ...item, description: 'Direct from Last.fm', artist: item.sub };
+            }
 
-            const { item, reviews } = data;
-            const meta = item.metadata || {};
-            currentMongoId = item._id;
+            if (!item) throw new Error("Item not found");
 
             // 1. Render Title and Description
             titleEl.textContent = item.title || "Untitled";
             descEl.textContent = meta.description || "No description provided.";
 
-            if (meta.image && !meta.image.includes('placeholder')) {
-                posterEl.src = meta.image;
+            if (item.image && !item.image.includes('placeholder')) {
+                posterEl.src = item.image;
             }
             if (id && type) {
                 window.loadDetailButton(id, type);
             }
 
             // 2. SMART RATING LOGIC
-            // Priority: App averageRating -> API Rating -> "NEW"
-            if (item.averageRating > 0) {
-                avgRatingEl.textContent = item.averageRating.toFixed(1);
-                if (starIcon) starIcon.classList.remove('d-none');
-                totalReviewsEl.textContent = `${reviews.length} reviews`;
-            } else if (meta.apiRating > 0) {
-                avgRatingEl.textContent = meta.apiRating.toFixed(1);
-                if (starIcon) starIcon.classList.remove('d-none');
-                totalReviewsEl.textContent = `${reviews.length} reviews`;
-            } else {
-                avgRatingEl.textContent = "NEW";
-                if (starIcon) starIcon.classList.add('d-none');
-                totalReviewsEl.textContent = `${reviews.length} reviews`;
-            }
+            avgRatingEl.textContent = "NEW";
+            if (starIcon) starIcon.classList.add('d-none');
+            totalReviewsEl.textContent = `0 reviews`;
 
             // 3. POSTER & FALLBACK
             const localPlaceholder = displayType === 'music' ? '/images/music.png' : '/images/book.png';
-            const isLocalPlaceholder = meta.image === '/images/book.png' || meta.image === '/images/music.png';
-            const img = new Image();
-            img.src = (meta.image && !meta.image.includes('images/book.png') && !meta.image.includes('placeholder') && !isLocalPlaceholder)
-                ? meta.image
-                : (backupImg || localPlaceholder);
-            img.onload = () => {
-                posterEl.src = img.src;
-                posterEl.style.opacity = '1';
-            };
-            img.onerror = () => {
-                posterEl.src = localPlaceholder;
-                posterEl.style.opacity = '1';
-            };
+            posterEl.src = item.image || localPlaceholder;
+            posterEl.style.opacity = '1';
 
-            // 4. METADATA INFO (Director, Runtime, Artist, Author)
+            // 4. METADATA INFO
             let infoHTML = '';
-            if (type === 'movie' || type === 'show') {
-                if (meta.director && meta.director !== 'N/A') infoHTML += `<div class="col-6"><strong>Director:</strong><br>${meta.director}</div>`;
-                if (meta.runtime && meta.runtime !== 'N/A') infoHTML += `<div class="col-6"><strong>Runtime:</strong><br>${meta.runtime}</div>`;
-                if (meta.genres) infoHTML += `<div class="col-12"><strong>Genres:</strong><br>${meta.genres}</div>`;
+            if (type === 'movie' || type === 'show' || type === 'tv') {
+                if (meta.sub) infoHTML += `<div class="col-6"><strong>Release:</strong><br>${meta.sub}</div>`;
+                if (meta.genres) infoHTML += `<div class="col-6"><strong>Category:</strong><br>${meta.genres}</div>`;
             } else if (type === 'music') {
-                infoHTML = `<div class="col-6"><strong>Artist:</strong><br>${meta.artist || 'Unknown'}</div>
-                            <div class="col-6"><strong>Album:</strong><br>${meta.album || 'Single'}</div>`;
+                infoHTML = `<div class="col-6"><strong>Artist:</strong><br>${meta.artist || 'Unknown'}</div>`;
             } else if (type === 'book') {
                 infoHTML = `<div class="col-6"><strong>Author:</strong><br>${meta.author || 'Unknown Author'}</div>`;
             }
             if (infoEl) infoEl.innerHTML = `<div class="row g-3 small">${infoHTML}</div>`;
 
-            // 5. RESTORE CAST CAROUSEL
-            if ((type === 'movie' || type === 'show') && meta.castData && meta.castData.length > 0) {
-                castSection.classList.remove('d-none');
-                castContainer.innerHTML = meta.castData.map(actor => `
-                    <div class="cast-card text-center" style="min-width: 100px; flex: 0 0 auto;">
-                        <img src="${actor.profile_path ? 'https://image.tmdb.org/t/p/w185' + actor.profile_path : '/images/music.png'}" 
-                             class="rounded-3 mb-2 shadow-sm" style="width: 90px; height: 120px; object-fit: cover; border: none;">
-                        <p class="small fw-bold mb-0 text-truncate" style="width: 90px;">${actor.name}</p>
-                        <p class="text-muted small" style="font-size: 0.65rem; width: 90px; line-height: 1;">${actor.character}</p>
-                    </div>
-                `).join('');
-            } else {
-                castSection?.classList.add('d-none');
-            }
-
-            renderReviews(reviews);
+            castSection?.classList.add('d-none');
+            renderReviews([]);
 
         } catch (err) {
             console.error("Frontend Error:", err);
-            titleEl.textContent = "Error loading details."; // This triggers if an ID is missing or fetch fails
+            titleEl.textContent = "Error loading details.";
         }
     };
 

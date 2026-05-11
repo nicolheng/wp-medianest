@@ -51,8 +51,7 @@ export async function loadWatchlistAndHistory() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const isAuth = await initUserSession({ requireAuth: true });
-    if (!isAuth) return;
+    await initUserSession({ requireAuth: false });
 
     loadWatchlistAndHistory();
 });

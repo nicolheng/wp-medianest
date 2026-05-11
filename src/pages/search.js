@@ -171,5 +171,4 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('search-results-page')) {
     window.renderSearchResults();
   }
-
 });

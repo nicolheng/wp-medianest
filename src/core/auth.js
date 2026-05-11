@@ -70,48 +70,39 @@ function showErrorOnPage(msg) {
     }
 }
 
-// reusable function to handle the actual 'fetch' call
+// reusable function to handle the actual 'fetch' call (Mocked for standalone)
 async function handleAuth(endpoint, bodyData, successMessage) {
-    try {
-        const response = await fetch(`${endpoint}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bodyData),
-            credentials: 'include'
-        });
-
-        // SAFETY CHECK: If response is empty, don't try to parse JSON
-        const text = await response.text();
-        const data = text ? JSON.parse(text) : {};
-
-        if (response.ok && data.success) {
-            window.location.href = "index.html";
-        } else {
-            const rawMessage = String(data.message || 'Registration failed.');
-            if (endpoint.includes('register')) {
-                if (rawMessage.includes("All fields are required")) {
-                    showErrorOnPage(rawMessage);
-                } else if (rawMessage.includes("Password must")) {
-                    showFieldError('password', rawMessage);
-                } else if (rawMessage.includes("Email already exists")) {
-                    showFieldError('email', rawMessage);
-                } else if (rawMessage.includes("valid email")) {
-                    showFieldError('email', 'Please enter a valid email address.');
-                } else {
-                    showErrorOnPage(rawMessage);
-                }
-            } else {
-                showFieldError('password', 'The username or password is incorrect.');
-            }
+    console.log(`Standalone Auth [${endpoint}]:`, bodyData);
+    
+    // Simple local validation
+    if (endpoint.includes('register')) {
+        if (!bodyData.username || !bodyData.email || !bodyData.password) {
+            showErrorOnPage("All fields are required.");
+            return;
         }
-    } catch (err) {
-        console.error("Auth Error:", err);
-        if (endpoint.includes('register')) {
-            showErrorOnPage('Unable to connect to the registration server. Please make sure the backend is running.');
-        } else {
-            alert("Server connection failed.");
+        if (bodyData.password.length < 6) {
+            showFieldError('password', "Password must be at least 6 characters.");
+            return;
+        }
+    } else {
+        if (!bodyData.email || !bodyData.password) {
+            showErrorOnPage("Please enter both email and password.");
+            return;
         }
     }
+
+    // Mock successful login: Save user info to localStorage so session.js can pick it up
+    const mockUser = {
+        username: bodyData.username || bodyData.email.split('@')[0] || 'User',
+        email: bodyData.email,
+        profilePic: '',
+        profile: { bio: 'Standalone User', joinDate: new Date().toISOString() }
+    };
+    
+    localStorage.setItem('medianest_user', JSON.stringify(mockUser));
+    
+    // Redirect to home page
+    window.location.href = "index.html";
 }
 
 // shows errors under each input

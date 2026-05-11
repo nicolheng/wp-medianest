@@ -32,13 +32,6 @@ export default {
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/itunes/, ''),
       },
-      '/api': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-        secure: false,
-        cookiePathRewrite: '/',      // Preserves cookie path
-        cookieDomainRewrite: '',     // Preserves cookie domain
-      },
     },
   },
   // silence Sass deprecation warnings
