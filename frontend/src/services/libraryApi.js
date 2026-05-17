@@ -21,6 +21,7 @@ export async function fetchFullLibrary() {
 
         const data = await response.json();
         window.userLibrary = data;
+        window.dispatchEvent(new Event('libraryUpdated'));
         return data;
     } catch (error) {
         console.error("Library Error:", error);

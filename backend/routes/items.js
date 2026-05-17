@@ -10,6 +10,7 @@ router.get('/:type/:id', async (req, res) => {
 
         if (type === 'books') type = 'book';
         if (type === 'movies') type = 'movie';
+        if (type === 'tracks') type = 'music';
 
         let item = await EntertainmentItem.findOne({ "metadata.externalId": id, type });
         let reviews = [];

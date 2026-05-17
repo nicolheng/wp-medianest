@@ -53,6 +53,12 @@ const UserSchema = new mongoose.Schema({
         avatarUrl: { type: String, default: "https://i.postimg.cc/zvS2kWVk/user.jpg" },
         joinDate: { type: Date, default: Date.now }
     },
+    badges: {
+        movies: { type: String, default: "none" },
+        tv: { type: String, default: "none" },
+        books: { type: String, default: "none" },
+        music: { type: String, default: "none" }
+    },
     createdAt: {
         type: Date,
         default: Date.now

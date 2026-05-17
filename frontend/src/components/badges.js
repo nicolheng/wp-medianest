@@ -24,12 +24,9 @@ const BADGE_DATA = {
         gold:   { count: 100, img: './assets/badges/music-gold.png', name: 'Gold' },
         diamond:{ count: 200, img: './assets/badges/music-diamond.png', name: 'Diamond' }
     }
-    };
+};
 
-    // Mock data for Presentation 1 demo
-    const MOCK_STATS = { books: 32, movies: 102, tv: 20, music: 25 };
-
-    function getBadgeInfo(category, currentCount) {
+function getBadgeInfo(category, currentCount) {
     const tiers = BADGE_DATA[category];
     const sortedTiers = Object.values(tiers).sort((a, b) => a.count - b.count);
     
@@ -40,12 +37,12 @@ const BADGE_DATA = {
     // Find highest unlocked tier
     for (let i = 0; i < sortedTiers.length; i++) {
         if (currentCount >= sortedTiers[i].count) {
-        currentTier = sortedTiers[i];
-        isLocked = false;
-        // Set next tier if exists
-        if (i + 1 < sortedTiers.length) {
-            nextTier = sortedTiers[i + 1];
-        }
+            currentTier = sortedTiers[i];
+            isLocked = false;
+            // Set next tier if exists
+            if (i + 1 < sortedTiers.length) {
+                nextTier = sortedTiers[i + 1];
+            }
         }
     }
     
@@ -57,40 +54,48 @@ const BADGE_DATA = {
     }
     
     // Determine display values
-    const displayBadge = currentTier;
-    const targetCount = nextTier ? nextTier.count : currentTier.count; // Max level shows current
+    const targetCount = nextTier ? nextTier.count : currentTier.count; 
     
     return {
-        img: displayBadge.img,
-        name: displayBadge.name,
+        img: currentTier.img,
+        name: currentTier.name,
         target: targetCount,
         isLocked: isLocked
     };
 }
 
-function renderBadges() {
+export function renderBadges() {
     const container = document.getElementById('badge-grid');
     if (!container) return;
+    
+    const library = window.userLibrary || { history: {} };
+    const history = library.history || {};
     
     container.innerHTML = '';
     
     Object.keys(BADGE_DATA).forEach(category => {
-        const count = MOCK_STATS[category] || 0;
+        const count = history[category]?.length || 0;
         const badge = getBadgeInfo(category, count);
         
         const el = document.createElement('div');
         el.className = 'badge-item';
         
         el.innerHTML = `
-        <div class="badge-icon-circle">
-            <img src="${badge.img}" alt="${category}" class="badge-img ${badge.isLocked ? 'locked' : ''}">
-        </div>
-        <div class="badge-label">${category.charAt(0).toUpperCase() + category.slice(1)}</div>
-        <div class="badge-progress">${count} / ${badge.target}</div>
+            <div class="badge-icon-circle">
+                <img src="${badge.img}" alt="${category}" class="badge-img ${badge.isLocked ? 'locked' : ''}">
+            </div>
+            <div class="badge-label">${category.charAt(0).toUpperCase() + category.slice(1)}</div>
+            <div class="badge-progress">${count} / ${badge.target}</div>
         `;
         
         container.appendChild(el);
     });
 }
 
-document.addEventListener('DOMContentLoaded', renderBadges);
+// Listen for library updates to re-render badges
+window.addEventListener('libraryUpdated', renderBadges);
+
+// Initial render if data already exists
+if (window.userLibrary) {
+    renderBadges();
+}

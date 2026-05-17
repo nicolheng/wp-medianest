@@ -128,6 +128,7 @@ router.get('/me', async (req, res) => {
                 username: user.username,
                 email: user.email,
                 profile: user.profile || {},
+                badges: user.badges || {},
                 createdAt: user.createdAt
             }
         });
@@ -205,6 +206,7 @@ router.put('/profile', async (req, res) => {
                 username: user.username,
                 email: user.email,
                 profile: user.profile || {},
+                badges: user.badges || {},
                 createdAt: user.createdAt
             }
         });
