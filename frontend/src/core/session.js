@@ -4,6 +4,7 @@ export async function checkAuthStatus() {
     const authButtons = document.getElementById('auth-buttons');
     const profilePlaceholder = document.getElementById('profile-placeholder');
     const navUsername = document.getElementById('nav-username');
+    const createAccountCta = document.getElementById('create-account-cta');
 
     try {
         const res = await fetch('/api/auth/me', {
@@ -21,6 +22,7 @@ export async function checkAuthStatus() {
                     profilePlaceholder.classList.remove('d-none');
                     profilePlaceholder.classList.add('d-flex');
                 }
+                if (createAccountCta) createAccountCta.classList.add('d-none');
 
                 updateNavProfile(data.user);
 
@@ -32,6 +34,7 @@ export async function checkAuthStatus() {
                     profilePlaceholder.classList.add('d-none');
                     profilePlaceholder.classList.remove('d-flex');
                 }
+                if (createAccountCta) createAccountCta.classList.remove('d-none');
             }
         } else {
             // 401: Not authenticated
@@ -40,6 +43,7 @@ export async function checkAuthStatus() {
                 profilePlaceholder.classList.add('d-none');
                 profilePlaceholder.classList.remove('d-flex');
             }
+            if (createAccountCta) createAccountCta.classList.remove('d-none');
         }
     } catch (err) {
         console.error('Auth check failed:', err);
@@ -49,6 +53,7 @@ export async function checkAuthStatus() {
             profilePlaceholder.classList.add('d-none');
             profilePlaceholder.classList.remove('d-flex');
         }
+        if (createAccountCta) createAccountCta.classList.remove('d-none');
     }
 }
 

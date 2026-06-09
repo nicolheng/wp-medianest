@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (resultsPage) {
       resultsPage.classList.add('loading-active');
 
+      //Keyword Search & Category Filtering.
       const params = new URLSearchParams(window.location.search);
       await initUserSession();
       const q = (params.get('q') || '').trim();
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return title.includes(qLower) || sub.includes(qLower);
       };
 
-      // 1. Fetch all categories using search_api (works for both query and non-query)
+      // fetch all categories using search_api
       const allPromises = {
         movies: searchMovies(q),
         tv: searchTVShows(q),
@@ -82,10 +83,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let shouldShow = false;
 
             if (isFilterActive) {
-              // If filters are chosen, show only categories in filters (even if empty)
+              // If filters are chosen, show only categories in filters 
               shouldShow = filters.includes(type);
             } else {
-              // If NO filters, show only if there are actual matches
+              // If no filters, show only if there are actual matches
               shouldShow = info.matches.length > 0;
             }
 
@@ -170,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (document.getElementById('search-results-page')) {
     window.renderSearchResults();
+  }else {
+    initUserSession();
   }
-
 });
