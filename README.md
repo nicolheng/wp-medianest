@@ -41,64 +41,98 @@ This project pulls data and chart information from the following industry-standa
 
 ---
 
-## How to Run
+## 🚀 Installation & Deployment Guide
 
-### prerequisites
+### 📋 System Prerequisites
 
-Install Node.js on your machine to run this project. Node.js includes npm (Node Package Manager).
-
-* **Node.js**: Version 18.0.0 or higher.
-
-Verify your installation by running these commands in your terminal:
+Your environment must run **Node.js v18.0.0 or higher** (which bundles the `npm` package manager). Verify your runtime versions before initiating builds:
 
 ```bash
 node -v
 npm -v
+
 ```
 
-### Frontend Only [temp]
+---
 
-
-1. git clone the repo
-2. at cmd, run `cd frontend`
-3. run `npm install`
-4. run `npm run dev`
-5. go to localhost:8081/
-
-### Backend Setup
-
-1. Prerequisites
-
-	- Node.js v18 or higher
-	- A running MongoDB instance (MongoDB Atlas recommended)
-
-2. Install and run
+### 📂 Step 1: Clone the Application Repository
 
 ```bash
-cd backend
+git clone <your-repository-url>
+cd medianest
+
+```
+
+---
+
+### 💻 Step 2: Frontend Environment Configuration
+
+The frontend client relies on structural environment constants situated directly within its source cluster.
+
+1. Navigate to the frontend directory:
+```bash
+cd frontend
+
+```
+
+
+2. Build your local configuration out of the repository placeholder inside the source folder:
+```bash
+cp src/.env.example src/.env
+
+```
+
+
+3. Open `src/.env` in your editor and input your client-side keys and server access origins.
+4. Install local node dependencies and spin up the development compiler:
+```bash
 npm install
-# Create a local .env from the example and fill values
-cp .env.example .env
-# Start in production mode
-npm start
-# For development with automatic restarts (uses nodemon if installed):
-npx nodemon server.js
+npm run dev
+
 ```
 
-3. Environment variables
 
-- Copy `backend/.env.example` to `backend/.env` and fill real secrets.
-- Important variables: `MONGO_URI`, `SESSION_SECRET`, `CLIENT_URL`, and API keys (`TMDB_KEY`, `LASTFM_KEY`, `NYT_KEY`, `GOOGLE_BOOKS_KEY`).
+5. The interface will bind locally. Launch your web browser and open: `http://localhost:8081/`
 
-4. Tests
+---
 
+### ⚙️ Step 3: Backend Server Configuration
+
+1. Navigate into the application server root directory:
 ```bash
-cd backend
-npm test
+cd ../backend
+
 ```
 
-5. Notes
 
-- Keep real `.env` files out of version control. The repo's `.gitignore` already ignores `.env` and `.env.*`.
-- Track only `backend/.env.example` in the repo so contributors know required variables.
+2. Construct your isolated application context out of the configuration template:
+```bash
+cp .env.example .env
 
+```
+
+
+3. Open the newly generated `.env` file and supply your distinct cluster credentials and access secrets:
+```env
+# Core Connections & Cryptography Secrets
+PORT=5000
+MONGO_URI=mongodb://syn:MediaNest2026@ac-d50un0q-shard-00-00.cwe0dlw.mongodb.net:27017,ac-d50un0q-shard-00-01.cwe0dlw.mongodb.net:27017,ac-d50un0q-shard-00-02.cwe0dlw.mongodb.net:27017/?ssl=true&replicaSet=atlas-os0j0e-shard-0&authSource=admin&appName=myDeployment
+SESSION_SECRET=MediaNestSuperSecureSecretKey2026!
+CLIENT_URL=http://localhost:8081
+
+# Third-Party Upstream Access Tokens
+TMDB_KEY=your_tmdb_api_key
+LASTFM_KEY=your_lastfm_api_key
+NYT_KEY=your_nyt_api_key
+GOOGLE_BOOKS_KEY=your_google_books_api_key
+
+```
+
+
+4. Install server dependencies and execute the daemon application boot script:
+```bash
+npm install
+# Launches server environment with hot-reloading tracking
+npx nodemon server.js
+
+```
