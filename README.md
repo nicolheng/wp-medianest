@@ -64,3 +64,41 @@ npm -v
 3. run `npm install`
 4. run `npm run dev`
 5. go to localhost:8081/
+
+### Backend Setup
+
+1. Prerequisites
+
+	- Node.js v18 or higher
+	- A running MongoDB instance (MongoDB Atlas recommended)
+
+2. Install and run
+
+```bash
+cd backend
+npm install
+# Create a local .env from the example and fill values
+cp .env.example .env
+# Start in production mode
+npm start
+# For development with automatic restarts (uses nodemon if installed):
+npx nodemon server.js
+```
+
+3. Environment variables
+
+- Copy `backend/.env.example` to `backend/.env` and fill real secrets.
+- Important variables: `MONGO_URI`, `SESSION_SECRET`, `CLIENT_URL`, and API keys (`TMDB_KEY`, `LASTFM_KEY`, `NYT_KEY`, `GOOGLE_BOOKS_KEY`).
+
+4. Tests
+
+```bash
+cd backend
+npm test
+```
+
+5. Notes
+
+- Keep real `.env` files out of version control. The repo's `.gitignore` already ignores `.env` and `.env.*`.
+- Track only `backend/.env.example` in the repo so contributors know required variables.
+
