@@ -116,7 +116,7 @@ cp .env.example .env
 ```env
 # Core Connections & Cryptography Secrets
 PORT=5000
-MONGO_URI=mongodb://syn:MediaNest2026@ac-d50un0q-shard-00-00.cwe0dlw.mongodb.net:27017,ac-d50un0q-shard-00-01.cwe0dlw.mongodb.net:27017,ac-d50un0q-shard-00-02.cwe0dlw.mongodb.net:27017/?ssl=true&replicaSet=atlas-os0j0e-shard-0&authSource=admin&appName=myDeployment
+MONGO_URI=mongodb://<username>:<password>@host:port/dbname
 SESSION_SECRET=MediaNestSuperSecureSecretKey2026!
 CLIENT_URL=http://localhost:8081
 
